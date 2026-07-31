@@ -1,0 +1,22 @@
+{
+  "name": "digital-banking-experience-lab",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @dbel/member-web",
+    "test": "npm run test --workspace @dbel/member-web",
+    "lint": "npm run lint --workspace @dbel/member-web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "build": "npm run build --workspace @dbel/member-web"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
