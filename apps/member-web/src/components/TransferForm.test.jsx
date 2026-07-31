@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { freshAccountDashboard } from "../data/accountDashboardFixtures";
 import TransferForm from "./TransferForm";
 
@@ -20,6 +20,24 @@ async function chooseAccounts(user, source = 0, destination = 1) {
     accounts[destination].id,
   );
 }
+
+async function prepareReview(user) {
+  await chooseAccounts(user);
+  await user.type(screen.getByLabelText("Amount"), "25.50");
+  await user.type(screen.getByLabelText("Memo (optional)"), "Vacation fund");
+  await user.click(screen.getByRole("button", { name: "Review" }));
+}
+
+const acceptedTransfer = {
+  transferId: "TRN-1001",
+  status: "accepted",
+  confirmationNumber: "HC-0001001",
+  submittedAt: "2026-07-31T14:30:00Z",
+  idempotencyKey: "member-intent-1",
+  duplicate: false,
+};
+
+afterEach(() => vi.restoreAllMocks());
 
 describe("transfer form validation", () => {
   it("associates required errors with each required control", async () => {
@@ -184,5 +202,77 @@ describe("transfer form validation", () => {
     await user.click(screen.getByRole("button", { name: "Review" }));
     expect(screen.getByText("Vacation fund")).toBeInTheDocument();
     expect(screen.getByText("Ready for submission")).toBeInTheDocument();
+  });
+});
+
+describe("transfer submission", () => {
+  it("disables duplicate clicks while one logical transfer is submitting", async () => {
+    const user = userEvent.setup();
+    let finishRequest;
+    vi.spyOn(globalThis, "fetch").mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finishRequest = resolve;
+        }),
+    );
+    renderForm();
+    await prepareReview(user);
+    const submit = screen.getByRole("button", { name: "Submit transfer" });
+    await user.click(submit);
+
+    expect(
+      screen.getByRole("button", { name: "Submitting transfer..." }),
+    ).toBeDisabled();
+    await user.click(
+      screen.getByRole("button", { name: "Submitting transfer..." }),
+    );
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    finishRequest({ ok: true, json: async () => acceptedTransfer });
+    expect(
+      await screen.findByRole("region", { name: "Transfer accepted." }),
+    ).toBeVisible();
+  });
+
+  it("posts the instruction and displays its deterministic confirmation", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => acceptedTransfer,
+    });
+    renderForm();
+    await prepareReview(user);
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/transfers",
+      expect.objectContaining({ method: "POST" }),
+    );
+    const confirmation = await screen.findByRole("region", {
+      name: "Transfer accepted.",
+    });
+    expect(within(confirmation).getByText("HC-0001001")).toBeVisible();
+    expect(
+      within(confirmation).getByText("2026-07-31T14:30:00Z"),
+    ).toBeVisible();
+    expect(
+      within(confirmation).getByText(
+        "Acceptance records the request; it is not settlement.",
+      ),
+    ).toBeVisible();
+  });
+
+  it("explains when a duplicate response reused the original result", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ ...acceptedTransfer, duplicate: true }),
+    });
+    renderForm();
+    await prepareReview(user);
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+    expect(
+      await screen.findByText(/API returned the original confirmation/),
+    ).toBeVisible();
   });
 });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { formatCents, formatMaskedSuffix } from "../utils/formatters";
 import { accountPropType } from "../propTypes/bankingPropTypes";
@@ -65,18 +65,59 @@ export default function TransferForm({ accounts }) {
   });
   const [errors, setErrors] = useState({});
   const [review, setReview] = useState(null);
+  const [submission, setSubmission] = useState({
+    status: "idle",
+    result: null,
+    error: null,
+  });
+  const submissionLocked = useRef(false);
 
   function updateValue(name, value) {
     setValues((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: undefined }));
     setReview(null);
+    setSubmission({ status: "idle", result: null, error: null });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validateTransfer(values, accounts);
     setErrors(nextErrors);
-    setReview(Object.keys(nextErrors).length === 0 ? values : null);
+    if (Object.keys(nextErrors).length === 0) {
+      setReview({
+        ...values,
+        // Generated once per valid review, then retained for every retry of it.
+        idempotencyKey: crypto.randomUUID(),
+      });
+    } else {
+      setReview(null);
+    }
+  }
+
+  async function submitTransfer() {
+    if (!review || submissionLocked.current) return;
+    submissionLocked.current = true;
+    setSubmission({ status: "submitting", result: null, error: null });
+
+    try {
+      const response = await fetch("/api/transfers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sourceAccount: review.sourceId,
+          destinationAccount: review.destinationId,
+          amountCents: Math.round(review.amount * 100),
+          memo: review.memo,
+          idempotencyKey: review.idempotencyKey,
+        }),
+      });
+      if (!response.ok) throw new Error("Transfer request failed");
+      const result = await response.json();
+      setSubmission({ status: "success", result, error: null });
+    } catch (error) {
+      submissionLocked.current = false;
+      setSubmission({ status: "error", result: null, error });
+    }
   }
 
   const reviewedSource = accounts.find(
@@ -92,7 +133,7 @@ export default function TransferForm({ accounts }) {
       <h1>Prepare a transfer</h1>
       <p className="transfer-intro">
         Move fictional money between your Harbor accounts. Nothing will be sent
-        yet.
+        until you review and submit it.
       </p>
 
       <form className="transfer-form" onSubmit={handleSubmit} noValidate>
@@ -227,7 +268,71 @@ export default function TransferForm({ accounts }) {
             </div>
           </dl>
           <p className="review-note">
-            This review is read-only. No transfer has been submitted.
+            This review is read-only. Submit represents one financial intention,
+            not one button click.
+          </p>
+          <button
+            className="primary-action"
+            type="button"
+            onClick={submitTransfer}
+            disabled={
+              submission.status === "submitting" ||
+              submission.status === "success"
+            }
+          >
+            {submission.status === "submitting"
+              ? "Submitting transfer..."
+              : "Submit transfer"}
+          </button>
+          {submission.status === "error" && (
+            <p className="submission-error" role="alert">
+              The transfer could not be submitted. Try again safely; the same
+              idempotency key will be reused.
+            </p>
+          )}
+        </section>
+      )}
+
+      {submission.status === "success" && (
+        <section
+          className="transfer-confirmation"
+          aria-labelledby="confirmation-title"
+        >
+          <p className="eyebrow">Confirmation</p>
+          <h2 id="confirmation-title">Transfer accepted.</h2>
+          <dl>
+            <div>
+              <dt>Confirmation number</dt>
+              <dd>{submission.result.confirmationNumber}</dd>
+            </div>
+            <div>
+              <dt>Amount</dt>
+              <dd>{formatCents(Math.round(review.amount * 100))}</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd>{accountLabel(reviewedSource)}</dd>
+            </div>
+            <div>
+              <dt>Destination</dt>
+              <dd>{accountLabel(reviewedDestination)}</dd>
+            </div>
+            <div>
+              <dt>Memo</dt>
+              <dd>{review.memo || "No memo"}</dd>
+            </div>
+            <div>
+              <dt>Submitted</dt>
+              <dd>{submission.result.submittedAt}</dd>
+            </div>
+          </dl>
+          <p className="acceptance-note">
+            Acceptance records the request; it is not settlement.
+          </p>
+          <p className="idempotency-note">
+            {submission.result.duplicate
+              ? "This was a repeated request. The API returned the original confirmation, so only one logical transfer exists."
+              : "Repeated clicks reuse this intention’s idempotency key, so they cannot create multiple logical transfers."}
           </p>
         </section>
       )}
