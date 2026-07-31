@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
+import PropTypes from "prop-types";
 
-export default function MemberLayout() {
+export default function MemberLayout({ session, onLogout }) {
   return (
     <>
       <header className="site-header">
@@ -14,9 +15,13 @@ export default function MemberLayout() {
           <NavLink to="/" end>
             Dashboard
           </NavLink>
-          <NavLink to="/transfers/new">Transfer Money</NavLink>
+          <NavLink to="/transfers/new">Transfers</NavLink>
           <NavLink to="/settings">Settings</NavLink>
+          <button className="nav-button" type="button" onClick={onLogout}>
+            Logout
+          </button>
         </nav>
+        <p className="signed-in-member">Signed in as {session.displayName}</p>
       </header>
       <Outlet />
       <footer>
@@ -25,3 +30,8 @@ export default function MemberLayout() {
     </>
   );
 }
+
+MemberLayout.propTypes = {
+  session: PropTypes.object.isRequired,
+  onLogout: PropTypes.func.isRequired,
+};
