@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithRouter } from "../test/renderWithRouter";
 import { describe, expect, it } from "vitest";
 import {
   emptyAccountDashboard,
@@ -9,7 +10,7 @@ import AccountDashboard from "./AccountDashboard";
 
 describe("account dashboard", () => {
   it("renders the fictional member and both deposit accounts", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(
       screen.getByRole("heading", { name: /Alex Morgan/i }),
@@ -23,7 +24,7 @@ describe("account dashboard", () => {
   });
 
   it("renders one accessibly named account card for each fixture account", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(screen.getAllByRole("article")).toHaveLength(
       freshAccountDashboard.accounts.length,
@@ -41,14 +42,14 @@ describe("account dashboard", () => {
   });
 
   it("renders account type badges derived from each account", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(screen.getByText("Checking")).toHaveClass("account-type-badge");
     expect(screen.getByText("Savings")).toHaveClass("account-type-badge");
   });
 
   it("renders the status of each account as text", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     const cards = screen.getAllByRole("article");
     expect(
@@ -60,7 +61,7 @@ describe("account dashboard", () => {
   });
 
   it("renders an empty recent-activity message for every account", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(
       screen.getAllByRole("heading", { name: "Recent activity" }),
@@ -82,7 +83,7 @@ describe("account dashboard", () => {
   });
 
   it("distinguishes a successful empty projection from an account balance", () => {
-    render(<AccountDashboard dashboard={emptyAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={emptyAccountDashboard} />);
 
     expect(
       screen.getByText("No accounts are currently available."),
@@ -93,7 +94,7 @@ describe("account dashboard", () => {
   });
 
   it("shows masked suffixes without exposing internal account identifiers", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(screen.getByLabelText("Account ending in 4821")).toHaveTextContent(
       "•••• 4821",
@@ -106,7 +107,7 @@ describe("account dashboard", () => {
   });
 
   it("formats integer cents as user-visible US dollar balances", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     const checkingCard = screen
       .getByRole("heading", { name: "Everyday Checking" })
@@ -132,7 +133,7 @@ describe("account dashboard", () => {
   });
 
   it("shows an accessible warning for a stale projection", () => {
-    render(<AccountDashboard dashboard={staleAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={staleAccountDashboard} />);
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "Account information may be out of date. This account snapshot could not be refreshed and is based on stale projection data.",
@@ -140,7 +141,7 @@ describe("account dashboard", () => {
   });
 
   it("identifies a fresh projection as current without a stale warning", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "Projection is current. This dashboard is based on the latest available projection data.",
@@ -151,7 +152,7 @@ describe("account dashboard", () => {
   });
 
   it("renders the projection's last-updated value", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(screen.getByText(/Last updated/)).toHaveTextContent(
       "Jul 31, 2026, 12:00 PM UTC",

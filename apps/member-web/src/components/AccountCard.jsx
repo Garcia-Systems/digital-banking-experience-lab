@@ -4,6 +4,7 @@ import AccountMetadata from "./AccountMetadata";
 import BalanceSummary from "./BalanceSummary";
 import CardControls from "./CardControls";
 import RecentActivitySummary from "./RecentActivitySummary";
+import { Link } from "react-router-dom";
 
 export default function AccountCard({ account }) {
   return (
@@ -32,6 +33,9 @@ export default function AccountCard({ account }) {
         accountName={account.displayName}
         transactions={account.transactions}
       />
+      <Link className="account-link" to={`/accounts/${account.id}`}>
+        View account
+      </Link>
     </article>
   );
 }

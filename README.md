@@ -10,14 +10,20 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
 
-## Progress: Chapters 0–7 complete
+## Progress: Chapters 0–8 complete
 
-Chapter 7 gives that application boundary explicit loading, success, empty, stale, invalid-response, and failure states. A safe manual retry and deterministic API scenarios make every outcome observable without pretending that missing data is a zero balance.
+Chapter 8 adds client-side routing to the member application. The dashboard, account details, and deterministic settings screen are focused workflows that share one layout and preserve the loaded account projection during navigation.
 
 ## Architecture
 
 ```text
 Browser
+  Member Application
+  │
+  ├── Dashboard
+  ├── Account Details
+  └── Settings
+       │
   React request state (idle / loading / success / error)
        |
        | GET /api/dashboard?scenario=...
@@ -71,7 +77,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Loading, Empty, Success, and Failure States](book/07-loading-empty-success-and-failure-states.md).
+Follow the chapters in order in [`book`](book), ending with [Routing Through a Banking Application](book/08-routing-through-a-banking-application.md).
 
 ## Repository layout
 

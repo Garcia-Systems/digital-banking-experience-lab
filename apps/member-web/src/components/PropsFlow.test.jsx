@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithRouter } from "../test/renderWithRouter";
 import { describe, expect, it } from "vitest";
 import { freshAccountDashboard } from "../data/accountDashboardFixtures";
 import AccountCard from "./AccountCard";
@@ -9,14 +10,16 @@ const [checkingAccount, savingsAccount] = freshAccountDashboard.accounts;
 
 describe("prop-driven account presentation", () => {
   it("renders nickname and ownership supplied by each account", () => {
-    render(<AccountCard account={savingsAccount} />);
+    renderWithRouter(<AccountCard account={savingsAccount} />);
 
     expect(screen.getByText("Vacation Savings")).toBeInTheDocument();
     expect(screen.getByText("Joint")).toBeInTheDocument();
   });
 
   it("changes dividend language according to account data", () => {
-    const { rerender } = render(<AccountCard account={checkingAccount} />);
+    const { rerender } = renderWithRouter(
+      <AccountCard account={checkingAccount} />,
+    );
     expect(screen.getByText("No dividends")).toBeInTheDocument();
 
     rerender(<AccountCard account={savingsAccount} />);
@@ -25,7 +28,7 @@ describe("prop-driven account presentation", () => {
   });
 
   it("renders AccountCard from account data without a dashboard", () => {
-    render(<AccountCard account={checkingAccount} />);
+    renderWithRouter(<AccountCard account={checkingAccount} />);
 
     expect(
       screen.getByRole("article", { name: /Everyday Checking/ }),
@@ -34,7 +37,7 @@ describe("prop-driven account presentation", () => {
   });
 
   it("renders BalanceSummary from balance values alone", () => {
-    render(
+    renderWithRouter(
       <BalanceSummary
         availableBalanceCents={12345}
         currentBalanceCents={13000}
@@ -50,7 +53,7 @@ describe("prop-driven account presentation", () => {
   });
 
   it("renders ProjectionStatus independently of account information", () => {
-    render(
+    renderWithRouter(
       <ProjectionStatus
         projection={{ generatedAt: "2026-07-31T09:30:00Z", isStale: false }}
       />,

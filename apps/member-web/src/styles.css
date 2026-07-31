@@ -62,6 +62,21 @@ button:focus-visible {
   color: white;
   padding: 1rem max(1.25rem, calc((100% - 70rem) / 2));
 }
+.site-header nav {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+.site-header nav a {
+  color: #d9efea;
+  font-weight: 700;
+  text-decoration: none;
+}
+.site-header nav a.active {
+  color: #f4cb70;
+  text-decoration: underline;
+  text-underline-offset: 0.35rem;
+}
 .brand {
   display: inline-flex;
   align-items: center;
@@ -278,8 +293,54 @@ footer {
 footer p {
   margin: 0;
 }
+.account-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #0d5b51;
+  font-weight: 750;
+}
+.route-page {
+  padding: 3rem 0 5rem;
+}
+.route-page > .projection-status {
+  margin-top: 1.5rem;
+}
+.account-detail {
+  margin-top: 1.5rem;
+}
+.activity-placeholder,
+.settings-list {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #d6ddd8;
+  border-radius: 0.75rem;
+  background: white;
+}
+.activity-placeholder p:last-child {
+  margin-bottom: 0;
+}
+.settings-list {
+  display: grid;
+  gap: 1.25rem;
+}
+.settings-list dt {
+  color: #5e6967;
+  font-size: 0.8rem;
+}
+.settings-list dd {
+  margin: 0.2rem 0 0;
+  font-weight: 700;
+}
 
 @media (min-width: 48rem) {
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .site-header nav {
+    margin-top: 0;
+  }
   main {
     width: min(100% - 4rem, 70rem);
   }

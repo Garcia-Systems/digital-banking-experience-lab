@@ -3,6 +3,11 @@ import PropTypes from "prop-types";
 import AccountDashboard from "./components/AccountDashboard";
 import { dashboardScenario } from "./data/dashboardScenario";
 import { validateDashboard } from "./data/validateDashboard";
+import { Route, Routes } from "react-router-dom";
+import MemberLayout from "./components/MemberLayout";
+import AccountDetails from "./components/AccountDetails";
+import Settings from "./components/Settings";
+import NotFound from "./components/NotFound";
 
 const initialRequest = { status: "idle", dashboard: null, error: null };
 
@@ -71,5 +76,21 @@ export default function App() {
     return <DashboardError onRetry={() => setAttempt((value) => value + 1)} />;
   }
 
-  return <AccountDashboard dashboard={request.dashboard} />;
+  return (
+    <Routes>
+      <Route element={<MemberLayout />}>
+        <Route
+          index
+          element={<AccountDashboard dashboard={request.dashboard} />}
+        />
+        <Route
+          path="accounts/:accountId"
+          element={<AccountDetails dashboard={request.dashboard} />}
+        />
+        <Route path="settings" element={<Settings />} />
+        <Route path="not-found" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
 }
