@@ -59,14 +59,23 @@ main {
 .welcome {
   padding: 3.5rem 0 2.25rem;
 }
-.eyebrow,
-.account-type {
+.eyebrow {
   color: #427069;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   margin: 0 0 0.4rem;
   text-transform: uppercase;
+}
+.account-type-badge {
+  display: inline-block;
+  margin: 0 0 0.5rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #e0efea;
+  color: #245b53;
+  font-size: 0.75rem;
+  font-weight: 750;
 }
 h1,
 h2,
@@ -106,6 +115,10 @@ h1 {
 .projection-status.is-stale {
   border-left: 0.4rem solid #b85819;
   background: #fff8ef;
+}
+.freshness-message strong {
+  display: block;
+  color: #245b53;
 }
 .stale-warning strong {
   display: block;
@@ -154,6 +167,15 @@ h1 {
   margin-bottom: 0;
   font-size: 1.15rem;
 }
+.account-status {
+  margin: 0.45rem 0 0;
+  color: #53605e;
+  font-size: 0.85rem;
+}
+.account-status--dormant strong,
+.account-status--restricted strong {
+  color: #75320d;
+}
 .account-suffix {
   margin-bottom: 0;
   color: #586663;
@@ -183,6 +205,21 @@ h1 {
   color: #0d5b51;
   font-size: clamp(1.25rem, 6vw, 1.7rem);
 }
+.recent-activity {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e3e7e4;
+}
+.recent-activity h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+.recent-activity p,
+.recent-activity ul {
+  margin: 0;
+  color: #5e6967;
+  font-size: 0.85rem;
+}
 footer {
   padding: 1.5rem;
   border-top: 1px solid #d9dfda;
@@ -203,7 +240,7 @@ footer p {
     align-items: center;
     justify-content: space-between;
   }
-  .stale-warning {
+  .freshness-message {
     max-width: 28rem;
     text-align: right;
   }

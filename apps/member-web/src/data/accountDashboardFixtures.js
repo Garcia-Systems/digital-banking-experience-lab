@@ -11,18 +11,22 @@ export const accountDashboardFixture = {
     {
       id: "account-2001",
       type: "checking",
+      status: "open",
       displayName: "Everyday Checking",
       accountSuffix: "4821",
       availableBalanceCents: 125000,
       currentBalanceCents: 130500,
+      transactions: [],
     },
     {
       id: "account-2002",
       type: "savings",
+      status: "dormant",
       displayName: "Member Savings",
       accountSuffix: "7314",
       availableBalanceCents: 420000,
       currentBalanceCents: 420000,
+      transactions: [],
     },
   ],
 };

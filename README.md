@@ -4,7 +4,7 @@ The **Digital Banking Experience Laboratory** is an executable textbook for lear
 
 This independent educational project complements the separate **Digital Banking Systems Laboratory**. That laboratory studies core system concepts; this repository focuses on the experience layer around member interfaces, employee interfaces, APIs, and vendor integrations. The only implemented experience today is the member account dashboard described below.
 
-React begins here in JavaScript so the data flow remains visible to learners. TypeScript and React Native will be introduced gradually in later lessons; they are not configured in this first lesson.
+React begins here in JavaScript so the data flow remains visible to learners. TypeScript and React Native are not configured in the completed chapters.
 
 ## Safety and scope
 
@@ -12,9 +12,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, tran
 
 This is not a production banking application, does not claim regulatory compliance, and does not recreate or represent Langley Federal Credit Union's actual or proprietary systems, vendors, architecture, data, or internal procedures. Read the [security boundaries](docs/security-boundaries.md) before contributing.
 
-## First lesson: an interface is a projection
+## Progress: Chapters 0–2 complete
 
-The current React application renders deterministic fresh and stale account-dashboard fixtures. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and that the interface must communicate when that projection may be stale.
+Chapters 0 through 2 are implemented. The current React application renders deterministic fresh and stale account-dashboard fixtures. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and uses JSX to render account type badges, textual account statuses, multiple account cards, empty recent activity, and explicit projection freshness.
 
 ## Get started
 
@@ -36,7 +36,7 @@ npm run format:check
 npm run build
 ```
 
-Use `npm run format` to format supported files. Begin the guided material with [Setting up the laboratory](book/00-setting-up-the-laboratory.md), then continue to [Interface as projection](book/01-interface-as-projection.md).
+Use `npm run format` to format supported files. Begin with [Setting up the laboratory](book/00-setting-up-the-laboratory.md), continue to [Interface as projection](book/01-interface-as-projection.md), and then study [JSX and the first account dashboard](book/02-jsx-and-the-first-account-dashboard.md).
 
 ## Current repository map
 

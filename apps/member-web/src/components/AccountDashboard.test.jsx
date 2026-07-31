@@ -21,6 +21,34 @@ describe("account dashboard", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders account type badges derived from each account", () => {
+    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+
+    expect(screen.getByText("Checking")).toHaveClass("account-type-badge");
+    expect(screen.getByText("Savings")).toHaveClass("account-type-badge");
+  });
+
+  it("renders the status of each account as text", () => {
+    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+
+    const cards = screen.getAllByRole("article");
+    expect(
+      within(cards[0]).getByText("Status:", { exact: false }),
+    ).toHaveTextContent("Status: Open");
+    expect(
+      within(cards[1]).getByText("Status:", { exact: false }),
+    ).toHaveTextContent("Status: Dormant");
+  });
+
+  it("renders an empty recent-activity message for every account", () => {
+    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+
+    expect(
+      screen.getAllByRole("heading", { name: "Recent activity" }),
+    ).toHaveLength(2);
+    expect(screen.getAllByText("No recent transactions.")).toHaveLength(2);
+  });
+
   it("shows masked suffixes without exposing internal account identifiers", () => {
     render(<AccountDashboard dashboard={freshAccountDashboard} />);
 
@@ -64,14 +92,19 @@ describe("account dashboard", () => {
     render(<AccountDashboard dashboard={staleAccountDashboard} />);
 
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Balances may be out of date",
+      "Balances may be out of date. This account snapshot could not be refreshed and is based on stale projection data.",
     );
   });
 
-  it("does not show the stale warning for a fresh projection", () => {
+  it("identifies a fresh projection as current without a stale warning", () => {
     render(<AccountDashboard dashboard={freshAccountDashboard} />);
 
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Projection is current. This dashboard is based on the latest available projection data.",
+    );
+    expect(
+      screen.queryByText("Balances may be out of date", { exact: false }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the projection's last-updated value", () => {
