@@ -14,6 +14,7 @@ export default function MemberLayout() {
           <NavLink to="/" end>
             Dashboard
           </NavLink>
+          <NavLink to="/transfers/new">Transfer Money</NavLink>
           <NavLink to="/settings">Settings</NavLink>
         </nav>
       </header>

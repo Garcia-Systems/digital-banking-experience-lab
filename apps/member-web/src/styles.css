@@ -32,6 +32,11 @@ button:focus-visible {
   outline: 3px solid #e2a93b;
   outline-offset: 3px;
 }
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #e2a93b;
+  outline-offset: 2px;
+}
 .request-state {
   width: min(100% - 2rem, 42rem);
   margin: 4rem auto;
@@ -136,6 +141,16 @@ h1 {
 .welcome > p:last-child {
   color: #52615f;
   margin-bottom: 0;
+}
+.primary-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.45rem;
+  background: #0d5b51;
+  color: white;
+  font-weight: 750;
+  text-decoration: none;
 }
 .projection-status {
   display: flex;
@@ -429,4 +444,103 @@ footer p {
   margin: 0;
   color: #53605e;
   font-size: 0.78rem;
+}
+
+.transfer-page {
+  max-width: 46rem;
+}
+.transfer-intro {
+  color: #52615f;
+}
+.transfer-form,
+.transfer-review {
+  margin-top: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid #c8d3cd;
+  border-radius: 0.75rem;
+  background: white;
+}
+.form-field + .form-field {
+  margin-top: 1.4rem;
+}
+.form-field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 750;
+}
+.form-field input,
+.form-field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #8b9995;
+  border-radius: 0.4rem;
+  background: white;
+  color: #152523;
+  font: inherit;
+}
+.form-field [aria-invalid="true"] {
+  border: 2px solid #a43c2c;
+}
+.field-help,
+.field-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+}
+.field-help {
+  color: #5e6967;
+}
+.field-error {
+  color: #8b2e22;
+  font-weight: 700;
+}
+.validation-summary {
+  margin-bottom: 1.5rem;
+  padding: 0.9rem;
+  border-left: 0.35rem solid #a43c2c;
+  background: #fff4f1;
+  color: #77271d;
+  font-weight: 700;
+}
+.money-input {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+.money-input span {
+  font-weight: 750;
+}
+.primary-action {
+  margin-top: 1.75rem;
+  padding: 0.7rem 1.2rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: #0d5b51;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+}
+.transfer-review h2 {
+  font-family: Georgia, serif;
+}
+.transfer-review dl {
+  display: grid;
+  gap: 1rem;
+}
+.transfer-review dt {
+  color: #5e6967;
+  font-size: 0.8rem;
+}
+.transfer-review dd {
+  margin: 0.15rem 0 0;
+  font-weight: 700;
+}
+.review-note {
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e3e7e4;
+  color: #52615f;
+  font-size: 0.9rem;
 }

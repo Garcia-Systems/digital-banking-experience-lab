@@ -8,6 +8,7 @@ import MemberLayout from "./components/MemberLayout";
 import AccountDetails from "./components/AccountDetails";
 import Settings from "./components/Settings";
 import NotFound from "./components/NotFound";
+import TransferForm from "./components/TransferForm";
 
 const initialRequest = { status: "idle", dashboard: null, error: null };
 
@@ -88,6 +89,10 @@ export default function App() {
           element={<AccountDetails dashboard={request.dashboard} />}
         />
         <Route path="settings" element={<Settings />} />
+        <Route
+          path="transfers/new"
+          element={<TransferForm accounts={request.dashboard.accounts} />}
+        />
         <Route path="not-found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Route>

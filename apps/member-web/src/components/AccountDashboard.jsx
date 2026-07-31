@@ -1,6 +1,7 @@
 import AccountList from "./AccountList";
 import ProjectionStatus from "./ProjectionStatus";
 import { dashboardPropType } from "../propTypes/bankingPropTypes";
+import { Link } from "react-router-dom";
 
 export default function AccountDashboard({ dashboard }) {
   return (
@@ -12,6 +13,9 @@ export default function AccountDashboard({ dashboard }) {
             Good afternoon, {dashboard.member.displayName}
           </h1>
           <p>A clear view of your fictional Harbor accounts.</p>
+          <Link className="primary-link" to="/transfers/new">
+            Transfer Money
+          </Link>
         </section>
         <ProjectionStatus projection={dashboard.projection} />
         <section className="accounts" aria-labelledby="accounts-title">
