@@ -2,6 +2,7 @@ import { accountPropType } from "../propTypes/bankingPropTypes";
 import AccountHeader from "./AccountHeader";
 import AccountMetadata from "./AccountMetadata";
 import BalanceSummary from "./BalanceSummary";
+import CardControls from "./CardControls";
 import RecentActivitySummary from "./RecentActivitySummary";
 
 export default function AccountCard({ account }) {
@@ -26,6 +27,7 @@ export default function AccountCard({ account }) {
         interestBearing={account.interestBearing}
         transfersRestricted={account.status === "restricted"}
       />
+      <CardControls accountName={account.displayName} />
       <RecentActivitySummary
         accountName={account.displayName}
         transactions={account.transactions}

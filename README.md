@@ -12,9 +12,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, tran
 
 This is not a production banking application, does not claim regulatory compliance, and does not recreate or represent Langley Federal Credit Union's actual or proprietary systems, vendors, architecture, data, or internal procedures. Read the [security boundaries](docs/security-boundaries.md) before contributing.
 
-## Progress: Chapters 0–4 complete
+## Progress: Chapters 0–5 complete
 
-Chapters 0 through 4 are implemented. The current React application composes the member dashboard from focused account components and renders deterministic multiple-account, empty-account, fresh, and stale projections. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and uses accessible account cards to distinguish balances, masked identifiers, account status, empty recent activity, and projection freshness. Chapter 4 adds explicit one-way prop flow, fictional ownership and nickname metadata, and conditional dividend presentation.
+Chapters 0 through 5 are implemented. The current React application composes the member dashboard from focused account components and renders deterministic multiple-account, empty-account, fresh, and stale projections. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and uses accessible account cards to distinguish balances, masked identifiers, account status, empty recent activity, and projection freshness. Chapter 4 adds explicit one-way prop flow, fictional ownership and nickname metadata, and conditional dividend presentation. Chapter 5 adds local card lock and unlock interactions with React state and named event handlers. The simulation is deliberately temporary and repeatedly explains that changing React state does not change a bank account.
 
 ## Get started
 
@@ -36,7 +36,7 @@ npm run format:check
 npm run build
 ```
 
-Use `npm run format` to format supported files. Follow the chapters in order: [Setting up the laboratory](book/00-setting-up-the-laboratory.md), [Interface as projection](book/01-interface-as-projection.md), [JSX and the first account dashboard](book/02-jsx-and-the-first-account-dashboard.md), and [Components and account cards](book/03-components-and-account-cards.md), followed by [Props and account data](book/04-props-and-account-data.md).
+Use `npm run format` to format supported files. Follow the chapters in order: [Setting up the laboratory](book/00-setting-up-the-laboratory.md), [Interface as projection](book/01-interface-as-projection.md), [JSX and the first account dashboard](book/02-jsx-and-the-first-account-dashboard.md), [Components and account cards](book/03-components-and-account-cards.md), [Props and account data](book/04-props-and-account-data.md), and [State and member actions](book/05-state-and-member-actions.md).
 
 ## Current repository map
 

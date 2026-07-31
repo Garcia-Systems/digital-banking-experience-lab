@@ -296,3 +296,48 @@ footer p {
 .account-metadata .restricted-metadata dd {
   color: #75320d;
 }
+
+.card-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 0.65rem;
+  background: #f3f8f6;
+}
+.card-controls h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.card-lock-status {
+  margin: 0.15rem 0 0;
+  color: #245b53;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.card-controls button {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid #0d5b51;
+  border-radius: 0.45rem;
+  background: #0d5b51;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.card-controls button:hover {
+  background: #083f39;
+}
+.card-controls button:focus-visible {
+  outline: 3px solid #e2a93b;
+  outline-offset: 3px;
+}
+.simulation-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #53605e;
+  font-size: 0.78rem;
+}
