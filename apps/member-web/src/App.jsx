@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import AccountDashboard from "./components/AccountDashboard";
 import { dashboardScenario } from "./data/dashboardScenario";
 import { validateDashboard } from "./data/validateDashboard";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import MemberLayout from "./components/MemberLayout";
 import AccountDetails from "./components/AccountDetails";
 import Settings from "./components/Settings";
@@ -32,7 +32,7 @@ function DashboardError({ onRetry }) {
 
 DashboardError.propTypes = { onRetry: PropTypes.func.isRequired };
 
-function MemberApplication() {
+export default function App() {
   const [request, setRequest] = useState(initialRequest);
   const [attempt, setAttempt] = useState(0);
 
@@ -92,13 +92,5 @@ function MemberApplication() {
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
-  );
-}
-
-export default function App() {
-  return (
-    <BrowserRouter>
-      <MemberApplication />
-    </BrowserRouter>
   );
 }

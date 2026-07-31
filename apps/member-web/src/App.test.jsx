@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithRouter } from "./test/renderWithRouter";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -24,7 +25,7 @@ describe("dashboard request states", () => {
       "fetch",
       vi.fn(() => new Promise(() => {})),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "Loading account information…",
@@ -40,7 +41,7 @@ describe("dashboard request states", () => {
       "fetch",
       vi.fn().mockResolvedValue(response(freshAccountDashboard)),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(
       await screen.findByRole("heading", { name: /Alex Morgan/ }),
@@ -57,7 +58,7 @@ describe("dashboard request states", () => {
       "fetch",
       vi.fn().mockResolvedValue(response(emptyAccountDashboard)),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(
       await screen.findByText("No accounts are currently available."),
@@ -71,7 +72,7 @@ describe("dashboard request states", () => {
       "fetch",
       vi.fn().mockResolvedValue(response(staleAccountDashboard)),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(
       await screen.findByText("Account information may be out of date."),
@@ -91,7 +92,7 @@ describe("dashboard request states", () => {
           response({ error: { message: "SQL service exploded" } }, false),
         ),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "We could not load your account information.",
@@ -106,7 +107,7 @@ describe("dashboard request states", () => {
         .fn()
         .mockResolvedValue(response({ member: freshAccountDashboard.member })),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "We could not load your account information.",
@@ -125,7 +126,7 @@ describe("dashboard request states", () => {
         .mockRejectedValueOnce(new Error("network detail"))
         .mockResolvedValueOnce(response(freshAccountDashboard)),
     );
-    render(<App />);
+    renderWithRouter(<App />);
 
     await user.click(await screen.findByRole("button", { name: /try again/i }));
     expect(
@@ -140,7 +141,7 @@ describe("dashboard request states", () => {
       "fetch",
       vi.fn().mockResolvedValue(response(staleAccountDashboard)),
     );
-    render(<App />);
+    renderWithRouter(<App />);
     await screen.findByRole("heading", { name: /Alex Morgan/ });
     expect(fetch).toHaveBeenCalledWith("/api/dashboard?scenario=stale");
   });

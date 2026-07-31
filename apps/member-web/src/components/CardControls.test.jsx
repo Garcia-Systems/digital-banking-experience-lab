@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithRouter } from "../test/renderWithRouter";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { freshAccountDashboard } from "../data/accountDashboardFixtures";
@@ -11,7 +12,7 @@ function getAccountCard(name) {
 describe("local card lock simulation", () => {
   it("changes an unlocked card to locked through member interaction", async () => {
     const user = userEvent.setup();
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
     const checkingCard = getAccountCard("Everyday Checking");
 
     expect(within(checkingCard).getByText("Card unlocked")).toBeInTheDocument();
@@ -32,7 +33,7 @@ describe("local card lock simulation", () => {
 
   it("changes a locked card back to unlocked", async () => {
     const user = userEvent.setup();
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
     const checkingCard = getAccountCard("Everyday Checking");
     const lockButton = within(checkingCard).getByRole("button", {
       name: "Lock card for Everyday Checking",
@@ -50,7 +51,7 @@ describe("local card lock simulation", () => {
 
   it("keeps card state local to one account", async () => {
     const user = userEvent.setup();
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
     const checkingCard = getAccountCard("Everyday Checking");
     const savingsCard = getAccountCard("Member Savings");
 
@@ -66,7 +67,7 @@ describe("local card lock simulation", () => {
 
   it("preserves projection freshness and account metadata after a state update", async () => {
     const user = userEvent.setup();
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
     const checkingCard = getAccountCard("Everyday Checking");
 
     await user.click(
@@ -91,7 +92,7 @@ describe("local card lock simulation", () => {
   });
 
   it("always explains that the control is only a simulation", () => {
-    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+    renderWithRouter(<AccountDashboard dashboard={freshAccountDashboard} />);
 
     expect(
       screen.getAllByText(
