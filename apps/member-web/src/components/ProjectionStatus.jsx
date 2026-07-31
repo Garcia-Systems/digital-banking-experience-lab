@@ -1,4 +1,5 @@
 import { formatTimestamp } from "../utils/formatters";
+import { projectionPropType } from "../propTypes/bankingPropTypes";
 
 export default function ProjectionStatus({ projection }) {
   return (
@@ -24,3 +25,7 @@ export default function ProjectionStatus({ projection }) {
     </section>
   );
 }
+
+ProjectionStatus.propTypes = {
+  projection: projectionPropType.isRequired,
+};

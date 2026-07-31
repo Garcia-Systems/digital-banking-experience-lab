@@ -29,6 +29,8 @@ This is deliberately not an API simulation. Deterministic fixtures make the two 
 
 JSX lets components describe semantic HTML alongside the JavaScript values that populate it. Curly braces render values such as `dashboard.member.displayName`. They also pass objects as component properties, as in the `projection` supplied to `ProjectionStatus`. JSX resembles HTML, but it is JavaScript syntax transformed during the Vite build.
 
+JavaScript does not provide compile-time checks for those component properties. The shared PropTypes in `src/propTypes/bankingPropTypes.js` document the account, projection, and dashboard inputs and validate them at runtime during development. TypeScript, introduced later, provides a different kind of protection through static checking before the application runs.
+
 Balances remain integer cents in the fixture. `formatCents` divides by 100 only at the display boundary and uses `Intl.NumberFormat` for US currency. This avoids using binary decimal arithmetic as the stored money representation in the lesson.
 
 ### Mapping data into components

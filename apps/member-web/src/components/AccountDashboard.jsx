@@ -1,5 +1,6 @@
 import AccountCard from "./AccountCard";
 import ProjectionStatus from "./ProjectionStatus";
+import { dashboardPropType } from "../propTypes/bankingPropTypes";
 
 export default function AccountDashboard({ dashboard }) {
   return (
@@ -46,3 +47,7 @@ export default function AccountDashboard({ dashboard }) {
     </>
   );
 }
+
+AccountDashboard.propTypes = {
+  dashboard: dashboardPropType.isRequired,
+};

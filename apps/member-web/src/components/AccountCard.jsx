@@ -1,4 +1,5 @@
 import { formatCents } from "../utils/formatters";
+import { accountPropType } from "../propTypes/bankingPropTypes";
 
 export default function AccountCard({ account }) {
   return (
@@ -28,3 +29,7 @@ export default function AccountCard({ account }) {
     </article>
   );
 }
+
+AccountCard.propTypes = {
+  account: accountPropType.isRequired,
+};
