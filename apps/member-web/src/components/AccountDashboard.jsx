@@ -1,4 +1,4 @@
-import AccountCard from "./AccountCard";
+import AccountList from "./AccountList";
 import ProjectionStatus from "./ProjectionStatus";
 import { dashboardPropType } from "../propTypes/bankingPropTypes";
 
@@ -34,11 +34,7 @@ export default function AccountDashboard({ dashboard }) {
             </div>
             <p>{dashboard.accounts.length} accounts</p>
           </div>
-          <div className="account-grid">
-            {dashboard.accounts.map((account) => (
-              <AccountCard key={account.id} account={account} />
-            ))}
-          </div>
+          <AccountList accounts={dashboard.accounts} />
         </section>
       </main>
       <footer>

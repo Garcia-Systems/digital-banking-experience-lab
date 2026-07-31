@@ -8,7 +8,12 @@ export const accountPropType = PropTypes.exact({
   accountSuffix: PropTypes.string.isRequired,
   availableBalanceCents: PropTypes.number.isRequired,
   currentBalanceCents: PropTypes.number.isRequired,
-  transactions: PropTypes.array.isRequired,
+  transactions: PropTypes.arrayOf(
+    PropTypes.exact({
+      id: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
 });
 
 export const projectionPropType = PropTypes.exact({

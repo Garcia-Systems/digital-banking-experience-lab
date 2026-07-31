@@ -33,6 +33,11 @@ export const accountDashboardFixture = {
 
 export const freshAccountDashboard = accountDashboardFixture;
 
+export const emptyAccountDashboard = {
+  ...accountDashboardFixture,
+  accounts: [],
+};
+
 export const staleAccountDashboard = {
   ...accountDashboardFixture,
   projection: {
