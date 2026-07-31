@@ -12,9 +12,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, tran
 
 This is not a production banking application, does not claim regulatory compliance, and does not recreate or represent Langley Federal Credit Union's actual or proprietary systems, vendors, architecture, data, or internal procedures. Read the [security boundaries](docs/security-boundaries.md) before contributing.
 
-## Progress: Chapters 0–3 complete
+## Progress: Chapters 0–4 complete
 
-Chapters 0 through 3 are implemented. The current React application composes the member dashboard from focused account components and renders deterministic multiple-account, empty-account, fresh, and stale projections. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and uses accessible account cards to distinguish balances, masked identifiers, account status, empty recent activity, and projection freshness.
+Chapters 0 through 4 are implemented. The current React application composes the member dashboard from focused account components and renders deterministic multiple-account, empty-account, fresh, and stale projections. It demonstrates that a member interface is a read-oriented projection of banking information—not the authoritative ledger—and uses accessible account cards to distinguish balances, masked identifiers, account status, empty recent activity, and projection freshness. Chapter 4 adds explicit one-way prop flow, fictional ownership and nickname metadata, and conditional dividend presentation.
 
 ## Get started
 
@@ -25,7 +25,7 @@ npm install
 npm run dev
 ```
 
-Vite prints the local development URL. Use `?scenario=multiple-accounts` for checking and savings, `?scenario=empty-accounts` for a successful projection with no accounts, or `?scenario=stale` for stale data. Omitting the query renders the fresh multiple-account projection.
+Vite prints the local development URL. Use `?scenario=multiple-accounts` for checking and savings, `?scenario=empty-accounts` for a successful projection with no accounts, or `?scenario=stale` for stale data, `?scenario=individual-checking` for the Chapter 4 individual checking experiment, or `?scenario=joint-savings` for its joint interest-bearing savings counterpart. Omitting the query renders the fresh multiple-account projection.
 
 Run the quality checks from the repository root:
 
@@ -36,7 +36,7 @@ npm run format:check
 npm run build
 ```
 
-Use `npm run format` to format supported files. Follow the chapters in order: [Setting up the laboratory](book/00-setting-up-the-laboratory.md), [Interface as projection](book/01-interface-as-projection.md), [JSX and the first account dashboard](book/02-jsx-and-the-first-account-dashboard.md), and [Components and account cards](book/03-components-and-account-cards.md).
+Use `npm run format` to format supported files. Follow the chapters in order: [Setting up the laboratory](book/00-setting-up-the-laboratory.md), [Interface as projection](book/01-interface-as-projection.md), [JSX and the first account dashboard](book/02-jsx-and-the-first-account-dashboard.md), and [Components and account cards](book/03-components-and-account-cards.md), followed by [Props and account data](book/04-props-and-account-data.md).
 
 ## Current repository map
 

@@ -1,5 +1,6 @@
 import { accountPropType } from "../propTypes/bankingPropTypes";
 import AccountHeader from "./AccountHeader";
+import AccountMetadata from "./AccountMetadata";
 import BalanceSummary from "./BalanceSummary";
 import RecentActivitySummary from "./RecentActivitySummary";
 
@@ -9,10 +10,21 @@ export default function AccountCard({ account }) {
       className="account-card"
       aria-label={`${account.displayName}, ${account.type} account`}
     >
-      <AccountHeader account={account} />
+      <AccountHeader
+        type={account.type}
+        status={account.status}
+        displayName={account.displayName}
+        accountSuffix={account.accountSuffix}
+      />
       <BalanceSummary
         availableBalanceCents={account.availableBalanceCents}
         currentBalanceCents={account.currentBalanceCents}
+      />
+      <AccountMetadata
+        nickname={account.nickname}
+        ownership={account.ownership}
+        interestBearing={account.interestBearing}
+        transfersRestricted={account.status === "restricted"}
       />
       <RecentActivitySummary
         accountName={account.displayName}

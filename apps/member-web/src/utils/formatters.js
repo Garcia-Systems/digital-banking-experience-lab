@@ -20,3 +20,11 @@ export function formatCents(cents) {
 export function formatTimestamp(timestamp) {
   return timestampFormatter.format(new Date(timestamp));
 }
+
+export function formatMaskedSuffix(accountSuffix) {
+  return `•••• ${accountSuffix}`;
+}
+
+export function formatOwnership(ownership) {
+  return ownership === "joint" ? "Joint" : "Individual";
+}
