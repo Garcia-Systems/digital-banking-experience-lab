@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
 
-## Progress: Chapters 0–9 complete
+## Progress: Chapters 0–10 complete
 
-Chapter 9 adds the first banking workflow: an accessible, controlled transfer form with client-side convenience validation and a read-only review. It prepares only fictional account-to-account instructions; the backend remains authoritative and submission is reserved for the next chapter.
+Chapter 10 completes the first end-to-end banking workflow. React submits a reviewed transfer with a stable idempotency key, and the PHP API returns a deterministic confirmation while protecting one member intention from duplicate requests.
 
 ## Architecture
 
@@ -22,12 +22,12 @@ Browser
   │
   ├── Dashboard
   ├── Account Details
-  ├── Transfer Preparation
+  ├── Idempotent Transfer Submission
   └── Settings
        │
   React request state (idle / loading / success / error)
        |
-       | GET /api/dashboard?scenario=...
+       | GET /api/dashboard or POST /api/transfers
        v
   PHP dashboard endpoint (HTTP/JSON contract)
        |
@@ -78,7 +78,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Transfer Forms and Validation](book/09-transfer-forms-and-validation.md).
+Follow the chapters in order in [`book`](book), ending with [Idempotent Transfer Submission](book/10-idempotent-transfer-submission.md).
 
 ## Repository layout
 

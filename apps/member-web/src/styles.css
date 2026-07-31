@@ -453,7 +453,8 @@ footer p {
   color: #52615f;
 }
 .transfer-form,
-.transfer-review {
+.transfer-review,
+.transfer-confirmation {
   margin-top: 2rem;
   padding: clamp(1.25rem, 4vw, 2rem);
   border: 1px solid #c8d3cd;
@@ -522,20 +523,40 @@ footer p {
   font: inherit;
   font-weight: 750;
 }
-.transfer-review h2 {
+.transfer-review h2,
+.transfer-confirmation h2 {
   font-family: Georgia, serif;
 }
-.transfer-review dl {
+.transfer-review dl,
+.transfer-confirmation dl {
   display: grid;
   gap: 1rem;
 }
-.transfer-review dt {
+.transfer-review dt,
+.transfer-confirmation dt {
   color: #5e6967;
   font-size: 0.8rem;
 }
-.transfer-review dd {
+.transfer-review dd,
+.transfer-confirmation dd {
   margin: 0.15rem 0 0;
   font-weight: 700;
+}
+.primary-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.acceptance-note,
+.idempotency-note,
+.submission-error {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-left: 0.3rem solid #0d5b51;
+  background: #f3f8f6;
+}
+.submission-error {
+  border-color: #a43c2c;
+  background: #fff4f1;
 }
 .review-note {
   margin: 1.5rem 0 0;
