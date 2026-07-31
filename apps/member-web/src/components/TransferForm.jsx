@@ -25,11 +25,9 @@ function validateTransfer(values, accounts) {
   }
 
   if (values.amount === null) {
-    errors.amount = "Enter a transfer amount.";
-  } else if (values.amount === 0) {
+    errors.amount = "Transfer amount is required.";
+  } else if (values.amount <= 0) {
     errors.amount = "Transfer amount must be greater than zero.";
-  } else if (values.amount < 0) {
-    errors.amount = "Transfer amount must be positive.";
   } else if (
     source &&
     Math.round(values.amount * 100) > source.availableBalanceCents
@@ -111,7 +109,9 @@ export default function TransferForm({ accounts }) {
             value={values.sourceId}
             onChange={(event) => updateValue("sourceId", event.target.value)}
             aria-invalid={Boolean(errors.sourceId)}
-            aria-describedby={errors.sourceId ? "source-error" : undefined}
+            aria-errormessage={
+              errors.sourceId ? "source-account-error" : undefined
+            }
           >
             <option value="">Choose an account</option>
             {accounts.map((account) => (
@@ -121,7 +121,7 @@ export default function TransferForm({ accounts }) {
               </option>
             ))}
           </select>
-          <FieldError id="source-error">{errors.sourceId}</FieldError>
+          <FieldError id="source-account-error">{errors.sourceId}</FieldError>
         </div>
 
         <div className="form-field">
@@ -133,8 +133,8 @@ export default function TransferForm({ accounts }) {
               updateValue("destinationId", event.target.value)
             }
             aria-invalid={Boolean(errors.destinationId)}
-            aria-describedby={
-              errors.destinationId ? "destination-error" : undefined
+            aria-errormessage={
+              errors.destinationId ? "destination-account-error" : undefined
             }
           >
             <option value="">Choose an account</option>
@@ -144,7 +144,9 @@ export default function TransferForm({ accounts }) {
               </option>
             ))}
           </select>
-          <FieldError id="destination-error">{errors.destinationId}</FieldError>
+          <FieldError id="destination-account-error">
+            {errors.destinationId}
+          </FieldError>
         </div>
 
         <div className="form-field">
@@ -164,13 +166,16 @@ export default function TransferForm({ accounts }) {
                 )
               }
               aria-invalid={Boolean(errors.amount)}
-              aria-describedby={errors.amount ? "amount-error" : "amount-help"}
+              aria-describedby="transfer-amount-help"
+              aria-errormessage={
+                errors.amount ? "transfer-amount-error" : undefined
+              }
             />
           </div>
-          <p className="field-help" id="amount-help">
+          <p className="field-help" id="transfer-amount-help">
             Enter dollars and cents without a currency symbol.
           </p>
-          <FieldError id="amount-error">{errors.amount}</FieldError>
+          <FieldError id="transfer-amount-error">{errors.amount}</FieldError>
         </div>
 
         <div className="form-field">
@@ -181,12 +186,13 @@ export default function TransferForm({ accounts }) {
             value={values.memo}
             onChange={(event) => updateValue("memo", event.target.value)}
             aria-invalid={Boolean(errors.memo)}
-            aria-describedby="memo-help memo-error"
+            aria-describedby="transfer-memo-help"
+            aria-errormessage={errors.memo ? "transfer-memo-error" : undefined}
           />
-          <p className="field-help" id="memo-help">
+          <p className="field-help" id="transfer-memo-help">
             {values.memo.length} of {MEMO_LIMIT} characters
           </p>
-          <FieldError id="memo-error">{errors.memo}</FieldError>
+          <FieldError id="transfer-memo-error">{errors.memo}</FieldError>
         </div>
 
         <button className="primary-action" type="submit">

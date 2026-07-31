@@ -20,11 +20,13 @@ The checks cover:
 
 - required source and destination accounts;
 - different source and destination accounts;
-- a required amount that is positive and greater than zero;
+- a required amount that is greater than zero;
 - an amount no larger than the selected source's fictional available balance; and
 - a memo of at most 100 characters.
 
-The form uses `noValidate` so the lesson's messages are consistent, but it still uses semantic labels, inputs, selects, and a submit button. Invalid controls expose `aria-invalid` and reference their message with `aria-describedby`. The alert summary announces an unsuccessful review attempt. Native controls and normal document order preserve keyboard operation.
+The form uses `noValidate` so the lesson's messages are consistent, but it still uses semantic labels, inputs, selects, and a submit button. Each label identifies its control with matching `htmlFor` and `id` values. Persistent instructions use `aria-describedby`; when a field is invalid, `aria-invalid` communicates that state and `aria-errormessage` connects the control to its unique, visible error. The error remains understandable as text beside the field rather than relying on color. The alert summary announces an unsuccessful review attempt, while each field retains its direct error relationship. Native controls and normal document order preserve keyboard operation.
+
+These accessibility relationships make browser feedback more useful to assistive technology, but browser validation still does not replace authoritative backend validation.
 
 ## Comparison with PHP
 
