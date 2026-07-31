@@ -27,3 +27,14 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer
+      - name: Install API dependencies
+        working-directory: services/banking-api
+        run: composer install --no-interaction --prefer-dist
+      - name: Test banking API
+        working-directory: services/banking-api
+        run: php artisan test
