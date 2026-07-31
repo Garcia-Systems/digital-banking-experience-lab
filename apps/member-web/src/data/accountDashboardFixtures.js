@@ -13,6 +13,9 @@ export const accountDashboardFixture = {
       type: "checking",
       status: "open",
       displayName: "Everyday Checking",
+      nickname: "Daily Spending",
+      ownership: "individual",
+      interestBearing: false,
       accountSuffix: "4821",
       availableBalanceCents: 125000,
       currentBalanceCents: 130500,
@@ -23,6 +26,9 @@ export const accountDashboardFixture = {
       type: "savings",
       status: "dormant",
       displayName: "Member Savings",
+      nickname: "Vacation Savings",
+      ownership: "joint",
+      interestBearing: true,
       accountSuffix: "7314",
       availableBalanceCents: 420000,
       currentBalanceCents: 420000,
@@ -44,4 +50,14 @@ export const staleAccountDashboard = {
     generatedAt: "2026-07-31T10:15:00Z",
     isStale: true,
   },
+};
+
+export const individualCheckingDashboard = {
+  ...accountDashboardFixture,
+  accounts: [accountDashboardFixture.accounts[0]],
+};
+
+export const jointSavingsDashboard = {
+  ...accountDashboardFixture,
+  accounts: [accountDashboardFixture.accounts[1]],
 };
