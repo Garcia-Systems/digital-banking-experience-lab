@@ -135,7 +135,7 @@ describe("account dashboard", () => {
     render(<AccountDashboard dashboard={staleAccountDashboard} />);
 
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Balances may be out of date. This account snapshot could not be refreshed and is based on stale projection data.",
+      "Account information may be out of date. This account snapshot could not be refreshed and is based on stale projection data.",
     );
   });
 

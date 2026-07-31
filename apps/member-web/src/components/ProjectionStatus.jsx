@@ -18,8 +18,8 @@ export default function ProjectionStatus({ projection }) {
       </div>
       {projection.isStale ? (
         <p className="freshness-message stale-warning" role="status">
-          <strong>Balances may be out of date.</strong> This account snapshot
-          could not be refreshed and is based on stale projection data.
+          <strong>Account information may be out of date.</strong> This account
+          snapshot could not be refreshed and is based on stale projection data.
         </p>
       ) : (
         <p className="freshness-message" role="status">

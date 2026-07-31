@@ -1,12 +1,42 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import AccountDashboard from "./components/AccountDashboard";
+import { dashboardScenario } from "./data/dashboardScenario";
+import { validateDashboard } from "./data/validateDashboard";
+
+const initialRequest = { status: "idle", dashboard: null, error: null };
+
+function DashboardLoading() {
+  return (
+    <p className="request-state" role="status">
+      Loading account information…
+    </p>
+  );
+}
+
+function DashboardError({ onRetry }) {
+  return (
+    <section className="request-state request-error" role="alert">
+      <p>We could not load your account information.</p>
+      <button type="button" onClick={onRetry}>
+        Try again
+      </button>
+    </section>
+  );
+}
+
+DashboardError.propTypes = { onRetry: PropTypes.func.isRequired };
 
 export default function App() {
-  const [dashboard, setDashboard] = useState(null);
-  const [hasError, setHasError] = useState(false);
+  const [request, setRequest] = useState(initialRequest);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    let active = true;
+    setRequest({ status: "loading", dashboard: null, error: null });
+    const scenario = dashboardScenario();
+
+    fetch(`/api/dashboard?scenario=${scenario}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Dashboard request failed");
@@ -14,17 +44,32 @@ export default function App() {
 
         return response.json();
       })
-      .then(setDashboard)
-      .catch(() => setHasError(true));
-  }, []);
+      .then((payload) => {
+        const result = validateDashboard(payload);
+        if (!result.valid) throw new Error(result.reason);
+        if (active)
+          setRequest({
+            status: "success",
+            dashboard: result.dashboard,
+            error: null,
+          });
+      })
+      .catch((error) => {
+        if (active) setRequest({ status: "error", dashboard: null, error });
+      });
 
-  if (hasError) {
-    return <p role="alert">Unable to load dashboard.</p>;
+    return () => {
+      active = false;
+    };
+  }, [attempt]);
+
+  if (request.status === "idle" || request.status === "loading") {
+    return <DashboardLoading />;
   }
 
-  if (!dashboard) {
-    return <p role="status">Loading dashboard...</p>;
+  if (request.status === "error") {
+    return <DashboardError onRetry={() => setAttempt((value) => value + 1)} />;
   }
 
-  return <AccountDashboard dashboard={dashboard} />;
+  return <AccountDashboard dashboard={request.dashboard} />;
 }

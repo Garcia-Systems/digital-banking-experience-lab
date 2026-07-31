@@ -10,22 +10,22 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
 
-## Progress: Chapters 0–6 complete
+## Progress: Chapters 0–7 complete
 
-Chapter 6 introduces the laboratory's first application boundary. The React member dashboard requests a deterministic account projection from a minimal Laravel API, showing loading and safe error states while preserving the successful dashboard experience from earlier chapters.
+Chapter 7 gives that application boundary explicit loading, success, empty, stale, invalid-response, and failure states. A safe manual retry and deterministic API scenarios make every outcome observable without pretending that missing data is a zero balance.
 
 ## Architecture
 
 ```text
 Browser
-  React member dashboard (presentation and local UI state)
+  React request state (idle / loading / success / error)
        |
-       | GET /api/dashboard
+       | GET /api/dashboard?scenario=...
        v
-  Laravel banking API (HTTP/JSON contract)
+  PHP dashboard endpoint (HTTP/JSON contract)
        |
        v
-  deterministic PHP fixture (fictional projection)
+  deterministic scenario fixture (fictional projection)
 ```
 
 The fixture is educational data, not a database or core banking system. React presents the projection; Laravel owns the API response.
@@ -53,6 +53,8 @@ npm run dev
 
 Vite prints the member application URL and proxies `/api` to Laravel on `http://127.0.0.1:8000`.
 
+Choose a deterministic experiment with the frontend URL query parameter: `?scenario=success`, `empty`, `stale`, `error`, or `partial` (for example, `http://localhost:5173/?scenario=stale`). Only those names are forwarded; an unsupported frontend value falls back to `success`. The API scenarios can also be requested directly, for example `curl -i "http://127.0.0.1:8000/api/dashboard?scenario=empty"`.
+
 Run the frontend quality checks from the repository root:
 
 ```bash
@@ -69,7 +71,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [From React fixtures to a PHP API](book/06-from-react-fixtures-to-a-php-api.md).
+Follow the chapters in order in [`book`](book), ending with [Loading, Empty, Success, and Failure States](book/07-loading-empty-success-and-failure-states.md).
 
 ## Repository layout
 
