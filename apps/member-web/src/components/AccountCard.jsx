@@ -2,12 +2,18 @@ import { formatCents } from "../utils/formatters";
 import { accountPropType } from "../propTypes/bankingPropTypes";
 
 export default function AccountCard({ account }) {
+  const accountTypeLabel = `${account.type.charAt(0).toUpperCase()}${account.type.slice(1)}`;
+  const accountStatusLabel = `${account.status.charAt(0).toUpperCase()}${account.status.slice(1)}`;
+
   return (
     <article className="account-card">
       <div className="account-heading">
         <div>
-          <p className="account-type">{account.type}</p>
+          <p className="account-type-badge">{accountTypeLabel}</p>
           <h3>{account.displayName}</h3>
+          <p className={`account-status account-status--${account.status}`}>
+            Status: <strong>{accountStatusLabel}</strong>
+          </p>
         </div>
         <p
           className="account-suffix"
@@ -26,6 +32,21 @@ export default function AccountCard({ account }) {
           <dd>{formatCents(account.currentBalanceCents)}</dd>
         </div>
       </dl>
+      <section
+        className="recent-activity"
+        aria-labelledby={`activity-${account.id}`}
+      >
+        <h4 id={`activity-${account.id}`}>Recent activity</h4>
+        {account.transactions.length > 0 ? (
+          <ul>
+            {account.transactions.map((transaction) => (
+              <li key={transaction.id}>{transaction.description}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No recent transactions.</p>
+        )}
+      </section>
     </article>
   );
 }

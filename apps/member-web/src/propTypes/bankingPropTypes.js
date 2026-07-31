@@ -3,10 +3,12 @@ import PropTypes from "prop-types";
 export const accountPropType = PropTypes.exact({
   id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
+  status: PropTypes.oneOf(["open", "dormant", "restricted"]).isRequired,
   displayName: PropTypes.string.isRequired,
   accountSuffix: PropTypes.string.isRequired,
   availableBalanceCents: PropTypes.number.isRequired,
   currentBalanceCents: PropTypes.number.isRequired,
+  transactions: PropTypes.array.isRequired,
 });
 
 export const projectionPropType = PropTypes.exact({
