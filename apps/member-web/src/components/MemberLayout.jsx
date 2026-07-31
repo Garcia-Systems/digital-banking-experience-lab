@@ -16,6 +16,7 @@ export default function MemberLayout({ session, onLogout }) {
             Dashboard
           </NavLink>
           <NavLink to="/transfers/new">Transfers</NavLink>
+          <NavLink to="/verification">Verification</NavLink>
           <NavLink to="/settings">Settings</NavLink>
           <button className="nav-button" type="button" onClick={onLogout}>
             Logout

@@ -11,6 +11,7 @@ import AccountDashboard from "./components/AccountDashboard";
 import AccountDetails from "./components/AccountDetails";
 import Login from "./components/Login";
 import MemberLayout from "./components/MemberLayout";
+import MemberVerification from "./components/MemberVerification";
 import NotFound from "./components/NotFound";
 import Settings from "./components/Settings";
 import TransferDetails from "./components/TransferDetails";
@@ -88,6 +89,7 @@ function ProtectedApplication({ session, onLogout, onUnauthorized }) {
           element={<AccountDetails dashboard={request.dashboard} />}
         />
         <Route path="settings" element={<Settings />} />
+        <Route path="verification" element={<MemberVerification />} />
         <Route
           path="transfers/new"
           element={<TransferForm accounts={request.dashboard.accounts} />}
