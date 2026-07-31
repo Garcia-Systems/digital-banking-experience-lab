@@ -8,9 +8,15 @@ namespace App\Support;
  */
 class TransferStore
 {
-    private static array $transfersByKey = [];
+    private const ACCOUNTS = [
+        'account-2001' => ['id' => 'account-2001', 'displayName' => 'Everyday Checking', 'accountSuffix' => '4821'],
+        'account-2002' => ['id' => 'account-2002', 'displayName' => 'Member Savings', 'accountSuffix' => '7314'],
+    ];
 
-    public static function submit(string $idempotencyKey, array $instruction): array
+    private static array $transfersByKey = [];
+    private static array $transfersById = [];
+
+    public static function submit(string $idempotencyKey, array $instruction, string $scenario = 'accepted'): array
     {
         if (isset(self::$transfersByKey[$idempotencyKey])) {
             return [...self::$transfersByKey[$idempotencyKey], 'duplicate' => true];
@@ -19,21 +25,30 @@ class TransferStore
         $sequence = count(self::$transfersByKey) + 1001;
         $transfer = [
             'transferId' => "TRN-{$sequence}",
-            'status' => 'accepted',
+            'status' => $scenario,
             'confirmationNumber' => 'HC-'.str_pad((string) $sequence, 7, '0', STR_PAD_LEFT),
             'submittedAt' => '2026-07-31T14:30:00Z',
             'idempotencyKey' => $idempotencyKey,
             'duplicate' => false,
             ...$instruction,
+            'sourceAccount' => self::ACCOUNTS[$instruction['sourceAccount']],
+            'destinationAccount' => self::ACCOUNTS[$instruction['destinationAccount']],
         ];
 
         self::$transfersByKey[$idempotencyKey] = $transfer;
+        self::$transfersById[$transfer['transferId']] = $transfer;
 
         return $transfer;
+    }
+
+    public static function find(string $transferId): ?array
+    {
+        return self::$transfersById[$transferId] ?? null;
     }
 
     public static function reset(): void
     {
         self::$transfersByKey = [];
+        self::$transfersById = [];
     }
 }

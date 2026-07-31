@@ -5,4 +5,5 @@ use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', DashboardController::class);
-Route::post('/transfers', TransferController::class);
+Route::post('/transfers', [TransferController::class, 'store']);
+Route::get('/transfers/{transferId}', [TransferController::class, 'show']);

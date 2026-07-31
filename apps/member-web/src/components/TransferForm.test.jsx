@@ -1,13 +1,28 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { freshAccountDashboard } from "../data/accountDashboardFixtures";
 import TransferForm from "./TransferForm";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 
 const accounts = freshAccountDashboard.accounts;
 
 function renderForm() {
-  return render(<TransferForm accounts={accounts} />);
+  function Destination() {
+    const location = useLocation();
+    return <h1>Route: {location.pathname}</h1>;
+  }
+  return render(
+    <MemoryRouter initialEntries={["/transfers/new"]}>
+      <Routes>
+        <Route
+          path="/transfers/new"
+          element={<TransferForm accounts={accounts} />}
+        />
+        <Route path="/transfers/:transferId" element={<Destination />} />
+      </Routes>
+    </MemoryRouter>,
+  );
 }
 
 async function chooseAccounts(user, source = 0, destination = 1) {
@@ -228,13 +243,17 @@ describe("transfer submission", () => {
     );
     expect(fetch).toHaveBeenCalledTimes(1);
 
-    finishRequest({ ok: true, json: async () => acceptedTransfer });
+    await act(async () => {
+      finishRequest({ ok: true, json: async () => acceptedTransfer });
+    });
     expect(
-      await screen.findByRole("region", { name: "Transfer accepted." }),
+      await screen.findByRole("heading", {
+        name: "Route: /transfers/TRN-1001",
+      }),
     ).toBeVisible();
   });
 
-  it("posts the instruction and displays its deterministic confirmation", async () => {
+  it("posts the instruction and navigates to its transfer resource", async () => {
     const user = userEvent.setup();
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
@@ -248,21 +267,14 @@ describe("transfer submission", () => {
       "/api/transfers",
       expect.objectContaining({ method: "POST" }),
     );
-    const confirmation = await screen.findByRole("region", {
-      name: "Transfer accepted.",
-    });
-    expect(within(confirmation).getByText("HC-0001001")).toBeVisible();
     expect(
-      within(confirmation).getByText("2026-07-31T14:30:00Z"),
-    ).toBeVisible();
-    expect(
-      within(confirmation).getByText(
-        "Acceptance records the request; it is not settlement.",
-      ),
+      await screen.findByRole("heading", {
+        name: "Route: /transfers/TRN-1001",
+      }),
     ).toBeVisible();
   });
 
-  it("explains when a duplicate response reused the original result", async () => {
+  it("navigates to the original resource returned for a duplicate", async () => {
     const user = userEvent.setup();
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
@@ -272,7 +284,9 @@ describe("transfer submission", () => {
     await prepareReview(user);
     await user.click(screen.getByRole("button", { name: "Submit transfer" }));
     expect(
-      await screen.findByText(/API returned the original confirmation/),
+      await screen.findByRole("heading", {
+        name: "Route: /transfers/TRN-1001",
+      }),
     ).toBeVisible();
   });
 });
