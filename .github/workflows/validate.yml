@@ -35,6 +35,16 @@ jobs:
       - name: Install API dependencies
         working-directory: services/banking-api
         run: composer install --no-interaction --prefer-dist
+      - name: Prepare Laravel runtime directories
+        working-directory: services/banking-api
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/testing
+          mkdir -p storage/framework/views
+          mkdir -p storage/logs
+          chmod -R u+rwX,g+rwX bootstrap/cache storage
       - name: Test banking API
         working-directory: services/banking-api
         run: php artisan test
