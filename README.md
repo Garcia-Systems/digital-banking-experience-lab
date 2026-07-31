@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
 
-## Progress: Chapters 0–8 complete
+## Progress: Chapters 0–9 complete
 
-Chapter 8 adds client-side routing to the member application. The dashboard, account details, and deterministic settings screen are focused workflows that share one layout and preserve the loaded account projection during navigation.
+Chapter 9 adds the first banking workflow: an accessible, controlled transfer form with client-side convenience validation and a read-only review. It prepares only fictional account-to-account instructions; the backend remains authoritative and submission is reserved for the next chapter.
 
 ## Architecture
 
@@ -22,6 +22,7 @@ Browser
   │
   ├── Dashboard
   ├── Account Details
+  ├── Transfer Preparation
   └── Settings
        │
   React request state (idle / loading / success / error)
@@ -77,7 +78,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Routing Through a Banking Application](book/08-routing-through-a-banking-application.md).
+Follow the chapters in order in [`book`](book), ending with [Transfer Forms and Validation](book/09-transfer-forms-and-validation.md).
 
 ## Repository layout
 
