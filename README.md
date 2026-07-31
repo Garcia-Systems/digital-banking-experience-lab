@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–12 complete
+## Progress: Chapters 0–13 complete
 
-Chapter 12 places the member experience behind a deterministic authenticated session, including login, logout, protected routes, expiration, and safe unauthorized responses.
+Chapter 13 places a deterministic vendor simulator behind the PHP API and adds a member verification experience for successful, retryable, and permanent outcomes.
 
 ## Architecture
 
@@ -27,7 +27,11 @@ Browser
   ├── Dashboard
   ├── Account Details
   ├── Transfer Submission and Status
-  └── Settings
+  ├── Settings
+  └── Member Verification
+       │
+       v
+  Deterministic Vendor Simulator
        │
   React request state (idle / loading / success / error)
        |
@@ -68,6 +72,8 @@ Sign in using the fictional laboratory member ID `member-1001` and password `pas
 
 Choose a transfer outcome by opening the form with `?transferScenario=accepted`, `completed`, or `rejected` (for example, `http://localhost:5173/transfers/new?transferScenario=completed`). The submitted resource retains that deterministic status. The API equivalent is `POST /api/transfers?scenario=completed`; omitting the parameter uses `accepted`.
 
+Visit `/verification` to inspect or start member verification. Select a fixed simulator result with `?verificationScenario=success`, `timeout`, `unavailable`, `invalid-response`, or `permanent-failure`. The browser calls only the internal PHP API; the simulator makes no network requests.
+
 Run the frontend quality checks from the repository root:
 
 ```bash
@@ -84,7 +90,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Authentication and Session Boundaries](book/12-authentication-and-session-boundaries.md).
+Follow the chapters in order in [`book`](book), ending with [Member Verification and Vendor Integrations](book/13-member-verification-and-vendor-integrations.md).
 
 ## Repository layout
 

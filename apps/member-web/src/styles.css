@@ -657,3 +657,40 @@ footer p {
   gap: 1.25rem;
   margin-top: 1.5rem;
 }
+
+.verification-page {
+  width: min(46rem, calc(100% - 2rem));
+  margin: 3rem auto;
+}
+.verification-card {
+  margin-top: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid #c8d3cd;
+  border-radius: 0.75rem;
+  background: white;
+}
+.verification-badge {
+  display: inline-block;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  font-weight: 750;
+}
+.status-verified {
+  color: #0d5b51;
+}
+.status-retry_required,
+.status-pending {
+  color: #76540a;
+}
+.status-verification_failed {
+  color: #8b2e22;
+}
+.verification-card dt {
+  color: #52615f;
+  font-size: 0.85rem;
+}
+.verification-card dd {
+  margin: 0.2rem 0 0;
+  font-weight: 700;
+}
