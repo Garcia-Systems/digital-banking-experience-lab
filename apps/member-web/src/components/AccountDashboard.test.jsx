@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
+  emptyAccountDashboard,
   freshAccountDashboard,
   staleAccountDashboard,
 } from "../data/accountDashboardFixtures";
@@ -18,6 +19,24 @@ describe("account dashboard", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Member Savings" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders one accessibly named account card for each fixture account", () => {
+    render(<AccountDashboard dashboard={freshAccountDashboard} />);
+
+    expect(screen.getAllByRole("article")).toHaveLength(
+      freshAccountDashboard.accounts.length,
+    );
+    expect(
+      screen.getByRole("article", {
+        name: "Everyday Checking, checking account",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("article", {
+        name: "Member Savings, savings account",
+      }),
     ).toBeInTheDocument();
   });
 
@@ -47,6 +66,30 @@ describe("account dashboard", () => {
       screen.getAllByRole("heading", { name: "Recent activity" }),
     ).toHaveLength(2);
     expect(screen.getAllByText("No recent transactions.")).toHaveLength(2);
+
+    const checkingCard = screen.getByRole("article", {
+      name: /Everyday Checking/,
+    });
+    const savingsCard = screen.getByRole("article", {
+      name: /Member Savings/,
+    });
+    expect(
+      within(checkingCard).getByText("No recent transactions."),
+    ).toBeInTheDocument();
+    expect(
+      within(savingsCard).getByText("No recent transactions."),
+    ).toBeInTheDocument();
+  });
+
+  it("distinguishes a successful empty projection from an account balance", () => {
+    render(<AccountDashboard dashboard={emptyAccountDashboard} />);
+
+    expect(
+      screen.getByText("No accounts are currently available."),
+    ).toBeInTheDocument();
+    expect(screen.queryAllByRole("article")).toHaveLength(0);
+    expect(screen.getByText("0 accounts")).toBeInTheDocument();
+    expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
   });
 
   it("shows masked suffixes without exposing internal account identifiers", () => {
