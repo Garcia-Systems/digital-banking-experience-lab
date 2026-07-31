@@ -138,8 +138,7 @@ export default function App() {
 
   const unauthorized = useCallback(() => {
     setAuth({ status: "anonymous", session: null, message: expiredMessage });
-    navigate("/login", { replace: true });
-  }, [navigate]);
+  }, []);
 
   const logout = async () => {
     await fetch("/api/logout", { method: "POST" });

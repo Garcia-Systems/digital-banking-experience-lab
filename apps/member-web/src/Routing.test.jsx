@@ -5,32 +5,48 @@ import App from "./App";
 import { freshAccountDashboard } from "./data/accountDashboardFixtures";
 import { renderWithRouter } from "./test/renderWithRouter";
 
-const dashboardResponse = {
-  ok: true,
-  json: () => Promise.resolve(freshAccountDashboard),
+const authenticatedSession = {
+  authenticated: true,
+  memberId: "member-1001",
+  displayName: "Alex Morgan",
+  expiresAt: "2026-08-01T12:00:00Z",
 };
+
+function jsonResponse(body) {
+  return {
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(body),
+  };
+}
+
+function requestDetails([input, options = {}]) {
+  return {
+    url: typeof input === "string" ? input : input.url,
+    method: options.method ?? "GET",
+  };
+}
+
+function requestsForPath(path) {
+  return fetch.mock.calls
+    .map(requestDetails)
+    .filter(({ url }) => url.includes(path));
+}
 
 describe("member application routes", () => {
   beforeEach(() =>
     vi.stubGlobal(
       "fetch",
-      vi.fn((url) =>
-        Promise.resolve(
-          url === "/api/session"
-            ? {
-                ok: true,
-                status: 200,
-                json: () =>
-                  Promise.resolve({
-                    authenticated: true,
-                    memberId: "member-1001",
-                    displayName: "Alex Morgan",
-                    expiresAt: "2026-08-01T12:00:00Z",
-                  }),
-              }
-            : dashboardResponse,
-        ),
-      ),
+      vi.fn(async (input, options = {}) => {
+        const { url, method } = requestDetails([input, options]);
+
+        if (url.includes("/api/session") && method === "GET")
+          return jsonResponse(authenticatedSession);
+        if (url.includes("/api/dashboard") && method === "GET")
+          return jsonResponse(freshAccountDashboard);
+
+        throw new Error(`Unexpected request: ${method} ${url}`);
+      }),
     ),
   );
   afterEach(() => {
@@ -68,7 +84,12 @@ describe("member application routes", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("•••• 4821")).toBeInTheDocument();
     expect(screen.getByText("Projection is current.")).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(requestsForPath("/api/session")).toEqual([
+      { url: "/api/session", method: "GET" },
+    ]);
+    expect(requestsForPath("/api/dashboard")).toEqual([
+      { url: "/api/dashboard?scenario=success", method: "GET" },
+    ]);
   });
 
   it("renders the account identified directly by its route", async () => {
