@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { formatCents, formatMaskedSuffix } from "../utils/formatters";
 import { accountPropType } from "../propTypes/bankingPropTypes";
+import { useNavigate } from "react-router-dom";
 
 const MEMO_LIMIT = 100;
 
@@ -57,6 +58,7 @@ FieldError.propTypes = {
 };
 
 export default function TransferForm({ accounts }) {
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     sourceId: "",
     destinationId: "",
@@ -100,7 +102,15 @@ export default function TransferForm({ accounts }) {
     setSubmission({ status: "submitting", result: null, error: null });
 
     try {
-      const response = await fetch("/api/transfers", {
+      const requestedScenario = new URLSearchParams(window.location.search).get(
+        "transferScenario",
+      );
+      const scenario = ["accepted", "completed", "rejected"].includes(
+        requestedScenario,
+      )
+        ? `?scenario=${requestedScenario}`
+        : "";
+      const response = await fetch(`/api/transfers${scenario}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -113,7 +123,7 @@ export default function TransferForm({ accounts }) {
       });
       if (!response.ok) throw new Error("Transfer request failed");
       const result = await response.json();
-      setSubmission({ status: "success", result, error: null });
+      navigate(`/transfers/${encodeURIComponent(result.transferId)}`);
     } catch (error) {
       submissionLocked.current = false;
       setSubmission({ status: "error", result: null, error });
@@ -290,50 +300,6 @@ export default function TransferForm({ accounts }) {
               idempotency key will be reused.
             </p>
           )}
-        </section>
-      )}
-
-      {submission.status === "success" && (
-        <section
-          className="transfer-confirmation"
-          aria-labelledby="confirmation-title"
-        >
-          <p className="eyebrow">Confirmation</p>
-          <h2 id="confirmation-title">Transfer accepted.</h2>
-          <dl>
-            <div>
-              <dt>Confirmation number</dt>
-              <dd>{submission.result.confirmationNumber}</dd>
-            </div>
-            <div>
-              <dt>Amount</dt>
-              <dd>{formatCents(Math.round(review.amount * 100))}</dd>
-            </div>
-            <div>
-              <dt>Source</dt>
-              <dd>{accountLabel(reviewedSource)}</dd>
-            </div>
-            <div>
-              <dt>Destination</dt>
-              <dd>{accountLabel(reviewedDestination)}</dd>
-            </div>
-            <div>
-              <dt>Memo</dt>
-              <dd>{review.memo || "No memo"}</dd>
-            </div>
-            <div>
-              <dt>Submitted</dt>
-              <dd>{submission.result.submittedAt}</dd>
-            </div>
-          </dl>
-          <p className="acceptance-note">
-            Acceptance records the request; it is not settlement.
-          </p>
-          <p className="idempotency-note">
-            {submission.result.duplicate
-              ? "This was a repeated request. The API returned the original confirmation, so only one logical transfer exists."
-              : "Repeated clicks reuse this intention’s idempotency key, so they cannot create multiple logical transfers."}
-          </p>
         </section>
       )}
     </main>

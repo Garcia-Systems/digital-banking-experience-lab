@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
 
-## Progress: Chapters 0–10 complete
+## Progress: Chapters 0–11 complete
 
-Chapter 10 completes the first end-to-end banking workflow. React submits a reviewed transfer with a stable idempotency key, and the PHP API returns a deterministic confirmation while protecting one member intention from duplicate requests.
+Chapter 11 follows an accepted transfer into its deterministic lifecycle. React navigates to a confirmation resource that distinguishes accepted, completed, and rejected requests.
 
 ## Architecture
 
@@ -22,12 +22,12 @@ Browser
   │
   ├── Dashboard
   ├── Account Details
-  ├── Idempotent Transfer Submission
+  ├── Transfer Submission and Status
   └── Settings
        │
   React request state (idle / loading / success / error)
        |
-       | GET /api/dashboard or POST /api/transfers
+       | GET /api/dashboard, POST /api/transfers, or GET /api/transfers/{id}
        v
   PHP dashboard endpoint (HTTP/JSON contract)
        |
@@ -62,6 +62,8 @@ Vite prints the member application URL and proxies `/api` to Laravel on `http://
 
 Choose a deterministic experiment with the frontend URL query parameter: `?scenario=success`, `empty`, `stale`, `error`, or `partial` (for example, `http://localhost:5173/?scenario=stale`). Only those names are forwarded; an unsupported frontend value falls back to `success`. The API scenarios can also be requested directly, for example `curl -i "http://127.0.0.1:8000/api/dashboard?scenario=empty"`.
 
+Choose a transfer outcome by opening the form with `?transferScenario=accepted`, `completed`, or `rejected` (for example, `http://localhost:5173/transfers/new?transferScenario=completed`). The submitted resource retains that deterministic status. The API equivalent is `POST /api/transfers?scenario=completed`; omitting the parameter uses `accepted`.
+
 Run the frontend quality checks from the repository root:
 
 ```bash
@@ -78,7 +80,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Idempotent Transfer Submission](book/10-idempotent-transfer-submission.md).
+Follow the chapters in order in [`book`](book), ending with [Transfer Status and Confirmation](book/11-transfer-status-and-confirmation.md).
 
 ## Repository layout
 

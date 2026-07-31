@@ -565,3 +565,31 @@ footer p {
   color: #52615f;
   font-size: 0.9rem;
 }
+.status-badge {
+  display: inline-block;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+.status-accepted {
+  color: #76540a;
+}
+.status-completed {
+  color: #0d5b51;
+}
+.status-rejected {
+  color: #8b2e22;
+}
+.status-note {
+  margin: 1rem 0;
+  padding: 0.9rem;
+  background: #f3f8f6;
+  font-weight: 650;
+}
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
