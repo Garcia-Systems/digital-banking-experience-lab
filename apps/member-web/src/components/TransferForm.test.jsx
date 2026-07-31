@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { freshAccountDashboard } from "../data/accountDashboardFixtures";
@@ -243,7 +243,9 @@ describe("transfer submission", () => {
     );
     expect(fetch).toHaveBeenCalledTimes(1);
 
-    finishRequest({ ok: true, json: async () => acceptedTransfer });
+    await act(async () => {
+      finishRequest({ ok: true, json: async () => acceptedTransfer });
+    });
     expect(
       await screen.findByRole("heading", {
         name: "Route: /transfers/TRN-1001",

@@ -8,6 +8,11 @@ namespace App\Support;
  */
 class TransferStore
 {
+    private const ACCOUNTS = [
+        'account-2001' => ['id' => 'account-2001', 'displayName' => 'Everyday Checking', 'accountSuffix' => '4821'],
+        'account-2002' => ['id' => 'account-2002', 'displayName' => 'Member Savings', 'accountSuffix' => '7314'],
+    ];
+
     private static array $transfersByKey = [];
     private static array $transfersById = [];
 
@@ -26,6 +31,8 @@ class TransferStore
             'idempotencyKey' => $idempotencyKey,
             'duplicate' => false,
             ...$instruction,
+            'sourceAccount' => self::ACCOUNTS[$instruction['sourceAccount']],
+            'destinationAccount' => self::ACCOUNTS[$instruction['destinationAccount']],
         ];
 
         self::$transfersByKey[$idempotencyKey] = $transfer;

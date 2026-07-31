@@ -15,6 +15,7 @@ The confirmation page communicates each fixture outcome explicitly:
 - **Rejected:** the transfer could not be completed.
 
 The badge includes the status word, so meaning never depends on color alone.
+The submitted timestamp is formatted in the fixed `en-US` locale and UTC time zone (for example, `Jul 31, 2026, 2:30 PM UTC`) so the confirmation is consistent across member devices and test environments.
 
 ## React concept
 

@@ -15,7 +15,7 @@ class TransferTest extends TestCase
 
     private function instruction(string $key = 'intent-1'): array
     {
-        return ['sourceAccount' => 'CHK-4821', 'destinationAccount' => 'SAV-7314', 'amountCents' => 2550, 'memo' => 'Vacation fund', 'idempotencyKey' => $key];
+        return ['sourceAccount' => 'account-2001', 'destinationAccount' => 'account-2002', 'amountCents' => 25000, 'memo' => 'Vacation fund', 'idempotencyKey' => $key];
     }
 
     public function test_successful_post_has_a_deterministic_confirmation(): void
@@ -54,9 +54,13 @@ class TransferTest extends TestCase
         $this->postJson('/api/transfers', $this->instruction());
         $this->getJson('/api/transfers/TRN-1001')->assertOk()
             ->assertJsonPath('confirmationNumber', 'HC-0001001')
-            ->assertJsonPath('sourceAccount', 'CHK-4821')
-            ->assertJsonPath('destinationAccount', 'SAV-7314')
-            ->assertJsonPath('amountCents', 2550)
+            ->assertJsonPath('sourceAccount.id', 'account-2001')
+            ->assertJsonPath('sourceAccount.displayName', 'Everyday Checking')
+            ->assertJsonPath('sourceAccount.accountSuffix', '4821')
+            ->assertJsonPath('destinationAccount.id', 'account-2002')
+            ->assertJsonPath('destinationAccount.displayName', 'Member Savings')
+            ->assertJsonPath('destinationAccount.accountSuffix', '7314')
+            ->assertJsonPath('amountCents', 25000)
             ->assertJsonPath('memo', 'Vacation fund')
             ->assertJsonPath('status', 'accepted');
     }

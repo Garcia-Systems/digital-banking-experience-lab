@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { formatCents } from "../utils/formatters";
+import {
+  formatCents,
+  formatMaskedSuffix,
+  formatTimestamp,
+} from "../utils/formatters";
 
 const statusNotes = {
   accepted:
@@ -8,6 +12,10 @@ const statusNotes = {
   completed: "Your transfer has completed successfully.",
   rejected: "This transfer could not be completed.",
 };
+
+function accountName(account) {
+  return `${account.displayName} (${formatMaskedSuffix(account.accountSuffix)})`;
+}
 
 export default function TransferDetails() {
   const { transferId } = useParams();
@@ -55,7 +63,11 @@ export default function TransferDetails() {
         className="transfer-confirmation"
         aria-label="Transfer confirmation"
       >
-        <div className={`status-badge status-${transfer.status}`}>
+        <div
+          className={`status-badge status-${transfer.status}`}
+          role="status"
+          aria-label={`Transfer status: ${transfer.status}`}
+        >
           Status: <strong>{transfer.status}</strong>
         </div>
         <p className="status-note">{statusNotes[transfer.status]}</p>
@@ -70,11 +82,11 @@ export default function TransferDetails() {
           </div>
           <div>
             <dt>Source account</dt>
-            <dd>{transfer.sourceAccount}</dd>
+            <dd>{accountName(transfer.sourceAccount)}</dd>
           </div>
           <div>
             <dt>Destination account</dt>
-            <dd>{transfer.destinationAccount}</dd>
+            <dd>{accountName(transfer.destinationAccount)}</dd>
           </div>
           <div>
             <dt>Memo</dt>
@@ -82,7 +94,7 @@ export default function TransferDetails() {
           </div>
           <div>
             <dt>Submitted</dt>
-            <dd>{transfer.submittedAt}</dd>
+            <dd>{formatTimestamp(transfer.submittedAt)}</dd>
           </div>
         </dl>
       </section>

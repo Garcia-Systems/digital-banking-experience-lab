@@ -18,6 +18,14 @@ class TransferController
             'idempotencyKey' => ['required', 'string', 'max:200'],
         ]);
 
+        if (! in_array($validated['sourceAccount'], ['account-2001', 'account-2002'], true)
+            || ! in_array($validated['destinationAccount'], ['account-2001', 'account-2002'], true)) {
+            return response()->json(['error' => [
+                'code' => 'account_not_found',
+                'message' => 'One or more transfer accounts could not be found.',
+            ]], 422);
+        }
+
         $key = $validated['idempotencyKey'];
         unset($validated['idempotencyKey']);
 
