@@ -4,8 +4,10 @@ import AccountMetadata from "./AccountMetadata";
 import BalanceSummary from "./BalanceSummary";
 import CardControls from "./CardControls";
 import RecentActivitySummary from "./RecentActivitySummary";
+import { Link, useInRouterContext } from "react-router-dom";
 
 export default function AccountCard({ account }) {
+  const isRouted = useInRouterContext();
   return (
     <article
       className="account-card"
@@ -32,6 +34,15 @@ export default function AccountCard({ account }) {
         accountName={account.displayName}
         transactions={account.transactions}
       />
+      {isRouted ? (
+        <Link className="account-link" to={`/accounts/${account.id}`}>
+          View account
+        </Link>
+      ) : (
+        <a className="account-link" href={`/accounts/${account.id}`}>
+          View account
+        </a>
+      )}
     </article>
   );
 }

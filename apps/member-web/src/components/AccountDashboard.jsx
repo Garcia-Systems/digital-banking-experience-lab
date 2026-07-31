@@ -5,18 +5,6 @@ import { dashboardPropType } from "../propTypes/bankingPropTypes";
 export default function AccountDashboard({ dashboard }) {
   return (
     <>
-      <header className="site-header">
-        <a
-          className="brand"
-          href="#main-content"
-          aria-label="Harbor Community Credit Union, skip to accounts"
-        >
-          <span className="brand-mark" aria-hidden="true">
-            H
-          </span>
-          <span>Harbor Community Credit Union</span>
-        </a>
-      </header>
       <main id="main-content">
         <section className="welcome" aria-labelledby="page-title">
           <p className="eyebrow">Member dashboard</p>
@@ -37,9 +25,6 @@ export default function AccountDashboard({ dashboard }) {
           <AccountList accounts={dashboard.accounts} />
         </section>
       </main>
-      <footer>
-        <p>Educational demonstration • Fictional data only</p>
-      </footer>
     </>
   );
 }
