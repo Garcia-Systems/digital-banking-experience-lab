@@ -66,7 +66,7 @@ Run the Laravel suite separately:
 
 ```bash
 cd services/banking-api
-php artisan test
+composer test
 ```
 
 Follow the chapters in order in [`book`](book), ending with [From React fixtures to a PHP API](book/06-from-react-fixtures-to-a-php-api.md).

@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "test": "php artisan test"
+    "test": "php vendor/bin/phpunit"
   },
   "config": {
     "sort-packages": true,

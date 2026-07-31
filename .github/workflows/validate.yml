@@ -34,7 +34,7 @@ jobs:
           tools: composer
       - name: Install API dependencies
         working-directory: services/banking-api
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --prefer-dist --no-interaction --no-progress
       - name: Prepare Laravel runtime directories
         working-directory: services/banking-api
         run: |
@@ -47,4 +47,4 @@ jobs:
           chmod -R u+rwX,g+rwX bootstrap/cache storage
       - name: Test banking API
         working-directory: services/banking-api
-        run: php artisan test
+        run: composer test

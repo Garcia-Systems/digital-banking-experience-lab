@@ -65,4 +65,4 @@ npm install
 npm run dev
 ```
 
-Visit the URL printed by Vite. To exercise the endpoint directly, open `http://127.0.0.1:8000/api/dashboard`. Run `php artisan test` inside `services/banking-api` for the backend test and the root npm quality commands for the frontend.
+Visit the URL printed by Vite. To exercise the endpoint directly, open `http://127.0.0.1:8000/api/dashboard`. Run `composer test` inside `services/banking-api` for the backend test and the root npm quality commands for the frontend. This intentionally minimal Laravel application uses its existing PHPUnit development dependency directly rather than adding a package only to provide the `php artisan test` wrapper.
