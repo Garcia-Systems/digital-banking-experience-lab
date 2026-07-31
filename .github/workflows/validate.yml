@@ -27,3 +27,24 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer
+      - name: Install API dependencies
+        working-directory: services/banking-api
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Prepare Laravel runtime directories
+        working-directory: services/banking-api
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/testing
+          mkdir -p storage/framework/views
+          mkdir -p storage/logs
+          chmod -R u+rwX,g+rwX bootstrap/cache storage
+      - name: Test banking API
+        working-directory: services/banking-api
+        run: composer test
