@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
   freshAccountDashboard,
@@ -37,9 +37,27 @@ describe("account dashboard", () => {
   it("formats integer cents as user-visible US dollar balances", () => {
     render(<AccountDashboard dashboard={freshAccountDashboard} />);
 
-    expect(screen.getByText("$1,250.00")).toBeInTheDocument();
-    expect(screen.getByText("$1,305.00")).toBeInTheDocument();
-    expect(screen.getAllByText("$4,200.00")).toHaveLength(2);
+    const checkingCard = screen
+      .getByRole("heading", { name: "Everyday Checking" })
+      .closest("article");
+    const savingsCard = screen
+      .getByRole("heading", { name: "Member Savings" })
+      .closest("article");
+
+    expect(checkingCard).not.toBeNull();
+    expect(savingsCard).not.toBeNull();
+    expect(
+      within(checkingCard).getByText("Available balance").parentElement,
+    ).toHaveTextContent("$1,250.00");
+    expect(
+      within(checkingCard).getByText("Current balance").parentElement,
+    ).toHaveTextContent("$1,305.00");
+    expect(
+      within(savingsCard).getByText("Available balance").parentElement,
+    ).toHaveTextContent("$4,200.00");
+    expect(
+      within(savingsCard).getByText("Current balance").parentElement,
+    ).toHaveTextContent("$4,200.00");
   });
 
   it("shows an accessible warning for a stale projection", () => {
