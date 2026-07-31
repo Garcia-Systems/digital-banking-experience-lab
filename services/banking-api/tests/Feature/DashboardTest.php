@@ -6,6 +6,11 @@ use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withSession(['laboratory_session' => ['authenticated' => true]]);
+    }
     public function test_success_returns_the_deterministic_dashboard(): void
     {
         $response = $this->getJson('/api/dashboard?scenario=success');

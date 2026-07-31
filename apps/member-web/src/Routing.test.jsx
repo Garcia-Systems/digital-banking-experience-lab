@@ -5,13 +5,34 @@ import App from "./App";
 import { freshAccountDashboard } from "./data/accountDashboardFixtures";
 import { renderWithRouter } from "./test/renderWithRouter";
 
-const response = {
+const dashboardResponse = {
   ok: true,
   json: () => Promise.resolve(freshAccountDashboard),
 };
 
 describe("member application routes", () => {
-  beforeEach(() => vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response)));
+  beforeEach(() =>
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url) =>
+        Promise.resolve(
+          url === "/api/session"
+            ? {
+                ok: true,
+                status: 200,
+                json: () =>
+                  Promise.resolve({
+                    authenticated: true,
+                    memberId: "member-1001",
+                    displayName: "Alex Morgan",
+                    expiresAt: "2026-08-01T12:00:00Z",
+                  }),
+              }
+            : dashboardResponse,
+        ),
+      ),
+    ),
+  );
   afterEach(() => {
     vi.unstubAllGlobals();
     window.history.replaceState({}, "", "/");
@@ -47,7 +68,7 @@ describe("member application routes", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("•••• 4821")).toBeInTheDocument();
     expect(screen.getByText("Projection is current.")).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it("renders the account identified directly by its route", async () => {

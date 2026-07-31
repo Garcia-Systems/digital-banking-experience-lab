@@ -1,148 +1,131 @@
-import { screen } from "@testing-library/react";
-import { renderWithRouter } from "./test/renderWithRouter";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  emptyAccountDashboard,
-  freshAccountDashboard,
-  staleAccountDashboard,
-} from "./data/accountDashboardFixtures";
 import App from "./App";
+import { freshAccountDashboard } from "./data/accountDashboardFixtures";
+import { renderWithRouter } from "./test/renderWithRouter";
 
-const response = (body, ok = true) => ({
-  ok,
+const session = {
+  authenticated: true,
+  memberId: "member-1001",
+  displayName: "Alex Morgan",
+  expiresAt: "2026-08-01T12:00:00Z",
+};
+const response = (body, status = 200) => ({
+  ok: status >= 200 && status < 300,
+  status,
   json: () => Promise.resolve(body),
 });
 
-describe("dashboard request states", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    window.history.replaceState({}, "", "/");
-  });
+function mockAuthenticated() {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((url) =>
+      Promise.resolve(
+        url === "/api/session"
+          ? response(session)
+          : response(freshAccountDashboard),
+      ),
+    ),
+  );
+}
 
-  it("shows only loading information while the request is pending", () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(() => new Promise(() => {})),
-    );
-    renderWithRouter(<App />);
+describe("authentication boundaries", () => {
+  afterEach(() => vi.unstubAllGlobals());
 
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Loading account information…",
-    );
-    expect(
-      screen.queryByRole("heading", { name: "Everyday Checking" }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/No accounts/)).not.toBeInTheDocument();
-  });
-
-  it("renders a successful deterministic dashboard", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(response(freshAccountDashboard)),
-    );
-    renderWithRouter(<App />);
-
-    expect(
-      await screen.findByRole("heading", { name: /Alex Morgan/ }),
-    ).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledWith("/api/dashboard?scenario=success");
-    expect(
-      screen.getByRole("heading", { name: "Everyday Checking" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Jul 31, 2026, 12:00 PM UTC")).toBeInTheDocument();
-  });
-
-  it("renders empty success as neither an error nor a zero balance", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(response(emptyAccountDashboard)),
-    );
-    renderWithRouter(<App />);
-
-    expect(
-      await screen.findByText("No accounts are currently available."),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
-  });
-
-  it("keeps stale accounts usable and displays their warning and timestamp", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(response(staleAccountDashboard)),
-    );
-    renderWithRouter(<App />);
-
-    expect(
-      await screen.findByText("Account information may be out of date."),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Everyday Checking" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Jul 31, 2026, 10:15 AM UTC")).toBeInTheDocument();
-  });
-
-  it("shows a safe failure without internal response details", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(
-          response({ error: { message: "SQL service exploded" } }, false),
-        ),
-    );
-    renderWithRouter(<App />);
-
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "We could not load your account information.",
-    );
-    expect(screen.queryByText(/SQL service exploded/)).not.toBeInTheDocument();
-  });
-
-  it("rejects an invalid HTTP-200 response safely", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(response({ member: freshAccountDashboard.member })),
-    );
-    renderWithRouter(<App />);
-
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "We could not load your account information.",
-    );
-    expect(
-      screen.queryByText(/invalid_dashboard_contract/),
-    ).not.toBeInTheDocument();
-  });
-
-  it("retries through the interface and renders the next successful response", async () => {
+  it("completes a successful laboratory login and loads the dashboard", async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockRejectedValueOnce(new Error("network detail"))
-        .mockResolvedValueOnce(response(freshAccountDashboard)),
+      vi.fn((url) => {
+        if (url === "/api/session")
+          return Promise.resolve(response({ authenticated: false }, 401));
+        if (url === "/api/login") return Promise.resolve(response(session));
+        return Promise.resolve(response(freshAccountDashboard));
+      }),
     );
-    renderWithRouter(<App />);
-
-    await user.click(await screen.findByRole("button", { name: /try again/i }));
+    renderWithRouter(<App />, { route: "/login" });
+    await user.click(await screen.findByRole("button", { name: "Sign in" }));
     expect(
       await screen.findByRole("heading", { name: /Alex Morgan/ }),
     ).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(screen.getByText("Signed in as Alex Morgan")).toBeInTheDocument();
   });
 
-  it("forwards only an allowed URL scenario", async () => {
-    window.history.replaceState({}, "", "/?scenario=stale");
+  it("shows a safe failed-login message", async () => {
+    const user = userEvent.setup();
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(response(staleAccountDashboard)),
+      vi.fn((url) =>
+        Promise.resolve(
+          url === "/api/session"
+            ? response({ authenticated: false }, 401)
+            : response({}, 401),
+        ),
+      ),
+    );
+    renderWithRouter(<App />, { route: "/login" });
+    await user.clear(await screen.findByLabelText("Password"));
+    await user.type(screen.getByLabelText("Password"), "wrong");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "credentials were not recognized",
+    );
+  });
+
+  it("logs out and removes protected information", async () => {
+    const user = userEvent.setup();
+    mockAuthenticated();
+    renderWithRouter(<App />);
+    await user.click(await screen.findByRole("button", { name: "Logout" }));
+    expect(
+      await screen.findByRole("heading", { name: "Member login" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /Welcome, Alex Morgan/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("redirects a protected route to login", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(response({ authenticated: false }, 401))),
+    );
+    renderWithRouter(<App />, { route: "/accounts/account-2001" });
+    expect(
+      await screen.findByRole("heading", { name: "Member login" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument();
+  });
+
+  it("treats an expired initial session as anonymous", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(response({ authenticated: false }, 401))),
+    );
+    renderWithRouter(<App />, { route: "/transfers/new" });
+    expect(
+      await screen.findByRole("heading", { name: "Member login" }),
+    ).toBeInTheDocument();
+  });
+
+  it("clears protected UI after an unauthorized API response", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url) =>
+        Promise.resolve(
+          url === "/api/session" ? response(session) : response({}, 401),
+        ),
+      ),
     );
     renderWithRouter(<App />);
-    await screen.findByRole("heading", { name: /Alex Morgan/ });
-    expect(fetch).toHaveBeenCalledWith("/api/dashboard?scenario=stale");
+    expect(
+      await screen.findByText(
+        "Your session has expired. Please sign in again.",
+      ),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument(),
+    );
   });
 });

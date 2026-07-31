@@ -8,17 +8,21 @@ This independent educational project complements the separate **Digital Banking 
 
 Harbor Community Credit Union is fictional. Every member, account, balance, identifier, timestamp, and workflow is synthetic test data. Never add real member data or credentials.
 
-This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, authentication, or authoritative ledger.
+This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–11 complete
+## Progress: Chapters 0–12 complete
 
-Chapter 11 follows an accepted transfer into its deterministic lifecycle. React navigates to a confirmation resource that distinguishes accepted, completed, and rejected requests.
+Chapter 12 places the member experience behind a deterministic authenticated session, including login, logout, protected routes, expiration, and safe unauthorized responses.
 
 ## Architecture
 
 ```text
 Browser
-  Member Application
+  React Member Application
+        │
+  Authenticated Session
+        │
+  PHP Banking API
   │
   ├── Dashboard
   ├── Account Details
@@ -27,7 +31,7 @@ Browser
        │
   React request state (idle / loading / success / error)
        |
-       | GET /api/dashboard, POST /api/transfers, or GET /api/transfers/{id}
+       | POST /api/login, GET /api/session, and authenticated banking requests
        v
   PHP dashboard endpoint (HTTP/JSON contract)
        |
@@ -60,7 +64,7 @@ npm run dev
 
 Vite prints the member application URL and proxies `/api` to Laravel on `http://127.0.0.1:8000`.
 
-Choose a deterministic experiment with the frontend URL query parameter: `?scenario=success`, `empty`, `stale`, `error`, or `partial` (for example, `http://localhost:5173/?scenario=stale`). Only those names are forwarded; an unsupported frontend value falls back to `success`. The API scenarios can also be requested directly, for example `curl -i "http://127.0.0.1:8000/api/dashboard?scenario=empty"`.
+Sign in using the fictional laboratory member ID `member-1001` and password `password`. These deterministic credentials are intentionally insecure and are never appropriate outside this educational application. After login, choose a dashboard experiment with `?scenario=success`, `empty`, `stale`, `error`, or `partial`. The session API also accepts `?scenario=expired` as a deterministic timeout demonstration.
 
 Choose a transfer outcome by opening the form with `?transferScenario=accepted`, `completed`, or `rejected` (for example, `http://localhost:5173/transfers/new?transferScenario=completed`). The submitted resource retains that deterministic status. The API equivalent is `POST /api/transfers?scenario=completed`; omitting the parameter uses `accepted`.
 
@@ -80,7 +84,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Transfer Status and Confirmation](book/11-transfer-status-and-confirmation.md).
+Follow the chapters in order in [`book`](book), ending with [Authentication and Session Boundaries](book/12-authentication-and-session-boundaries.md).
 
 ## Repository layout
 

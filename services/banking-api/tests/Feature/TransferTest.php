@@ -10,6 +10,7 @@ class TransferTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withSession(['laboratory_session' => ['authenticated' => true]]);
         TransferStore::reset();
     }
 
