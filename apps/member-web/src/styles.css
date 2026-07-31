@@ -28,6 +28,34 @@ a:focus-visible {
   outline: 3px solid #e2a93b;
   outline-offset: 4px;
 }
+button:focus-visible {
+  outline: 3px solid #e2a93b;
+  outline-offset: 3px;
+}
+.request-state {
+  width: min(100% - 2rem, 42rem);
+  margin: 4rem auto;
+  padding: 1.5rem;
+  border: 1px solid #c8d3cd;
+  border-radius: 0.75rem;
+  background: white;
+}
+.request-error {
+  border-left: 0.4rem solid #a43c2c;
+}
+.request-error p {
+  margin-bottom: 1rem;
+}
+.request-error button {
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #0d5b51;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
 
 .site-header {
   background: #0d4944;
