@@ -11,12 +11,12 @@ return [
         ],
     ],
     'members' => [
-        ['memberId' => 'member-1001', 'displayName' => 'Avery Morgan', 'verificationStatus' => 'verified', 'accountCount' => 2, 'email' => 'avery.morgan@example.test', 'phone' => '(555) 010-1001', 'accounts' => [['name' => 'Everyday Checking', 'maskedNumber' => '•••• 1842', 'balanceCents' => 284650], ['name' => 'Member Savings', 'maskedNumber' => '•••• 7750', 'balanceCents' => 910200]]],
+        ['memberId' => 'member-1001', 'displayName' => 'Alex Morgan', 'verificationStatus' => 'verified', 'accountCount' => 2, 'email' => 'alex.morgan@example.test', 'phone' => '(555) 010-1001', 'accounts' => [['name' => 'Everyday Checking', 'maskedNumber' => '•••• 4821', 'balanceCents' => 130500], ['name' => 'Member Savings', 'maskedNumber' => '•••• 7314', 'balanceCents' => 420000]]],
         ['memberId' => 'member-1002', 'displayName' => 'Jordan Lee', 'verificationStatus' => 'pending', 'accountCount' => 1, 'email' => 'jordan.lee@example.test', 'phone' => '(555) 010-1002', 'accounts' => [['name' => 'Everyday Checking', 'maskedNumber' => '•••• 2281', 'balanceCents' => 132420]]],
         ['memberId' => 'member-1003', 'displayName' => 'Sam Rivera', 'verificationStatus' => 'review required', 'accountCount' => 3, 'email' => 'sam.rivera@example.test', 'phone' => '(555) 010-1003', 'accounts' => [['name' => 'Everyday Checking', 'maskedNumber' => '•••• 9034', 'balanceCents' => 51890]]],
     ],
     'transfers' => [
-        ['transferId' => 'transfer-7001', 'member' => 'Avery Morgan', 'memberId' => 'member-1001', 'amountCents' => 12500, 'status' => 'completed', 'submittedAt' => '2026-08-01T08:15:00Z', 'verificationStatus' => 'verified', 'failureId' => null],
+        ['transferId' => 'transfer-7001', 'member' => 'Alex Morgan', 'memberId' => 'member-1001', 'amountCents' => 12500, 'status' => 'completed', 'submittedAt' => '2026-08-01T08:15:00Z', 'verificationStatus' => 'verified', 'failureId' => null],
         ['transferId' => 'transfer-7002', 'member' => 'Jordan Lee', 'memberId' => 'member-1002', 'amountCents' => 4800, 'status' => 'accepted', 'submittedAt' => '2026-08-01T08:32:00Z', 'verificationStatus' => 'pending', 'failureId' => null],
         ['transferId' => 'transfer-7003', 'member' => 'Sam Rivera', 'memberId' => 'member-1003', 'amountCents' => 22100, 'status' => 'rejected', 'submittedAt' => '2026-08-01T08:47:00Z', 'verificationStatus' => 'review required', 'failureId' => 'failure-9002'],
     ],
@@ -48,7 +48,7 @@ return [
             ],
         ],
         [
-            'operationId' => 'failure-9003', 'operationType' => 'Member verification', 'member' => 'Avery Morgan (member-1001)',
+            'operationId' => 'failure-9003', 'operationType' => 'Member verification', 'member' => 'Alex Morgan (member-1001)',
             'status' => 'failed', 'retryable' => true, 'failureCategory' => 'Authentication Expired',
             'categoryExplanation' => 'The vendor credential expired before the operation completed.',
             'lastAttemptedAt' => '2026-08-01T08:58:00Z', 'requestSummary' => 'Refresh verification evidence for an existing member.',

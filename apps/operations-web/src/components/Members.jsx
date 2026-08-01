@@ -21,7 +21,7 @@ export default function Members() {
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="member-1001 or Avery"
+          placeholder="member-1001 or Alex"
         />
       </label>
       <div className="table-wrap">
