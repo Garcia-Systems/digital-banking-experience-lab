@@ -7,11 +7,12 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @dbel/member-web",
-    "test": "npm run test --workspace @dbel/member-web",
-    "lint": "npm run lint --workspace @dbel/member-web",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build": "npm run build --workspace @dbel/member-web"
+    "build": "npm run build --workspaces --if-present",
+    "dev:operations": "npm run dev --workspace @dbel/operations-web"
   },
   "devDependencies": {
     "prettier": "3.6.2"
