@@ -17,7 +17,11 @@ final class MemberVerificationController
 
     public function store(Request $request, DeterministicVerificationVendor $vendor): JsonResponse
     {
-        $result = $vendor->verify((string) $request->query('scenario', 'success'));
+        $scenario = (string) $request->query('scenario', 'success');
+        $attemptKey = "verification_attempts.{$scenario}";
+        $attempt = (int) $request->session()->get($attemptKey, 0) + 1;
+        $request->session()->put($attemptKey, $attempt);
+        $result = $vendor->verify($scenario, $attempt);
 
         $verification = match (true) {
             ($result['decision'] ?? null) === 'approved' => $this->state(
@@ -27,24 +31,35 @@ final class MemberVerificationController
             ),
             ($result['decision'] ?? null) === 'declined' => $this->state(
                 'verification_failed',
-                "We couldn't verify your information. Please contact Harbor Community Credit Union.",
+                "Your verification was permanently rejected. Please contact Harbor Community Credit Union if you need assistance.",
+                false,
+            ),
+            in_array(($result['decision'] ?? null), ['invalid_member', 'unsupported'], true) => $this->state(
+                'verification_failed',
+                "This request cannot succeed with the information provided. Please contact Harbor Community Credit Union if you need assistance.",
                 false,
             ),
             ($result['retryable'] ?? false) === true => $this->state(
                 'retry_required',
-                'We could not complete verification right now. Please try again.',
+                "We couldn't complete your request right now.",
                 true,
             ),
             default => $this->state(
-                'retry_required',
-                'We could not complete verification right now. Please try again.',
-                true,
+                'verification_failed',
+                'This request is not supported. Please contact Harbor Community Credit Union if you need assistance.',
+                false,
             ),
         };
 
         $request->session()->put('member_verification', $verification);
 
-        return response()->json($verification);
+        $httpStatus = match ($verification['status']) {
+            'retry_required' => 503,
+            'verification_failed' => 422,
+            default => 200,
+        };
+
+        return response()->json($verification, $httpStatus);
     }
 
     /** @return array<string, mixed> */
