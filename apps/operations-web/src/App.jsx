@@ -6,6 +6,8 @@ import Members from "./components/Members.jsx";
 import TransferDetails from "./components/TransferDetails.jsx";
 import Transfers from "./components/Transfers.jsx";
 import Unauthorized from "./components/Unauthorized.jsx";
+import FailureDetails from "./components/FailureDetails.jsx";
+import Failures from "./components/Failures.jsx";
 
 export function OperationsRoutes({ role = "operations-user" }) {
   if (role !== "operations-user") return <Unauthorized />;
@@ -16,6 +18,8 @@ export function OperationsRoutes({ role = "operations-user" }) {
         <Route path="members" element={<Members />} />
         <Route path="transfers" element={<Transfers />} />
         <Route path="transfers/:transferId" element={<TransferDetails />} />
+        <Route path="failures" element={<Failures />} />
+        <Route path="failures/:failureId" element={<FailureDetails />} />
       </Route>
     </Routes>
   );

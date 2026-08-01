@@ -11,6 +11,7 @@ export default function Layout() {
           <NavLink to="/">Dashboard</NavLink>
           <NavLink to="/members">Members</NavLink>
           <NavLink to="/transfers">Transfers</NavLink>
+          <NavLink to="/failures">Failed Operations</NavLink>
         </nav>
         <p className="notice">
           Educational access model: authorization is intentionally simplified.
