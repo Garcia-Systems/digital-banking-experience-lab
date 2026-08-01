@@ -1,12 +1,7 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react-native";
-import MobileApp from "../MobileApp";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react-native";
+import { MobileAppContent } from "../MobileApp";
 import { clearLaboratorySessionToken } from "../api/session";
+import { renderWithSafeArea } from "./renderWithSafeArea";
 
 const dashboard = {
   member: { id: "member-1001", displayName: "Alex Morgan" },
@@ -77,7 +72,7 @@ describe("mobile session boundary", () => {
 
   it("starts signed out and never exposes protected dashboard data", async () => {
     installApi();
-    render(<MobileApp />);
+    renderWithSafeArea(<MobileAppContent />);
     expect(
       await screen.findByRole("header", { name: "Mobile member sign in" }),
     ).toBeTruthy();
@@ -87,7 +82,7 @@ describe("mobile session boundary", () => {
 
   it("shows loading during sign in and then loads the protected dashboard", async () => {
     const api = installApi({ pendingLogin: true });
-    render(<MobileApp />);
+    renderWithSafeArea(<MobileAppContent />);
     fireEvent.press(await screen.findByRole("button", { name: "Sign in" }));
     expect(screen.getByLabelText("Signing in")).toBeTruthy();
     await act(async () => api.resolveLogin());
@@ -105,7 +100,7 @@ describe("mobile session boundary", () => {
 
   it("shows a safe invalid-credentials error without protected content", async () => {
     installApi({ invalidLogin: true });
-    render(<MobileApp />);
+    renderWithSafeArea(<MobileAppContent />);
     fireEvent.changeText(await screen.findByLabelText("Password"), "wrong");
     fireEvent.press(screen.getByRole("button", { name: "Sign in" }));
     expect(
@@ -118,7 +113,7 @@ describe("mobile session boundary", () => {
 
   it("returns to sign in with expiration wording when dashboard authorization expires", async () => {
     installApi({ expireDashboard: true });
-    render(<MobileApp />);
+    renderWithSafeArea(<MobileAppContent />);
     fireEvent.press(await screen.findByRole("button", { name: "Sign in" }));
     expect(
       await screen.findByText(
@@ -130,7 +125,7 @@ describe("mobile session boundary", () => {
 
   it("logs out, clears protected content, and permits signing in again", async () => {
     installApi();
-    render(<MobileApp />);
+    renderWithSafeArea(<MobileAppContent />);
     fireEvent.press(await screen.findByRole("button", { name: "Sign in" }));
     expect(await screen.findByText("Everyday Checking")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Sign out" }));

@@ -13,7 +13,7 @@ import TransactionHistoryScreen from "./screens/TransactionHistoryScreen";
 import TransferPreparationScreen from "./screens/TransferPreparationScreen";
 import SignInScreen from "./screens/SignInScreen";
 
-export default function MobileApp() {
+export function MobileAppContent() {
   const [session, setSession] = useState({ status: "checking", message: "" });
   const [route, setRoute] = useState("dashboard");
   const [dashboard, setDashboard] = useState(null);
@@ -69,7 +69,7 @@ export default function MobileApp() {
   }
 
   return (
-    <SafeAreaProvider>
+    <>
       {session.status === "checking" && (
         <View style={styles.checking}>
           <ActivityIndicator
@@ -115,6 +115,14 @@ export default function MobileApp() {
             onBack={() => setRoute("dashboard")}
           />
         )}
+    </>
+  );
+}
+
+export default function MobileApp() {
+  return (
+    <SafeAreaProvider>
+      <MobileAppContent />
     </SafeAreaProvider>
   );
 }
