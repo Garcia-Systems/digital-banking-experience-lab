@@ -50,6 +50,42 @@ class TransferTest extends TestCase
             ->assertUnprocessable()->assertJsonValidationErrors(['sourceAccount', 'amountCents', 'memo', 'idempotencyKey']);
     }
 
+    public function test_invalid_amount_returns_a_structured_member_safe_error(): void
+    {
+        $instruction = $this->instruction();
+        $instruction['amountCents'] = 0;
+
+        $this->postJson('/api/transfers', $instruction)->assertUnprocessable()
+            ->assertJsonPath('errors.amountCents.0', 'Transfer amount must be greater than zero.');
+    }
+
+    public function test_missing_required_fields_return_structured_errors(): void
+    {
+        $this->postJson('/api/transfers', ['memo' => ''])->assertUnprocessable()
+            ->assertJsonPath('errors.sourceAccount.0', 'Choose a source account.')
+            ->assertJsonPath('errors.destinationAccount.0', 'Choose a destination account.')
+            ->assertJsonPath('errors.amountCents.0', 'Transfer amount is required.')
+            ->assertJsonStructure(['errors' => ['sourceAccount', 'destinationAccount', 'amountCents', 'idempotencyKey']]);
+    }
+
+    public function test_memo_length_validation_returns_a_structured_error(): void
+    {
+        $instruction = $this->instruction();
+        $instruction['memo'] = str_repeat('x', 101);
+
+        $this->postJson('/api/transfers', $instruction)->assertUnprocessable()
+            ->assertJsonPath('errors.memo.0', 'Memo must be 100 characters or fewer.');
+    }
+
+    public function test_amount_cannot_exceed_the_source_account_balance(): void
+    {
+        $instruction = $this->instruction();
+        $instruction['amountCents'] = 125001;
+
+        $this->postJson('/api/transfers', $instruction)->assertUnprocessable()
+            ->assertJsonPath('errors.amountCents.0', 'Amount cannot exceed the available balance of $1,250.00.');
+    }
+
     public function test_get_returns_the_created_transfer_resource(): void
     {
         $this->postJson('/api/transfers', $this->instruction());
