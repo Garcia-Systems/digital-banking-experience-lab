@@ -8,10 +8,13 @@ export default function Layout() {
         <h1>Operations Portal</h1>
         <p className="role">Signed in as Operations User</p>
         <nav aria-label="Operations">
-          <NavLink to="/">Dashboard</NavLink>
-          <NavLink to="/members">Members</NavLink>
-          <NavLink to="/transfers">Transfers</NavLink>
-          <NavLink to="/failures">Failed Operations</NavLink>
+          <NavLink to="/operations">Home</NavLink>
+          <NavLink to="/operations/members">Members</NavLink>
+          <NavLink to="/operations/transfers">Transfers</NavLink>
+          <NavLink to="/operations/failures">Failed Operations</NavLink>
+          <NavLink to="/operations/verifications">
+            Verification Requests
+          </NavLink>
         </nav>
         <p className="notice">
           Educational access model: authorization is intentionally simplified.

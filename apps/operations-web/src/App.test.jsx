@@ -5,6 +5,7 @@ import {
   failures,
   members,
   transfers,
+  verifications,
 } from "./data/operationsFixtures.js";
 import { renderOperationsApp } from "./test/renderOperationsApp.jsx";
 
@@ -13,6 +14,33 @@ const responses = {
   "/api/operations/members": { members },
   "/api/operations/transfers": { transfers },
   "/api/operations/failures": { failures },
+  "/api/operations/verifications": { verifications },
+  ...Object.fromEntries(
+    members.map((member) => [
+      `/api/operations/members/${member.memberId}`,
+      {
+        member,
+        transfers: transfers.filter(
+          (record) => record.memberId === member.memberId,
+        ),
+        failures: failures.filter((record) =>
+          record.member.includes(member.memberId),
+        ),
+      },
+    ]),
+  ),
+  ...Object.fromEntries(
+    transfers.map((transfer) => [
+      `/api/operations/transfers/${transfer.transferId}`,
+      { transfer },
+    ]),
+  ),
+  ...Object.fromEntries(
+    verifications.map((verification) => [
+      `/api/operations/verifications/${verification.verificationId}`,
+      { verification },
+    ]),
+  ),
   ...Object.fromEntries(
     failures.map((failure) => [
       `/api/operations/failures/${failure.operationId}`,
@@ -43,7 +71,7 @@ describe("operations portal", () => {
 
     expect(screen.getByText("System Health")).toBeInTheDocument();
     const navigation = screen.getByRole("navigation", { name: /operations/i });
-    expect(within(navigation).getAllByRole("link")).toHaveLength(4);
+    expect(within(navigation).getAllByRole("link")).toHaveLength(5);
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith("/api/operations/dashboard", {
         headers: { "X-Laboratory-Role": "operations-user" },
@@ -55,7 +83,7 @@ describe("operations portal", () => {
     renderOperationsApp("/");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
-    expect(screen.getByRole("link", { name: /dashboard/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -65,20 +93,20 @@ describe("operations portal", () => {
   });
 
   it("marks Members as active on the member lookup route", async () => {
-    renderOperationsApp("/members");
+    renderOperationsApp("/operations/members");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByRole("link", { name: /members/i })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    expect(
-      screen.getByRole("link", { name: /dashboard/i }),
-    ).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: /home/i })).not.toHaveAttribute(
+      "aria-current",
+    );
   });
 
   it("marks Transfers as active on the transfer review route", async () => {
-    renderOperationsApp("/transfers");
+    renderOperationsApp("/operations/transfers");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByRole("link", { name: /^transfers$/i })).toHaveAttribute(
@@ -91,7 +119,7 @@ describe("operations portal", () => {
   });
 
   it("filters member fixtures by name and member ID", async () => {
-    renderOperationsApp("/members");
+    renderOperationsApp("/operations/members");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     fireEvent.change(screen.getByRole("textbox"), {
@@ -109,12 +137,12 @@ describe("operations portal", () => {
   });
 
   it("displays deterministic transfers and their detail links", async () => {
-    renderOperationsApp("/transfers");
+    renderOperationsApp("/operations/transfers");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByRole("link", { name: "transfer-7001" })).toHaveAttribute(
       "href",
-      "/transfers/transfer-7001",
+      "/operations/transfers/transfer-7001",
     );
     expect(screen.getByText("$125.00")).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith("/api/operations/transfers", {
@@ -133,7 +161,7 @@ describe("operations portal", () => {
   });
 
   it("renders a deterministic failed operations list and navigation", async () => {
-    renderOperationsApp("/failures");
+    renderOperationsApp("/operations/failures");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(
@@ -141,7 +169,7 @@ describe("operations portal", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "failure-9001" })).toHaveAttribute(
       "href",
-      "/failures/failure-9001",
+      "/operations/failures/failure-9001",
     );
     expect(screen.getByText("Vendor Timeout")).toBeInTheDocument();
     expect(
@@ -150,7 +178,7 @@ describe("operations portal", () => {
   });
 
   it("shows retry eligibility and the audit timeline in failure details", async () => {
-    renderOperationsApp("/failures/failure-9001");
+    renderOperationsApp("/operations/failures/failure-9001");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByText("Retry Eligible")).toBeInTheDocument();
@@ -159,12 +187,43 @@ describe("operations portal", () => {
   });
 
   it("shows manual review for a permanent failure", async () => {
-    renderOperationsApp("/failures/failure-9002");
+    renderOperationsApp("/operations/failures/failure-9002");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByText("Manual Review Required")).toBeInTheDocument();
     expect(
       screen.getByText(/Permanent Validation Failure/),
+    ).toBeInTheDocument();
+  });
+
+  it("connects member, transfer, and failure details", async () => {
+    renderOperationsApp("/operations/members/member-1003");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("$518.90")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "transfer-7003" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "failure-9002" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders verification list and detail workflows", async () => {
+    const view = renderOperationsApp("/operations/verifications");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(
+      screen.getByRole("link", { name: "verification-5001" }),
+    ).toBeInTheDocument();
+    view.unmount();
+    renderOperationsApp("/operations/verifications/verification-5001");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    expect(
+      screen.getByText(
+        "Identity evidence is awaiting a deterministic vendor retry.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "failure-9001" }),
     ).toBeInTheDocument();
   });
 });

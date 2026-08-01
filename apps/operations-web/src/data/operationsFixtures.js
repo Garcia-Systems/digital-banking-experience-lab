@@ -14,18 +14,50 @@ export const members = [
     displayName: "Avery Morgan",
     verificationStatus: "verified",
     accountCount: 2,
+    email: "avery.morgan@example.test",
+    phone: "(555) 010-1001",
+    accounts: [
+      {
+        name: "Everyday Checking",
+        maskedNumber: "•••• 1842",
+        balanceCents: 284650,
+      },
+      {
+        name: "Member Savings",
+        maskedNumber: "•••• 7750",
+        balanceCents: 910200,
+      },
+    ],
   },
   {
     memberId: "member-1002",
     displayName: "Jordan Lee",
     verificationStatus: "pending",
     accountCount: 1,
+    email: "jordan.lee@example.test",
+    phone: "(555) 010-1002",
+    accounts: [
+      {
+        name: "Everyday Checking",
+        maskedNumber: "•••• 2281",
+        balanceCents: 132420,
+      },
+    ],
   },
   {
     memberId: "member-1003",
     displayName: "Sam Rivera",
     verificationStatus: "review required",
     accountCount: 3,
+    email: "sam.rivera@example.test",
+    phone: "(555) 010-1003",
+    accounts: [
+      {
+        name: "Everyday Checking",
+        maskedNumber: "•••• 9034",
+        balanceCents: 51890,
+      },
+    ],
   },
 ];
 
@@ -36,6 +68,9 @@ export const transfers = [
     amountCents: 12500,
     status: "completed",
     submittedAt: "2026-08-01T08:15:00Z",
+    memberId: "member-1001",
+    verificationStatus: "verified",
+    failureId: null,
   },
   {
     transferId: "transfer-7002",
@@ -43,6 +78,9 @@ export const transfers = [
     amountCents: 4800,
     status: "accepted",
     submittedAt: "2026-08-01T08:32:00Z",
+    memberId: "member-1002",
+    verificationStatus: "pending",
+    failureId: null,
   },
   {
     transferId: "transfer-7003",
@@ -50,6 +88,33 @@ export const transfers = [
     amountCents: 22100,
     status: "rejected",
     submittedAt: "2026-08-01T08:47:00Z",
+    memberId: "member-1003",
+    verificationStatus: "review required",
+    failureId: "failure-9002",
+  },
+];
+
+export const verifications = [
+  {
+    verificationId: "verification-5001",
+    memberId: "member-1002",
+    member: "Jordan Lee",
+    status: "pending",
+    lastAttemptAt: "2026-08-01T08:41:00Z",
+    retryEligible: true,
+    failureId: "failure-9001",
+    summary: "Identity evidence is awaiting a deterministic vendor retry.",
+  },
+  {
+    verificationId: "verification-5002",
+    memberId: "member-1003",
+    member: "Sam Rivera",
+    status: "review required",
+    lastAttemptAt: "2026-08-01T08:52:00Z",
+    retryEligible: false,
+    failureId: null,
+    summary:
+      "An employee may review the shared context; no action is available.",
   },
 ];
 

@@ -14,7 +14,7 @@ export default function FailureDetails() {
     return (
       <>
         <h2>Failed operation not found</h2>
-        <Link to="/failures">Return to failed operations</Link>
+        <Link to="/operations/failures">Return to failed operations</Link>
       </>
     );
   return (
@@ -51,7 +51,7 @@ export default function FailureDetails() {
           ))}
         </ol>
       </section>
-      <Link to="/failures">Return to failed operations</Link>
+      <Link to="/operations/failures">Return to failed operations</Link>
     </>
   );
 }

@@ -8,6 +8,9 @@ import Transfers from "./components/Transfers.jsx";
 import Unauthorized from "./components/Unauthorized.jsx";
 import FailureDetails from "./components/FailureDetails.jsx";
 import Failures from "./components/Failures.jsx";
+import MemberDetails from "./components/MemberDetails.jsx";
+import Verifications from "./components/Verifications.jsx";
+import VerificationDetails from "./components/VerificationDetails.jsx";
 
 export function OperationsRoutes({ role = "operations-user" }) {
   if (role !== "operations-user") return <Unauthorized />;
@@ -15,11 +18,27 @@ export function OperationsRoutes({ role = "operations-user" }) {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Dashboard />} />
-        <Route path="members" element={<Members />} />
-        <Route path="transfers" element={<Transfers />} />
-        <Route path="transfers/:transferId" element={<TransferDetails />} />
-        <Route path="failures" element={<Failures />} />
-        <Route path="failures/:failureId" element={<FailureDetails />} />
+        <Route path="operations" element={<Dashboard />} />
+        <Route path="operations/members" element={<Members />} />
+        <Route
+          path="operations/members/:memberId"
+          element={<MemberDetails />}
+        />
+        <Route path="operations/transfers" element={<Transfers />} />
+        <Route
+          path="operations/transfers/:transferId"
+          element={<TransferDetails />}
+        />
+        <Route path="operations/failures" element={<Failures />} />
+        <Route
+          path="operations/failures/:failureId"
+          element={<FailureDetails />}
+        />
+        <Route path="operations/verifications" element={<Verifications />} />
+        <Route
+          path="operations/verifications/:verificationId"
+          element={<VerificationDetails />}
+        />
       </Route>
     </Routes>
   );

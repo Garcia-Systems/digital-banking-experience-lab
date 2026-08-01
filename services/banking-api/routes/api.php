@@ -25,8 +25,12 @@ Route::middleware(StartSession::class)->group(function (): void {
 
 Route::prefix('operations')->middleware(RequireOperationsRole::class)->group(function (): void {
     Route::get('/dashboard', App\Http\Controllers\Operations\DashboardController::class);
-    Route::get('/members', App\Http\Controllers\Operations\MemberController::class);
-    Route::get('/transfers', App\Http\Controllers\Operations\TransferController::class);
+    Route::get('/members', [App\Http\Controllers\Operations\MemberController::class, 'index']);
+    Route::get('/members/{memberId}', [App\Http\Controllers\Operations\MemberController::class, 'show']);
+    Route::get('/transfers', [App\Http\Controllers\Operations\TransferController::class, 'index']);
+    Route::get('/transfers/{transferId}', [App\Http\Controllers\Operations\TransferController::class, 'show']);
     Route::get('/failures', [App\Http\Controllers\Operations\FailureController::class, 'index']);
     Route::get('/failures/{failureId}', [App\Http\Controllers\Operations\FailureController::class, 'show']);
+    Route::get('/verifications', [App\Http\Controllers\Operations\VerificationController::class, 'index']);
+    Route::get('/verifications/{verificationId}', [App\Http\Controllers\Operations\VerificationController::class, 'show']);
 });

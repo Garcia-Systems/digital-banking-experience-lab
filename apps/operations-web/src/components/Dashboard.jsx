@@ -1,5 +1,6 @@
 import { dashboard } from "../data/operationsFixtures.js";
 import { useOperationsResource } from "../api/operations.js";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { data, error } = useOperationsResource("dashboard", dashboard);
@@ -17,6 +18,15 @@ export default function Dashboard() {
             <strong>{metric.value}</strong>
           </article>
         ))}
+      </section>
+      <section className="panel">
+        <h3>Continue an employee workflow</h3>
+        <div className="quick-links">
+          <Link to="/operations/members">Members</Link>
+          <Link to="/operations/transfers">Transfers</Link>
+          <Link to="/operations/failures">Failed Operations</Link>
+          <Link to="/operations/verifications">Verification Requests</Link>
+        </div>
       </section>
       <section className="panel">
         <h3>Operational awareness</h3>

@@ -52,4 +52,28 @@ class OperationsTest extends TestCase
         $this->getJson('/api/operations/failures/failure-unknown', $this->headers)
             ->assertNotFound()->assertJsonPath('error.code', 'failure_not_found');
     }
+
+    public function test_verification_requests_are_deterministic(): void
+    {
+        $first = $this->getJson('/api/operations/verifications', $this->headers);
+        $second = $this->getJson('/api/operations/verifications', $this->headers);
+        $first->assertOk()->assertJsonCount(2, 'verifications')->assertJsonPath('verifications.0.verificationId', 'verification-5001');
+        $this->assertSame($first->getContent(), $second->getContent());
+    }
+
+    public function test_verification_detail_and_unknown_resource(): void
+    {
+        $this->getJson('/api/operations/verifications/verification-5001', $this->headers)
+            ->assertOk()->assertJsonPath('verification.retryEligible', true);
+        $this->getJson('/api/operations/verifications/unknown', $this->headers)
+            ->assertNotFound()->assertJsonPath('error.code', 'verification_not_found');
+    }
+
+    public function test_related_member_and_transfer_details_are_available(): void
+    {
+        $this->getJson('/api/operations/members/member-1003', $this->headers)->assertOk()->assertJsonPath('member.displayName', 'Sam Rivera')->assertJsonCount(1, 'failures');
+        $this->getJson('/api/operations/transfers/transfer-7003', $this->headers)->assertOk()->assertJsonPath('transfer.failureId', 'failure-9002');
+        $this->getJson('/api/operations/members/unknown', $this->headers)->assertNotFound();
+        $this->getJson('/api/operations/transfers/unknown', $this->headers)->assertNotFound();
+    }
 }
