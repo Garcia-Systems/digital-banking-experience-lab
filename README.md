@@ -10,19 +10,24 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–16 complete
+## Progress: Chapters 0–17 complete
 
-Chapter 16 isolates feature-specific failures so the application remains useful during deterministic partial outages. It distinguishes expected service failures from unexpected rendering errors, preserves unaffected routes, and offers safe manual retry actions where appropriate.
+Chapter 17 introduces a separate employee-facing operations portal with a dashboard, member lookup, and read-only transfer review. It demonstrates multiple role-specific React applications consuming the same deterministic educational API.
 
 ## Architecture
 
 ```text
-Browser
-  React Member Application
+Member Web
         │
-  Authenticated Session
-        │
-  PHP Banking API
+        ├────────────┐
+        ▼            │
+PHP Banking API      │
+        ▲            │
+        └────────────┤
+                     │
+             Operations Web
+
+PHP Banking API
   │
   ├── Dashboard
   ├── Account Details
@@ -59,11 +64,17 @@ php artisan key:generate
 php artisan serve
 ```
 
-Start React in a second terminal from the repository root:
+Start the member React application in a second terminal from the repository root:
 
 ```bash
 npm install
 npm run dev
+```
+
+Or run the independent operations application on port 5174:
+
+```bash
+npm run dev:operations
 ```
 
 Vite prints the member application URL and proxies `/api` to Laravel on `http://127.0.0.1:8000`.
@@ -92,11 +103,12 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Graceful Error Recovery](book/16-graceful-error-recovery.md).
+Follow the chapters in order in [`book`](book), ending with [Internal Operations Portal](book/17-internal-operations-portal.md).
 
 ## Repository layout
 
 - `apps/member-web`: Vite-powered React member dashboard and frontend tests;
+- `apps/operations-web`: independently runnable React employee portal and frontend tests;
 - `services/banking-api`: Laravel JSON API, deterministic fixture, and feature test;
 - `book`: executable textbook chapters;
 - `docs/security-boundaries.md`: rules that keep the laboratory synthetic and educational;
