@@ -218,9 +218,57 @@ describe("transfer form validation", () => {
     expect(screen.getByText("Vacation fund")).toBeInTheDocument();
     expect(screen.getByText("Ready for submission")).toBeInTheDocument();
   });
+
+  it("renders HTML-like memo content as ordinary text", async () => {
+    const user = userEvent.setup();
+    renderForm();
+    await chooseAccounts(user);
+    await user.type(screen.getByLabelText("Amount"), "40");
+    await user.type(
+      screen.getByLabelText("Memo (optional)"),
+      "<strong>Rent & utilities</strong>",
+    );
+    await user.click(screen.getByRole("button", { name: "Review" }));
+
+    const review = screen.getByRole("region", { name: "Transfer summary" });
+    expect(
+      within(review).getByText("<strong>Rent & utilities</strong>"),
+    ).toBeVisible();
+    expect(review.querySelector("strong")).not.toBeInTheDocument();
+  });
 });
 
 describe("transfer submission", () => {
+  it("shows structured server validation errors on the matching fields", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: false,
+      status: 422,
+      json: async () => ({
+        errors: {
+          amountCents: ["Transfer amount must be greater than zero."],
+          memo: ["Memo must be 100 characters or fewer."],
+        },
+      }),
+    });
+    renderForm();
+    await prepareReview(user);
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+
+    expect(
+      await screen.findByText("Transfer amount must be greater than zero."),
+    ).toBeVisible();
+    expect(screen.getByLabelText("Amount")).toHaveAccessibleErrorMessage(
+      "Transfer amount must be greater than zero.",
+    );
+    expect(
+      screen.getByLabelText("Memo (optional)"),
+    ).toHaveAccessibleErrorMessage("Memo must be 100 characters or fewer.");
+    expect(
+      screen.queryByRole("region", { name: "Transfer summary" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("disables duplicate clicks while one logical transfer is submitting", async () => {
     const user = userEvent.setup();
     let finishRequest;

@@ -5,6 +5,12 @@ import { accountPropType } from "../propTypes/bankingPropTypes";
 import { useNavigate } from "react-router-dom";
 
 const MEMO_LIMIT = 100;
+const API_FIELD_NAMES = {
+  sourceAccount: "sourceId",
+  destinationAccount: "destinationId",
+  amountCents: "amount",
+  memo: "memo",
+};
 
 function accountLabel(account) {
   return `${account.displayName} (${formatMaskedSuffix(account.accountSuffix)})`;
@@ -121,6 +127,25 @@ export default function TransferForm({ accounts }) {
           idempotencyKey: review.idempotencyKey,
         }),
       });
+      if (response.status === 422) {
+        const body = await response.json();
+        const serverErrors = Object.entries(body.errors ?? {}).reduce(
+          (nextErrors, [field, messages]) => {
+            const formField = API_FIELD_NAMES[field];
+            if (formField && Array.isArray(messages) && messages[0]) {
+              nextErrors[formField] = messages[0];
+            }
+            return nextErrors;
+          },
+          {},
+        );
+
+        submissionLocked.current = false;
+        setErrors(serverErrors);
+        setReview(null);
+        setSubmission({ status: "idle", result: null, error: null });
+        return;
+      }
       if (!response.ok) throw new Error("Transfer request failed");
       const result = await response.json();
       navigate(`/transfers/${encodeURIComponent(result.transferId)}`);

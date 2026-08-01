@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–13 complete
+## Progress: Chapters 0–14 complete
 
-Chapter 13 places a deterministic vendor simulator behind the PHP API and adds a member verification experience for successful, retryable, and permanent outcomes.
+Chapter 14 validates transfer input in both React and the authoritative PHP API, returns structured field errors, and demonstrates that member-provided memos render safely as ordinary text.
 
 ## Architecture
 
@@ -90,7 +90,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Member Verification and Vendor Integrations](book/13-member-verification-and-vendor-integrations.md).
+Follow the chapters in order in [`book`](book), ending with [Secure Handling of Member Input](book/14-secure-handling-of-member-input.md).
 
 ## Repository layout
 
