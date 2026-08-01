@@ -44,10 +44,7 @@ export default function AccountDetails({ dashboard }) {
       >
         <h2 id="activity-title">Recent activity</h2>
         <p>No recent activity is shown in this fictional example.</p>
-        <p>
-          This account page will become the home for transaction history in
-          later chapters.
-        </p>
+        <p>Use the mobile application to explore transaction history.</p>
       </section>
     </main>
   );

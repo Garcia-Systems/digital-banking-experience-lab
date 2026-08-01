@@ -52,7 +52,7 @@ return [
             'status' => 'failed', 'retryable' => true, 'failureCategory' => 'Authentication Expired',
             'categoryExplanation' => 'The vendor credential expired before the operation completed.',
             'lastAttemptedAt' => '2026-08-01T08:58:00Z', 'requestSummary' => 'Refresh verification evidence for an existing member.',
-            'operatorNotes' => 'Eligible for a later controlled retry after credentials are refreshed.',
+            'operatorNotes' => 'Eligible for a controlled retry after credentials are refreshed.',
             'auditTimeline' => [
                 ['at' => '2026-08-01T08:57:00Z', 'event' => 'Verification refresh requested'],
                 ['at' => '2026-08-01T08:58:00Z', 'event' => 'Expired authentication recorded'],

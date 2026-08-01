@@ -2,7 +2,11 @@
 
 The **Digital Banking Experience Laboratory** is the completed Volume I executable textbook for building and reasoning about modern digital banking experiences. It connects a Member Web, Operations Portal, Mobile Laboratory, and Banking API through fast deterministic scenarios and automated tests.
 
+It is designed for frontend, mobile, and API developers; technical educators; and hiring teams evaluating full-stack engineering practices. Learners use one fictional institution to study interface projections, API contracts, authentication boundaries, resilient workflows, accessibility, testing, and gradual TypeScript adoption without requiring access to financial infrastructure.
+
 Harbor Community Credit Union and every member, account, balance, identifier, timestamp, and outcome are fictional. This educational simulation is **not** a production banking platform, authoritative ledger, statement of regulatory compliance, or real institution. It has no live integrations, production authentication, or background processing. Read the [security boundaries](docs/security-boundaries.md) before contributing.
+
+Project policies are available in [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), the [Code of Conduct](CODE_OF_CONDUCT.md), the [changelog](CHANGELOG.md), and the [MIT license](LICENSE).
 
 ## Architecture
 
