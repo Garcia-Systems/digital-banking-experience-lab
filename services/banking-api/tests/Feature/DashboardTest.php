@@ -18,7 +18,12 @@ class DashboardTest extends TestCase
             'member' => ['id', 'displayName'],
             'projection' => ['generatedAt', 'isStale'],
             'accounts' => [['id', 'type', 'status', 'displayName', 'accountSuffix', 'availableBalanceCents', 'currentBalanceCents', 'transactions']],
-        ])->assertJsonCount(2, 'accounts')->assertJsonPath('projection.generatedAt', '2026-07-31T12:00:00Z');
+        ])->assertJsonCount(2, 'accounts')
+            ->assertJsonPath('projection.generatedAt', '2026-07-31T12:00:00Z')
+            ->assertJsonPath('accounts.0.transactions.0.description', 'Harbor Market')
+            ->assertJsonPath('accounts.0.transactions.0.amountCents', -7452)
+            ->assertJsonPath('accounts.0.transactions.0.type', 'card purchase')
+            ->assertJsonPath('accounts.0.transactions.0.postedAt', '2026-07-30');
     }
 
     public function test_empty_is_a_successful_projection_without_accounts(): void

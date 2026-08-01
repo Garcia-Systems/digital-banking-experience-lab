@@ -2,7 +2,7 @@
 
 The **Digital Banking Experience Laboratory** is an executable textbook for learning how modern banking experiences are designed, built, tested, and explained. Each lesson pairs a small working application with the reasoning behind it.
 
-This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. React remains JavaScript so its data flow is visible. Chapter 20 adds a focused React Native application while deliberately postponing TypeScript and mobile navigation.
+This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. React remains JavaScript so its data flow is visible. Chapter 21 expands the React Native application into everyday account, transaction-history, and transfer-preparation workflows without adding TypeScript or production-only mobile features.
 
 ## Safety and scope
 
@@ -10,21 +10,24 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–20 complete
+## Progress: Chapters 0–21 complete
 
-Chapter 20 introduces an Expo React Native account dashboard with loading, success, stale, empty, partial-response, and failure behavior. Its scope is intentionally one read-only native screen.
+Chapter 21 adds account navigation, deterministic transaction history, and a locally validated transfer review that intentionally stops before submission.
 
 ## Architecture
 
 ```text
-Member Web ───────┐
-                  │
-Operations Web ───┼──> PHP Banking API ──> Deterministic Vendor Simulator
-                  │        │
-Mobile App ───────┘        └──> deterministic fictional projections
+React Member Web ────┐
+React Native Mobile ─┼─┐
+Operations Portal ───┘ │
+                       ▼
+                PHP Banking API
+                       │
+                       ▼
+        Deterministic Banking Services
 ```
 
-All three clients use fictional educational data. The fixtures are not a database or core banking system: React and React Native present projections, while Laravel owns the shared API response.
+All three applications consume the same educational PHP API and use fictional data. The fixtures are not a database or core banking system: React and React Native present projections, while Laravel owns the shared response contract.
 
 ## Get started
 
@@ -90,13 +93,13 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [React Native Foundations](book/20-react-native-foundations.md).
+Follow the chapters in order in [`book`](book), ending with [Mobile Banking Workflows](book/21-mobile-banking-workflows.md).
 
 ## Repository layout
 
 - `apps/member-web`: Vite-powered React member dashboard and frontend tests;
 - `apps/operations-web`: independently runnable React employee portal and frontend tests;
-- `apps/mobile`: Expo React Native account dashboard and native component tests;
+- `apps/mobile`: Expo React Native banking workflows and native component tests;
 - `services/banking-api`: Laravel JSON API, deterministic fixture, and feature test;
 - `book`: executable textbook chapters;
 - `docs/security-boundaries.md`: rules that keep the laboratory synthetic and educational;
