@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   dashboard,
@@ -49,25 +50,41 @@ const responses = {
   ),
 };
 
+const createJsonResponse = (body, status = 200) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  json: async () => body,
+});
+
 beforeEach(() => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(async (url, options = {}) => {
-      const body = responses[url];
-      if (
-        !body ||
-        options.headers?.["X-Laboratory-Role"] !== "operations-user"
-      ) {
-        return { ok: false, status: 403, json: async () => ({}) };
+    vi.fn(async (input, options = {}) => {
+      const url = typeof input === "string" ? input : input.url;
+      const method = options.method ?? "GET";
+      if (method !== "GET") {
+        throw new Error(`Unexpected request: ${method} ${url}`);
       }
-      return { ok: true, status: 200, json: async () => body };
+      const body = responses[url];
+      if (options.headers?.["X-Laboratory-Role"] !== "operations-user") {
+        return createJsonResponse({}, 403);
+      }
+      if (body) return createJsonResponse(body);
+      if (
+        /^\/api\/operations\/(members|transfers|failures|verifications)\/[^/]+$/.test(
+          url,
+        )
+      ) {
+        return createJsonResponse({}, 404);
+      }
+      throw new Error(`Unexpected request: ${method} ${url}`);
     }),
   );
 });
 
 describe("operations portal", () => {
   it("renders the dashboard and operations navigation", async () => {
-    renderOperationsApp("/");
+    renderOperationsApp("/operations");
 
     expect(screen.getByText("System Health")).toBeInTheDocument();
     const navigation = screen.getByRole("navigation", { name: /operations/i });
@@ -80,7 +97,7 @@ describe("operations portal", () => {
   });
 
   it("marks Dashboard as active on the dashboard route", async () => {
-    renderOperationsApp("/");
+    renderOperationsApp("/operations");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
     expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
@@ -197,33 +214,121 @@ describe("operations portal", () => {
   });
 
   it("connects member, transfer, and failure details", async () => {
+    const user = userEvent.setup();
     renderOperationsApp("/operations/members/member-1003");
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(screen.getByText("$518.90")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "transfer-7003" }),
+      await screen.findByRole("heading", { name: "Sam Rivera" }),
     ).toBeInTheDocument();
+
+    const accountsSection = screen
+      .getByRole("heading", { name: /fictional accounts/i })
+      .closest("section");
+    expect(within(accountsSection).getByText(/\$518\.90/)).toBeInTheDocument();
+
+    const transfersSection = screen
+      .getByRole("heading", { name: /recent transfers/i })
+      .closest("section");
+    const transferLink = within(transfersSection).getByRole("link", {
+      name: "transfer-7003",
+    });
+    expect(transferLink).toHaveAttribute(
+      "href",
+      "/operations/transfers/transfer-7003",
+    );
+
+    const failuresSection = screen
+      .getByRole("heading", { name: /recent failed operations/i })
+      .closest("section");
+    const failureLink = within(failuresSection).getByRole("link", {
+      name: "failure-9002",
+    });
+    expect(failureLink).toHaveAttribute(
+      "href",
+      "/operations/failures/failure-9002",
+    );
+
+    await user.click(transferLink);
     expect(
-      screen.getByRole("link", { name: "failure-9002" }),
+      await screen.findByRole("heading", { name: "transfer-7003" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("Sam Rivera")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /view member/i })).toHaveAttribute(
+      "href",
+      "/operations/members/member-1003",
+    );
+
+    await user.click(screen.getByRole("link", { name: "failure-9002" }));
+    expect(
+      await screen.findByRole("heading", { name: "failure-9002" }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens a failed operation from the member context", async () => {
+    const user = userEvent.setup();
+    renderOperationsApp("/operations/members/member-1003");
+    const failuresSection = (
+      await screen.findByRole("heading", {
+        name: /recent failed operations/i,
+      })
+    ).closest("section");
+    await user.click(
+      within(failuresSection).getByRole("link", { name: "failure-9002" }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: "failure-9002" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Manual Review Required")).toBeInTheDocument();
+  });
+
+  it("returns from member detail to the member lookup", async () => {
+    const user = userEvent.setup();
+    renderOperationsApp("/operations/members/member-1003");
+    await user.click(
+      await screen.findByRole("link", { name: /return to members/i }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: /member lookup/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "member-1003" })).toHaveAttribute(
+      "href",
+      "/operations/members/member-1003",
+    );
   });
 
   it("renders verification list and detail workflows", async () => {
     const view = renderOperationsApp("/operations/verifications");
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
     expect(
-      screen.getByRole("link", { name: "verification-5001" }),
+      await screen.findByRole("link", { name: "verification-5001" }),
     ).toBeInTheDocument();
     view.unmount();
     renderOperationsApp("/operations/verifications/verification-5001");
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Identity evidence is awaiting a deterministic vendor retry.",
       ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "failure-9001" }),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["member", "/operations/members/unknown", "Member not found"],
+    ["transfer", "/operations/transfers/unknown", "Transfer not found"],
+    [
+      "failed operation",
+      "/operations/failures/unknown",
+      "Failed operation not found",
+    ],
+    [
+      "verification request",
+      "/operations/verifications/unknown",
+      "Verification request not found",
+    ],
+  ])("shows a safe message for an unknown %s", async (_, route, heading) => {
+    renderOperationsApp(route);
+    expect(
+      await screen.findByRole("heading", { name: heading }),
     ).toBeInTheDocument();
   });
 });

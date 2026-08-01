@@ -8,7 +8,9 @@ export default function Layout() {
         <h1>Operations Portal</h1>
         <p className="role">Signed in as Operations User</p>
         <nav aria-label="Operations">
-          <NavLink to="/operations">Home</NavLink>
+          <NavLink to="/operations" end>
+            Home
+          </NavLink>
           <NavLink to="/operations/members">Members</NavLink>
           <NavLink to="/operations/transfers">Transfers</NavLink>
           <NavLink to="/operations/failures">Failed Operations</NavLink>
