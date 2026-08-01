@@ -83,12 +83,49 @@ beforeEach(() => {
 });
 
 describe("operations portal", () => {
-  it("renders the dashboard and operations navigation", async () => {
+  it("renders the shared layout, dashboard summary, and distinct link regions", async () => {
     renderOperationsApp("/operations");
 
-    expect(screen.getByText("System Health")).toBeInTheDocument();
     const navigation = screen.getByRole("navigation", { name: /operations/i });
     expect(within(navigation).getAllByRole("link")).toHaveLength(5);
+    expect(
+      within(navigation).getByRole("link", { name: /^transfers$/i }),
+    ).toHaveAttribute("href", "/operations/transfers");
+    expect(
+      screen.getByText(/signed in as operations user/i),
+    ).toBeInTheDocument();
+
+    const metrics = screen.getByRole("region", { name: /operations metrics/i });
+    expect(within(metrics).getByText("System Health")).toBeInTheDocument();
+    expect(within(metrics).getByText("Operational")).toBeInTheDocument();
+
+    const quickLinksSection = screen
+      .getByRole("heading", { name: /continue an employee workflow/i })
+      .closest("section");
+    const expectedQuickLinks = [
+      ["Members", "/operations/members"],
+      ["Transfers", "/operations/transfers"],
+      ["Failed Operations", "/operations/failures"],
+      ["Verification Requests", "/operations/verifications"],
+    ];
+    for (const [name, href] of expectedQuickLinks) {
+      expect(
+        within(quickLinksSection).getByRole("link", { name }),
+      ).toHaveAttribute("href", href);
+    }
+
+    const awarenessSection = screen
+      .getByRole("heading", { name: /operational awareness/i })
+      .closest("section");
+    expect(
+      within(awarenessSection).getByText(
+        /all educational services are responding normally/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(awarenessSection).getByText(`Snapshot: ${dashboard.generatedAt}`),
+    ).toBeInTheDocument();
+
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith("/api/operations/dashboard", {
         headers: { "X-Laboratory-Role": "operations-user" },
@@ -100,13 +137,27 @@ describe("operations portal", () => {
     renderOperationsApp("/operations");
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
-    expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
-      "aria-current",
-      "page",
+    const navigation = screen.getByRole("navigation", { name: /operations/i });
+    expect(
+      within(navigation).getByRole("link", { name: /home/i }),
+    ).toHaveAttribute("aria-current", "page");
+    expect(
+      within(navigation).getByRole("link", { name: /members/i }),
+    ).not.toHaveAttribute("aria-current");
+  });
+
+  it("keeps the deterministic dashboard visible when its API is unavailable", async () => {
+    fetch.mockResolvedValueOnce(createJsonResponse({}, 503));
+    renderOperationsApp("/operations");
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /live API unavailable; showing the deterministic educational snapshot/i,
     );
-    expect(screen.getByRole("link", { name: /members/i })).not.toHaveAttribute(
-      "aria-current",
-    );
+    expect(
+      within(
+        screen.getByRole("region", { name: /operations metrics/i }),
+      ).getByText("Operational"),
+    ).toBeInTheDocument();
   });
 
   it("marks Members as active on the member lookup route", async () => {
