@@ -1,73 +1,46 @@
-# Chapter 22: Gradual TypeScript Migration
+# 22: Gradual TypeScript migration
 
-## Banking Concept
+## Learning objectives
 
-Financial software commonly lives for decades. Regulations, products, integrations, and member expectations change while accounts must remain available and historical behavior must remain explainable. A complete rewrite concentrates risk and can discard knowledge encoded in tested software. A gradual migration is therefore a better laboratory model: improve one boundary at a time, preserve observable behavior, and keep every intermediate revision deployable.
+- Explain why Volume I began in JavaScript.
+- Inspect the selected migrated files.
+- Run compile-time checking.
+- Preserve runtime validation at network boundaries.
 
-In this chapter the PHP API remains authoritative. TypeScript describes the account projection consumed by the experience layer; it does not turn that projection into a ledger or make a balance correct.
+## Banking concept
 
-## TypeScript Concept
+**Reliable financial presentation.** Misspelled or nullable account fields can produce misleading output. Static types improve editor and build feedback for Harbor's core dashboard values, but cannot prove a balance is authoritative.
 
-TypeScript adds a static type checker and editor information to JavaScript. It can detect passing a string where cents must be a number, misspelling an account field, or forgetting a union case before code runs. Types disappear during compilation, so they add no production runtime work.
+## Frontend concept
 
-Adoption can be incremental. This repository keeps `allowJs` enabled and `checkJs` disabled: existing JavaScript continues to build while selected `.ts` and `.tsx` files receive strict checks. Pure formatters are a low-risk first step, followed here by a dashboard client, a web balance component, and a native account card. The small `Account`, `DashboardProjection`, and `TransferSummary` contracts document only today's deterministic API.
+**Selected TypeScript adoption.** JavaScript came first so early chapters expose React mechanics without a second language layer. Migration targets `banking.ts`, dashboard fetching, formatters, `BalanceSummary.tsx`, and the mobile `AccountCard.tsx`, demonstrating incremental interoperation rather than a wholesale rewrite.
 
-Run the actual compiler from the repository root:
+## Implementation
+
+`apps/member-web/src/types/banking.ts`, `api/dashboard.ts`, `utils/formatters.ts`, `components/BalanceSummary.tsx`, both application `tsconfig.json` files, and `apps/mobile/src/components/AccountCard.tsx` form the selected slice.
+
+## Run the laboratory
+
+From the repository root unless the command changes directory:
 
 ```bash
 npm run typecheck
 ```
 
-The root command invokes TypeScript in strict, no-output mode for the focused member-web and mobile configurations. It checks `dashboard.ts`, `BalanceSummary.tsx`, the shared banking types, the typed web formatter, and `AccountCard.tsx`. Vite and Expo can transpile TypeScript syntax while building, but transpilation is not the static guarantee: `npm run typecheck` is the canonical compiler check. JavaScript remains supported and only this deliberately migrated slice is checked.
+## What to observe
 
-Each application configuration also selects only the React ambient types it needs. The web configuration supplies DOM libraries explicitly, while the native configuration relies on React Native's declarations and does not load browser globals. This keeps browser and native definitions from colliding without hiding dependency errors through `skipLibCheck`.
+TypeScript checks the selected Member Web and Mobile Laboratory files without emitting output. JavaScript components continue to build and test alongside them.
 
-The transfer type is a discriminated union. Its `status` distinguishes accepted/completed transfers from rejected transfers, for which `failureReason` is required. The projection's optional `reason` demonstrates an optional property without inventing new API behavior.
+## Engineering tradeoffs
 
-### Compile-time types are not runtime validation
+Gradual migration limits disruption and keeps the learning sequence clear, but leaves mixed enforcement and boundary seams. TypeScript checks compile-time assumptions only; `validateDashboard.js` and mobile `validateDashboard.js` remain necessary because API JSON is runtime data.
 
-A response from the network is unknown at runtime. TypeScript cannot prevent a server, proxy, or fixture from returning malformed JSON. The dashboard client therefore calls the existing `validateDashboard` function before treating a payload as `Dashboard`. The PHP API remains the source of truth, and server-side input validation remains mandatory.
+## Automated tests
 
-## Relationship to the Digital Banking Systems Laboratory
-
-Strong typing makes experience code easier to navigate, refactor, and review. It improves the consistency with which clients interpret an account data contract. It does **not** establish available funds, authorize transfers, validate ownership, provide idempotency, or replace an authoritative ledger. Those banking correctness responsibilities stay at trusted system boundaries.
-
-## Comparison with JavaScript
-
-JavaScript accepts any value until the operation executes:
-
-```js
-export function formatCents(cents) {
-  return currencyFormatter.format(cents / 100);
-}
-```
-
-TypeScript states the expectation and return value for tools and reviewers:
-
-```ts
-export function formatCents(cents: number): string {
-  return currencyFormatter.format(cents / 100);
-}
-```
-
-A typed component similarly makes its props explicit:
-
-```ts
-interface BalanceSummaryProps {
-  availableBalanceCents: number;
-  currentBalanceCents: number;
-}
-```
-
-Neither example validates untrusted JSON. The type checker helps while writing and building code; runtime checks protect execution boundaries.
-
-## Engineering Tradeoffs
-
-- **Migration cost:** configuration, types, and changed files take time. Small vertical slices limit risk and preserve a useful comparison with JavaScript.
-- **Developer productivity:** completion, navigation, and earlier feedback often repay that cost, especially when contracts are shared by many components.
-- **Runtime performance:** types are erased, so TypeScript itself adds no runtime type checking. Builds perform an additional static analysis step; explicit runtime validators still have their normal cost.
-- **Learning curve:** contributors must learn annotations, narrowing, optional values, and unions. Simple domain types are preferable to advanced generic programming in an incremental migration.
+`formatters.test.js`, `AccountDashboard.test.jsx`, and mobile dashboard tests exercise migrated code at runtime; `npm run typecheck` is the static check. No separate invented TypeScript test suite exists.
 
 ## Exercise
 
-Migrate one additional member-web or React Native component to TypeScript. Add typed props and return values where useful, retain runtime validation at external boundaries, and preserve every existing test. Do not migrate an entire application or change a banking workflow.
+Add a harmless optional field to a local TypeScript example, then explain why accepting that field still requires runtime validation if it arrives from JSON.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

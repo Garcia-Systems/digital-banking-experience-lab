@@ -1,16 +1,16 @@
 # Digital Banking Experience Laboratory
 
-The **Digital Banking Experience Laboratory** is the completed Volume I executable textbook for building and reasoning about modern digital banking experiences. It connects a React member application, React employee portal, React Native mobile application, and PHP API through fast deterministic scenarios and automated tests.
+The **Digital Banking Experience Laboratory** is the completed Volume I executable textbook for building and reasoning about modern digital banking experiences. It connects a Member Web, Operations Portal, Mobile Laboratory, and Banking API through fast deterministic scenarios and automated tests.
 
 Harbor Community Credit Union and every member, account, balance, identifier, timestamp, and outcome are fictional. This educational simulation is **not** a production banking platform, authoritative ledger, statement of regulatory compliance, or real institution. It has no live integrations, production authentication, or background processing. Read the [security boundaries](docs/security-boundaries.md) before contributing.
 
 ## Architecture
 
 ```text
-                  React Member Web
+                  Member Web
                          │
                          │
- React Native Mobile ────┼────► PHP Banking API
+ Mobile Laboratory ────┼────► Banking API
                          │
  Operations Portal ──────┘
                               │

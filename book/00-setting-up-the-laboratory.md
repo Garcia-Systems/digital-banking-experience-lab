@@ -1,57 +1,46 @@
 # 00: Setting up the laboratory
 
-## Purpose
+## Learning objectives
 
-The Digital Banking Experience Laboratory is an executable textbook: explanations live beside small applications that can be run, changed, and tested. The fictional Harbor Community Credit Union gives every lesson a consistent domain without suggesting access to a real institution.
+- Install the locked JavaScript and PHP dependencies.
+- Start the Banking API, Member Web, Operations Portal, and Mobile Laboratory.
+- Distinguish synthetic laboratory data from production banking data.
+- Run the repository's complete validation suite.
 
-This is a **build-first** laboratory. Rather than reading a long language refresher, you will start the application, observe a concrete behavior, read the small amount of code responsible for it, and change that behavior with a test. The feedback loop turns abstract ideas into evidence.
+## Banking concept
 
-## Scope today
+**Laboratory boundaries.** A banking laboratory must make its trust boundary explicit. Harbor Community Credit Union, its members, balances, and outcomes are synthetic; the applications demonstrate experience design, not a ledger or compliance claim.
 
-This chapter's repository contains one React member web application in `apps/member-web`. It uses JavaScript, Vite, Vitest, and React Testing Library. There is no API, database, mobile application, employee portal, or TypeScript configuration yet. The dashboard reads deterministic fixtures directly so the lesson can concentrate on the interface boundary.
+## Frontend concept
 
-## The fictional-data rule
+**Workspace orchestration.** npm workspaces provide one root entry point for the three clients, while Composer manages the independent Banking API. Vite proxies browser `/api` requests; Expo uses an explicit network-reachable base URL.
 
-Harbor Community Credit Union, Alex Morgan, every account, and every balance are fictional. Never use real member data, credentials, account numbers, or transactions. Fixtures should have conspicuously synthetic identifiers, while the user interface must hide internal identifiers and render only masked account suffixes. Review `docs/security-boundaries.md` whenever adding a scenario.
+## Implementation
 
-## Install and run
+`package.json`, `.npmrc`, `services/banking-api/composer.json`, and the application manifests define the toolchain. `README.md` is the complete setup reference; `docs/security-boundaries.md` defines safe use.
 
-From the repository root, install dependencies and start Vite:
+## Run the laboratory
 
-```bash
-npm ci
-npm run dev
-```
-
-`npm ci` reproduces the dependency graph in `package-lock.json`. Use `npm install` only when deliberately changing dependencies and the lockfile.
-
-The repository's `.npmrc` keeps npm's peer-dependency resolution consistent with the committed Expo-compatible lockfile. Do not override it during clean installation.
-
-Open the URL Vite prints. The default view uses the fresh fixture. Append `?scenario=stale` to see the deterministic stale state.
-
-The root commands delegate to the member web workspace:
+From the repository root unless the command changes directory:
 
 ```bash
-npm run lint
-npm run format:check
-npm run typecheck
-npm run test
-npm run build
-npm run mobile:validate
+npm run verify
 ```
 
-At the completed Volume I repository state, these explicit root commands cover the member web, operations web, and mobile workspaces. `npm run build` produces the two web builds; `npm run mobile:validate` checks Expo configuration rather than producing a native binary. `npm run test` runs each test suite once rather than leaving a watcher open.
+## What to observe
 
-## Definition of done
+All client checks complete; `composer test` completes separately. With services running, Member Web appears on port 5173, Operations Portal on 5174, and Expo displays the Mobile Laboratory sign-in screen.
 
-You are done with this setup chapter when:
+## Engineering tradeoffs
 
-- dependencies install successfully;
-- the fresh dashboard opens locally;
-- the stale query-string scenario displays a warning;
-- lint, format-check, tests, and production build all pass;
-- you can explain why fixture identifiers are synthetic and why they do not appear in the interface.
+Locked installs make builds reproducible but require deliberate lockfile updates. Keeping the PHP service separate preserves its runtime boundary at the cost of a second install and test command.
+
+## Automated tests
+
+The root command runs all client suites. `services/banking-api/tests/Feature/EndToEndLaboratoryTest.php` checks the integrated API journey.
 
 ## Exercise
 
-Change Alex Morgan's display name in the fixture to another obviously fictional name. Run the tests, observe which user-visible expectation fails, update that expectation, and run the complete check suite again. Do not add a second source of member data.
+Run each application from a fresh clone, then record which process owns each port and which client-to-API transport it uses.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

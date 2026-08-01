@@ -1,47 +1,46 @@
-# Chapter 8: Routing Through a Banking Application
+# 08: Routing through a banking application
 
-A banking experience is not one endlessly growing dashboard. Members move between an overview, one account's details, and preferences while retaining the context already loaded by the application. This chapter introduces **client-side routing** as the mechanism behind those screens.
+## Learning objectives
 
-## The routes are banking workflows
+- Map URLs to Harbor workflows.
+- Use route parameters for account and transfer identity.
+- Keep authentication outside protected routes.
+- Provide a safe not-found experience.
 
-The member application now maps `/` to the dashboard, `/accounts/:accountId` to account details, and `/settings` to deterministic member preferences. A catch-all route provides a friendly missing-page experience. These are deliberately few routes: transfers, authentication, and transaction history are not part of this chapter.
+## Banking concept
 
-The dashboard remains the overview projection. Each **View account** link moves to the corresponding account screen without asking the browser to load a new document. React Router changes the URL and selects another React element while the application stays mounted. Consequently, the dashboard response held in `App` state survives navigation instead of being fetched again.
+**Workflow navigation.** Dashboard, account detail, transfer preparation, transfer status, verification, and settings are distinct member tasks. Stable routes make those tasks bookmarkable without treating the URL as authorization.
 
-## Route parameters select an account
+## Frontend concept
 
-The colon in `:accountId` declares a route parameter. `AccountDetails` reads that value with `useParams` and finds the matching account in the loaded projection. `/accounts/account-2001` therefore selects Everyday Checking, while `/accounts/account-2002` selects Member Savings.
+**React Router layouts.** Nested routes share `MemberLayout`; parameters select account or transfer views. `App` redirects anonymous requests to `/login` and the wildcard route renders `NotFound`.
 
-URLs are untrusted input. When the identifier does not match a projected account, the screen says **Account not found.** It neither crashes nor reveals component names, data structures, or API details.
+## Implementation
 
-## A shared layout
+`apps/member-web/src/App.jsx` defines `/`, `/accounts/:accountId`, `/transfers/new`, `/transfers/:transferId`, `/verification`, and `/settings`. `MemberLayout.jsx` provides shared navigation.
 
-`MemberLayout` is the stable frame around each route. It renders the fictional credit-union identity, a small navigation bar, the selected child route through `Outlet`, and the educational footer. Nested routes are useful here because the dashboard, account details, settings, and missing-page experience genuinely share that shell. Deeper nesting would add structure without a banking need, so this chapter avoids it.
+## Run the laboratory
 
-`NavLink` gives Dashboard and Settings real client-side navigation links and exposes the current destination for styling. Account cards use `Link` for the same reason. These remain ordinary, accessible links: members can recognize destinations, use keyboard navigation, and retain meaningful URLs.
+From the repository root unless the command changes directory:
 
-## Why banks separate screens
-
-The dashboard answers, “What accounts do I have, and how fresh is this overview?” The account page answers, “What are the balances and status of this account?” Settings answers, “What preferences are associated with this fictional member?” Separating those questions keeps each screen focused and gives future transaction lessons a natural home on the account route. Chapter 8 intentionally shows only a recent-activity placeholder; it does not pretend transaction history exists yet.
-
-Projection freshness appears on both the overview and a selected account. Moving it with the account context reinforces that a balance is a read-model projection with a timestamp, not automatically the authoritative ledger.
-
-## Compared with traditional PHP navigation
-
-In traditional server-rendered PHP navigation, selecting an account usually sends a request for a new HTML document. The server matches the URL, renders the whole page, and the browser replaces the current document. This laboratory still uses PHP for the JSON projection, but React Router handles screen selection after the initial application document loads. A navigation event changes the URL and rendered component without reloading that document or discarding React state.
-
-This is not a claim that client routing replaces the server. The PHP endpoint continues to own its HTTP/JSON contract, and a production host must be configured to serve the React entry document for application URLs requested directly.
-
-## Compared with AngularJS
-
-AngularJS applications commonly configured routes with modules such as `ngRoute`, inserted templates through `ng-view`, and coordinated data through controllers and scopes. This implementation uses React components, `Routes`/`Route`, a layout `Outlet`, hooks such as `useParams`, and ordinary component state. Both approaches can provide client-side navigation, but no AngularJS scope or controller lifecycle exists here: the loaded banking projection flows as explicit React props into whichever route is active.
+```bash
+npm run test:member -- --run src/Routing.test.jsx
+```
 
 ## What to observe
 
-1. Open `/` and note both account summaries and projection freshness.
-2. Select **View account** and watch the URL change without a full-page reload.
-3. Confirm the account suffix and balances correspond to the route parameter.
-4. Navigate to Settings and back; the loaded projection remains in application state.
-5. Request an invalid account identifier and an unknown URL to see the two safe failure experiences.
+Known routes render their workflow, unknown account IDs and paths show safe not-found output, and unauthenticated navigation reaches the login boundary.
 
-Routing is valuable here because it expresses member tasks as focused, linkable screens—not because every component needs a URL.
+## Engineering tradeoffs
+
+Client routing improves continuity but never authorizes access; the Banking API independently enforces the session. Loading the dashboard once aids coherence but couples these routes to that projection.
+
+## Automated tests
+
+`Routing.test.jsx` validates member routes and parameter handling; `App.test.jsx` validates the authentication redirect.
+
+## Exercise
+
+Add a routing test for an unknown transfer identifier using the existing safe error behavior.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

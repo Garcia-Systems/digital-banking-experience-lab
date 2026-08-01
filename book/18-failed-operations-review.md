@@ -1,41 +1,46 @@
-# Chapter 18: Failed Operations Review
+# 18: Failed operations review
 
-This chapter adds a deterministic, read-only investigation queue to Harbor Community Credit Union's fictional employee portal. It deliberately stops before corrective action: an operator can understand a failure and its history, but cannot retry or edit it.
+## Learning objectives
 
-## Banking Concept
+- Inspect a deterministic failure queue.
+- Open a failure detail safely.
+- Understand operational triage metadata.
+- Avoid implying that review automatically repairs work.
 
-Financial institutions separate member-facing errors from operator-facing diagnostics because the two audiences need different information. A member needs a safe, useful next step without vendor details, security-sensitive internals, or confusing technical terminology. An authorized operator needs consistent workflow context: which operation failed, who was affected, whether the condition may be transient, and what the audit history records.
+## Banking concept
 
-Operational review turns that context into a decision. A temporary service outage, vendor timeout, invalid vendor response, or expired authentication may be **retryable**, although eligibility is not permission to retry immediately. A permanent validation failure will not improve by repeating the same request and therefore requires manual review. Operators use the audit history to understand what was requested and classified, without receiving stack traces or internal implementation details.
+**Failure review.** Failed operations need identifiers, categories, timestamps, and safe context so Harbor employees can triage them. A review queue is an audit aid, not proof of retry or resolution.
 
-## React Concept
+## Frontend concept
 
-The failed-operations table and detail route form a **master-detail layout**. The master view makes records comparable; selecting an operation ID navigates to `/failures/:failureId`, where `useParams` identifies the record. Conditional rendering maps the deterministic `retryable` boolean to either **Retry Eligible** or **Manual Review Required**. This keeps the underlying data explicit while giving the decision state visual prominence.
+**List-detail workflow.** `Failures` renders the queue and links by `failureId`; `FailureDetails` renders the selected fixed record. The Banking API exposes matching collection and detail routes.
 
-## API Concept
+## Implementation
 
-Operational endpoints are role-specific investigation contracts. `GET /api/operations/failures` returns the queue and `GET /api/operations/failures/{failureId}` returns one record, including operator notes and audit events. Both are read-only. A missing identifier returns a deterministic not-found response, and repeated reads return the same fictional data.
+`apps/operations-web/src/components/Failures.jsx`, `FailureDetails.jsx`, `data/operationsFixtures.js`, and the Banking API `Operations/FailureController.php` implement review.
 
-Read-only investigation is a useful boundary: a query cannot accidentally become a corrective command. A later workflow can define retry authorization, idempotency, and new audit events independently.
+## Run the laboratory
 
-## Relationship to the Digital Banking Systems Laboratory
+From the repository root unless the command changes directory:
 
-The Digital Banking Systems Laboratory models backend isolation around retries, dead-letter queues, and permanent failures. A retryable operation might be isolated for controlled reprocessing; a permanently invalid operation must not cycle forever; a dead-letter queue preserves work that requires investigation. This chapter models the employee interface used to inspect the results of those backend decisions. It does not simulate a queue or execute a retry.
+```bash
+npm run test:operations
+```
 
-## Comparison with Traditional PHP
+## What to observe
 
-A traditional PHP administrative dashboard might render the list and detail pages entirely on the server, often combining routing, data lookup, and HTML templates. This laboratory retains PHP as a deterministic JSON boundary and lets the independent React application own navigation and presentation. Either architecture can be valid; the important properties are authorization, safe disclosure, stable read models, and auditable corrective actions.
+The failure list shows fixed cases, a known identifier opens details, and an unknown identifier produces the implemented safe missing-record experience.
 
-## Comparison with AngularJS
+## Engineering tradeoffs
 
-AngularJS applications commonly used route configuration plus `$routeParams` to create list and detail screens. React Router provides the same route-based detail idea through nested routes, links, and `useParams`, while normal component rendering handles the conditional badge. The master and detail views remain separate components with a shared fixture contract.
+Central review improves visibility but concentrates sensitive information. Production tooling needs strict access, redaction, retention, and immutable audit history beyond this fixture-backed example.
 
-## Engineering Tradeoffs
+## Automated tests
 
-Operators need enough information to distinguish transient conditions from permanent ones, but excess detail can expose credentials, infrastructure names, stack traces, or member-sensitive data. The model therefore uses operator-oriented summaries, category explanations, notes, and audit events rather than implementation diagnostics.
-
-Read-only review is intentionally less convenient than an inline retry button. Corrective workflows need stronger authorization, idempotency protection, concurrency rules, confirmation, and a new audit trail. Separating investigation from correction makes that risk visible instead of hiding it behind a convenient control.
+`apps/operations-web/src/App.test.jsx` validates failure list and detail behavior; `OperationsTest.php` validates `/api/operations/failures` routes.
 
 ## Exercise
 
-Add a deterministic **Escalated** failure category to your own copy. Decide on its operator-facing explanation, add a fictional record, and update the list and detail tests. Do not add retry execution or editing.
+Add an assertion that the list and detail view share the same failure identifier for an existing fixture.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

@@ -1,56 +1,46 @@
-# Chapter 12: Authentication and Session Boundaries
+# 12: Authentication and session boundaries
 
-This chapter adds a deliberately small, deterministic authentication boundary. Sign in with member ID `member-1001` and password `password`. These fictional credentials exist only to make the laboratory repeatable. They are intentionally insecure, are not production guidance, and must never be reused.
+## Learning objectives
+
+- Establish and inspect a laboratory session.
+- Protect member API routes.
+- Handle expiration and logout.
+- Explain why browser and mobile transports differ.
 
 ## Banking concept
 
-**Authentication** establishes which fictional member is present. **Authorization** decides what that identity may access or do. This chapter authenticates one member and uses a secure default—no session means no protected account information. A production bank would have much stronger identity proofing and fine-grained authorization, but those mechanisms are outside this laboratory.
+**Authentication boundaries.** Harbor checks identity before returning dashboard, verification, or transfer data. The fixed credentials and token are teaching mechanisms, not production identity or secret storage.
 
-A session boundary separates public login UI from protected account and transfer UI. Banks protect member information because balances, account identifiers, and activity are private even when no money-moving action occurs. Logout and timeout close that boundary and remove protected projections from client state.
+## Frontend concept
 
-## React concept
+**Session-aware clients.** Member Web checks `/api/session`, signs in at `/api/login`, relies on the same-origin Laravel session cookie, and posts `/api/logout`. A `401` clears protected UI and returns the member to sign-in.
 
-React owns explicit authentication states: checking, anonymous, and authenticated. On startup it asks `GET /api/session` rather than assuming that a browser cookie means the member is signed in. Protected routes—including dashboard, account details, new transfers, and transfer confirmation—render only after an authenticated response. Otherwise a catch-all route redirects to `/login`.
+## Implementation
 
-Navigation is conditional. Anonymous visitors see Login. Authenticated members see Dashboard, Transfers, Settings, Logout, and the fictional display name. Logout clears the session model and the dashboard projection before returning to login.
+`apps/member-web/src/App.jsx` and `Login.jsx`, plus `SessionController.php`, `RequireLaboratorySession.php`, and `routes/api.php`, implement the browser boundary.
 
-A protected request returning HTTP 401 follows the same safe path. React discards authenticated and dashboard state, redirects, and displays “Your session has expired. Please sign in again.” It performs no automatic refresh.
+## Run the laboratory
 
-## API concept
+From the repository root unless the command changes directory:
 
-`POST /api/login` compares input with the fixed laboratory credentials and creates this deterministic session:
-
-```json
-{
-  "authenticated": true,
-  "memberId": "member-1001",
-  "displayName": "Alex Morgan",
-  "expiresAt": "2026-08-01T12:00:00Z"
-}
+```bash
+npm run test:member -- --run src/App.test.jsx
 ```
 
-`GET /api/session` reports the current session and `POST /api/logout` invalidates it. The fixed expiration makes examples and assertions repeatable; it is not a real clock-based security control. Request `GET /api/session?scenario=expired` to deterministically remove the session. Protected API requests without a session receive HTTP 401 with a safe error contract.
+## What to observe
 
-The browser makes authenticated requests with the same-origin session cookie managed by PHP. It never reads or treats that cookie as banking data. No JWT, OAuth provider, database, or production identity mechanism is involved.
-
-## Comparison with traditional PHP
-
-A traditional PHP application commonly checks a server session before rendering each page, redirects anonymous requests, and sends fully rendered authenticated HTML. Here PHP still owns the session, but React asks for JSON and controls route rendering. Both designs must enforce the boundary on the server: hiding a React link alone is not authorization.
-
-## Comparison with AngularJS
-
-An AngularJS application often uses route resolve functions or transition hooks as route guards and stores authentication status in a shared service. React Router expresses the same idea through state plus conditional route trees. Neither client-side technique replaces an API-side authorization check.
+Anonymous users see login, valid fictional credentials establish the session, protected data loads, expiration returns to login, and logout removes the protected experience.
 
 ## Engineering tradeoffs
 
-Client state produces immediate conditional UI, while the server session remains the authority. Duplicating state means the client must respond when the server rejects a stale assumption. Short timeouts limit exposure but interrupt members; long timeouts reduce friction but keep access open longer. A friendly, detail-free timeout message balances recovery with avoiding internal disclosure.
+Cookie sessions suit same-origin browser requests but require CSRF and secure-cookie controls in production. The laboratory demonstrates boundaries without claiming production authentication completeness.
 
-This implementation chooses clarity and determinism over production security. Real systems require secure deployment, credential storage, CSRF defenses, rate limiting, identity assurance, careful cookie policy, authorization, monitoring, and many other controls that are intentionally absent here.
+## Automated tests
 
-## Relationship to the Digital Banking Systems Laboratory
-
-Authentication controls access to banking workflows; it does not change how the underlying ledger operates. The Digital Banking Systems Laboratory focuses on banking correctness and authoritative ledger behavior. This laboratory focuses on appropriately bounded access to banking functionality and safe projections. A login neither creates funds nor validates a transfer's accounting rules.
+`App.test.jsx` validates browser session flow; `AuthenticationTest.php` validates login, session inspection, protection, expiration, bearer support, and logout.
 
 ## Exercise
 
-Design a deterministic “locked account” login scenario. Specify its safe HTTP response, login-page message, and tests. Explain how it differs from invalid credentials without leaking sensitive identity details. **Do not implement it yet.**
+Add a browser test proving protected dashboard content is removed after the existing logout action.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.
