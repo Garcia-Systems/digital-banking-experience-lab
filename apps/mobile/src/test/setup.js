@@ -2,8 +2,8 @@ let consoleError;
 let consoleWarn;
 
 beforeEach(() => {
-  consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
-  consoleWarn = jest.spyOn(console, "warn").mockImplementation(() => {});
+  consoleError = jest.spyOn(console, "error");
+  consoleWarn = jest.spyOn(console, "warn");
 });
 
 afterEach(() => {
