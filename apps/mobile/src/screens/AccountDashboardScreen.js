@@ -2,12 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchDashboard } from "../api/dashboard";
 import AccountCard from "../components/AccountCard";
 import ProjectionStatus from "../components/ProjectionStatus";
@@ -45,7 +45,11 @@ export default function AccountDashboardScreen({
 
   if (request.status === "loading") {
     return (
-      <SafeAreaView style={styles.center} accessibilityLiveRegion="polite">
+      <SafeAreaView
+        edges={["top", "right", "bottom", "left"]}
+        style={styles.center}
+        accessibilityLiveRegion="polite"
+      >
         <ActivityIndicator
           accessibilityLabel="Loading account information"
           color="#0b665a"
@@ -58,7 +62,10 @@ export default function AccountDashboardScreen({
 
   if (request.status === "error") {
     return (
-      <SafeAreaView style={styles.center}>
+      <SafeAreaView
+        edges={["top", "right", "bottom", "left"]}
+        style={styles.center}
+      >
         <Text style={styles.errorTitle}>
           We could not load your account information.
         </Text>
@@ -79,7 +86,10 @@ export default function AccountDashboardScreen({
 
   const { dashboard } = request;
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      edges={["top", "right", "bottom", "left"]}
+      style={styles.safeArea}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.institution}>Harbor Community Credit Union</Text>
         <Text style={styles.eyebrow}>Member dashboard</Text>

@@ -20,6 +20,8 @@ React's mental model transfers directly. `AccountDashboardScreen` is a component
 
 These are not exact substitutions. Text must live in `Text`; layout defaults to Flexbox with a vertical direction; style properties are JavaScript values rather than a cascading stylesheet; and `Pressable` supplies interaction semantics that the application must label. A native screen participates in an iOS or Android view hierarchy rather than producing HTML or a DOM.
 
+Native screens must also respect space reserved for notches, status bars, and home indicators. React Native's older built-in `SafeAreaView` is deprecated. The dashboard instead places one `SafeAreaProvider` from `react-native-safe-area-context` near the application root and uses that library's `SafeAreaView` for screen containers. The device supplies its insets, so production layout does not hardcode padding for a particular phone; tests provide fixed metrics for repeatability.
+
 ## API Configuration
 
 The app reads `EXPO_PUBLIC_API_BASE_URL` and calls the existing `/api/dashboard` endpoint. A browser on the API computer can interpret `localhost` as that computer. An Android emulator usually treats it as the virtual device and may need the emulator host alias. An iOS simulator often shares the Mac network, though configuration matters. A physical phone treats `localhost` as the phone and normally needs the development computer's reachable LAN address. Firewalls and the server bind address must permit that connection.

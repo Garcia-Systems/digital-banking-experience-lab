@@ -1,5 +1,10 @@
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import AccountDashboardScreen from "./screens/AccountDashboardScreen";
 
 export default function MobileApp() {
-  return <AccountDashboardScreen />;
+  return (
+    <SafeAreaProvider>
+      <AccountDashboardScreen />
+    </SafeAreaProvider>
+  );
 }

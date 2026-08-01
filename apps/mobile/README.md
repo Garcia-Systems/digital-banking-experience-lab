@@ -29,3 +29,7 @@ npm run mobile:validate
 ```
 
 Tests mock the request boundary and require neither a running API nor an emulator. The API URL is public configuration, not a credential.
+
+## Safe areas
+
+Phones can reserve screen space for notches, status bars, and home indicators. The built-in React Native `SafeAreaView` is deprecated, so the application creates one `SafeAreaProvider` near its root and uses `SafeAreaView` from `react-native-safe-area-context` for each full-screen request state. Insets come from the device rather than hardcoded production padding; component tests supply deterministic example metrics.

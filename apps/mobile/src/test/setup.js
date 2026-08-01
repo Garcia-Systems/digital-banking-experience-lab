@@ -7,8 +7,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  expect(consoleError).not.toHaveBeenCalled();
-  expect(consoleWarn).not.toHaveBeenCalled();
-  consoleError.mockRestore();
-  consoleWarn.mockRestore();
+  try {
+    expect(consoleError).not.toHaveBeenCalled();
+    expect(consoleWarn).not.toHaveBeenCalled();
+  } finally {
+    consoleError.mockRestore();
+    consoleWarn.mockRestore();
+  }
 });

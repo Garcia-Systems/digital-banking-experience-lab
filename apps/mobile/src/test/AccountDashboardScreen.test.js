@@ -1,10 +1,6 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react-native";
+import { fireEvent, screen, waitFor } from "@testing-library/react-native";
 import AccountDashboardScreen from "../screens/AccountDashboardScreen";
+import { renderWithSafeArea } from "./renderWithSafeArea";
 
 const dashboard = {
   member: { id: "member-1001", displayName: "Alex Morgan" },
@@ -43,7 +39,7 @@ function deferred() {
 
 describe("mobile account dashboard", () => {
   it("renders the institution, fictional member, accounts, masked suffixes, and formatted cents", async () => {
-    render(
+    renderWithSafeArea(
       <AccountDashboardScreen
         loadDashboard={() => Promise.resolve(dashboard)}
       />,
@@ -64,7 +60,9 @@ describe("mobile account dashboard", () => {
 
   it("shows accessible loading copy until success replaces it", async () => {
     const request = deferred();
-    render(<AccountDashboardScreen loadDashboard={() => request.promise} />);
+    renderWithSafeArea(
+      <AccountDashboardScreen loadDashboard={() => request.promise} />,
+    );
     expect(screen.getByText("Loading account information…")).toBeTruthy();
     expect(screen.getByLabelText("Loading account information")).toBeTruthy();
     request.resolve(dashboard);
@@ -73,7 +71,7 @@ describe("mobile account dashboard", () => {
   });
 
   it("shows an empty success without inventing an account", async () => {
-    render(
+    renderWithSafeArea(
       <AccountDashboardScreen
         loadDashboard={() => Promise.resolve({ ...dashboard, accounts: [] })}
       />,
@@ -89,7 +87,7 @@ describe("mobile account dashboard", () => {
       ...dashboard,
       projection: { generatedAt: "2026-07-31T10:15:00Z", isStale: true },
     };
-    render(
+    renderWithSafeArea(
       <AccountDashboardScreen loadDashboard={() => Promise.resolve(stale)} />,
     );
     expect(
@@ -106,7 +104,9 @@ describe("mobile account dashboard", () => {
       .fn()
       .mockRejectedValueOnce(new Error("unavailable"))
       .mockResolvedValueOnce(dashboard);
-    render(<AccountDashboardScreen loadDashboard={loadDashboard} />);
+    renderWithSafeArea(
+      <AccountDashboardScreen loadDashboard={loadDashboard} />,
+    );
     expect(
       await screen.findByText("We could not load your account information."),
     ).toBeTruthy();
@@ -121,7 +121,9 @@ describe("mobile account dashboard", () => {
       .fn()
       .mockRejectedValueOnce(new Error("unavailable"))
       .mockReturnValueOnce(retry.promise);
-    render(<AccountDashboardScreen loadDashboard={loadDashboard} />);
+    renderWithSafeArea(
+      <AccountDashboardScreen loadDashboard={loadDashboard} />,
+    );
     const button = await screen.findByRole("button", { name: "Try Again" });
     fireEvent.press(button);
     fireEvent.press(button);
@@ -133,7 +135,7 @@ describe("mobile account dashboard", () => {
   });
 
   it("fails safely when the API client rejects a malformed response", async () => {
-    render(
+    renderWithSafeArea(
       <AccountDashboardScreen
         loadDashboard={() =>
           Promise.reject(new Error("invalid_dashboard_contract"))
