@@ -25,6 +25,8 @@ npm run dev
 
 `npm ci` reproduces the dependency graph in `package-lock.json`. Use `npm install` only when deliberately changing dependencies and the lockfile.
 
+The repository's `.npmrc` keeps npm's peer-dependency resolution consistent with the committed Expo-compatible lockfile. Do not override it during clean installation.
+
 Open the URL Vite prints. The default view uses the fresh fixture. Append `?scenario=stale` to see the deterministic stale state.
 
 The root commands delegate to the member web workspace:

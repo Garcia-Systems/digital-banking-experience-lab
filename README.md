@@ -55,6 +55,8 @@ cd ../..
 
 Use `npm install` only when intentionally changing JavaScript dependencies and updating `package-lock.json`; validation uses `npm ci`. Start services in this order.
 
+The committed `.npmrc` preserves the legacy peer-dependency resolution mode used by the current Expo-compatible lockfile. Keep that file in place for both `npm install` and `npm ci`; npm requires clean installs to use the same dependency-resolution settings that produced the lockfile.
+
 ### 1. PHP API
 
 ```bash
