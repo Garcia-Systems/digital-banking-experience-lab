@@ -59,6 +59,13 @@ class TransferController
         unset($validated['idempotencyKey']);
 
         $scenario = $request->query('scenario', 'accepted');
+        if ($scenario === 'unavailable') {
+            return response()->json(['error' => [
+                'code' => 'transfers_unavailable',
+                'message' => 'Transfers are temporarily unavailable.',
+                'retryAvailable' => true,
+            ]], 503);
+        }
         if (! in_array($scenario, ['accepted', 'completed', 'rejected'], true)) {
             return response()->json(['error' => [
                 'code' => 'unsupported_transfer_scenario',

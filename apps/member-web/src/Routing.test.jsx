@@ -115,6 +115,39 @@ describe("member application routes", () => {
     expect(screen.getByText("Secure message")).toBeInTheDocument();
   });
 
+  it("keeps settings available when the dashboard service is unavailable", async () => {
+    fetch.mockImplementation(async (input, options = {}) => {
+      const { url, method } = requestDetails([input, options]);
+      if (url.includes("/api/session") && method === "GET")
+        return jsonResponse(authenticatedSession);
+      if (url.includes("/api/dashboard"))
+        return { ...jsonResponse({}), ok: false, status: 503 };
+      throw new Error(`Unexpected request: ${method} ${url}`);
+    });
+    renderWithRouter(<App />, { route: "/settings?scenario=error" });
+    expect(
+      await screen.findByRole("heading", { name: "Settings" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Secure message")).toBeInTheDocument();
+  });
+
+  it("shows a degraded dashboard without displaying balances", async () => {
+    fetch.mockImplementation(async (input, options = {}) => {
+      const { url } = requestDetails([input, options]);
+      if (url.includes("/api/session"))
+        return jsonResponse(authenticatedSession);
+      return { ...jsonResponse({}), ok: false, status: 503 };
+    });
+    renderWithRouter(<App />, { route: "/?scenario=error" });
+    expect(
+      await screen.findByRole("heading", {
+        name: "Dashboard temporarily unavailable",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("$1,250.00")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Settings" })).toBeInTheDocument();
+  });
+
   it("shows a friendly page for an unknown route", async () => {
     renderWithRouter(<App />, { route: "/something-unknown" });
     expect(

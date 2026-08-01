@@ -41,7 +41,7 @@ function ProtectedApplication({ session, onLogout, onUnauthorized }) {
   const [request, setRequest] = useState(initialRequest);
   const location = useLocation();
 
-  useEffect(() => {
+  const loadDashboard = useCallback(() => {
     let active = true;
     setRequest({ status: "loading", dashboard: null, error: null });
     fetch(`/api/dashboard?scenario=${dashboardScenario()}`)
@@ -72,28 +72,53 @@ function ProtectedApplication({ session, onLogout, onUnauthorized }) {
     };
   }, [onUnauthorized]);
 
-  if (request.status === "idle" || request.status === "loading")
-    return <Status>Loading account information…</Status>;
-  if (request.status === "error")
-    return <Status error>We could not load your account information.</Status>;
+  useEffect(() => loadDashboard(), [loadDashboard]);
+
+  const dashboardElement =
+    request.status === "success" ? (
+      <AccountDashboard dashboard={request.dashboard} />
+    ) : request.status === "error" ? (
+      <main id="main-content" className="route-page">
+        <h1>Dashboard temporarily unavailable</h1>
+        <Status error>
+          We could not load your account information. No balances are shown
+          because they may be incomplete.
+        </Status>
+        <button
+          className="primary-action"
+          type="button"
+          onClick={loadDashboard}
+        >
+          Retry dashboard
+        </button>
+      </main>
+    ) : (
+      <main id="main-content" className="route-page">
+        <Status>Loading account information…</Status>
+      </main>
+    );
+
+  const accountsElement = (Component) =>
+    request.status === "success" ? (
+      <Component
+        dashboard={request.dashboard}
+        accounts={request.dashboard.accounts}
+      />
+    ) : (
+      dashboardElement
+    );
 
   return (
     <Routes location={location}>
       <Route element={<MemberLayout session={session} onLogout={onLogout} />}>
-        <Route
-          index
-          element={<AccountDashboard dashboard={request.dashboard} />}
-        />
+        <Route index element={dashboardElement} />
         <Route
           path="accounts/:accountId"
-          element={<AccountDetails dashboard={request.dashboard} />}
+          element={accountsElement(AccountDetails)}
         />
         <Route path="settings" element={<Settings />} />
         <Route path="verification" element={<MemberVerification />} />
-        <Route
-          path="transfers/new"
-          element={<TransferForm accounts={request.dashboard.accounts} />}
-        />
+        <Route path="transfers/new" element={accountsElement(TransferForm)} />
         <Route path="transfers/:transferId" element={<TransferDetails />} />
         <Route path="not-found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />

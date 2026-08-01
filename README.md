@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–15 complete
+## Progress: Chapters 0–16 complete
 
-Chapter 15 distinguishes successful, retryable, and permanent verification outcomes. It demonstrates deterministic API failures, a manual retry that repeats only the failed operation, accessible progress, and duplicate-request prevention.
+Chapter 16 isolates feature-specific failures so the application remains useful during deterministic partial outages. It distinguishes expected service failures from unexpected rendering errors, preserves unaffected routes, and offers safe manual retry actions where appropriate.
 
 ## Architecture
 
@@ -74,6 +74,8 @@ Choose a transfer outcome by opening the form with `?transferScenario=accepted`,
 
 Visit `/verification` to inspect or start member verification. Select a fixed simulator result with `?verificationScenario=success`, `timeout`, `unavailable`, `temporary-upstream-failure`, `timeout-then-success`, `invalid-member-information`, `unsupported-request`, or `permanent-failure`. The browser calls only the internal PHP API; the simulator makes no network requests.
 
+Experiment with graceful degradation using `/?scenario=error` for an unavailable dashboard, `/transfers/new?transferScenario=unavailable` for unavailable transfer submission, and `/verification?verificationScenario=unavailable` for an unavailable verification status service. Visit `/settings?scenario=error` to confirm that an unrelated route remains available. Each response and retry is deterministic; the application never substitutes unmarked stale or invented banking information.
+
 Run the frontend quality checks from the repository root:
 
 ```bash
@@ -90,7 +92,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Retryable Operations](book/15-retryable-operations.md).
+Follow the chapters in order in [`book`](book), ending with [Graceful Error Recovery](book/16-graceful-error-recovery.md).
 
 ## Repository layout
 
