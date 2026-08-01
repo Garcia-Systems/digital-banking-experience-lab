@@ -1,39 +1,52 @@
 # Digital Banking Experience Laboratory
 
-The **Digital Banking Experience Laboratory** is an executable textbook for learning how modern banking experiences are designed, built, tested, and explained. Each lesson pairs a small working application with the reasoning behind it.
+The **Digital Banking Experience Laboratory** is the completed Volume I executable textbook for building and reasoning about modern digital banking experiences. It connects a React member application, React employee portal, React Native mobile application, and PHP API through fast deterministic scenarios and automated tests.
 
-This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. The applications now intentionally contain both JavaScript and TypeScript so readers can compare them during a gradual migration. Chapter 22 types a small set of utilities, contracts, clients, and components without rewriting the applications or changing banking workflows.
-
-## Safety and scope
-
-Harbor Community Credit Union is fictional. Every member, account, balance, identifier, timestamp, and workflow is synthetic test data. Never add real member data or credentials.
-
-This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
-
-## Progress: Chapters 0–22 complete
-
-Chapter 22 demonstrates incremental TypeScript adoption while keeping JavaScript support enabled and runtime API validation in place.
+Harbor Community Credit Union and every member, account, balance, identifier, timestamp, and outcome are fictional. This educational simulation is **not** a production banking platform, authoritative ledger, statement of regulatory compliance, or real institution. It has no live integrations, production authentication, or background processing. Read the [security boundaries](docs/security-boundaries.md) before contributing.
 
 ## Architecture
 
 ```text
-React Member Web ────┐
-React Native Mobile ─┼─┐
-Operations Portal ───┘ │
-                       ▼
-                PHP Banking API
-                       │
-                       ▼
-        Deterministic Banking Services
+                  React Member Web
+                         │
+                         │
+ React Native Mobile ────┼────► PHP Banking API
+                         │
+ Operations Portal ──────┘
+                              │
+                              ▼
+                Deterministic Banking Services
+                              │
+                              ▼
+                 Fictional Harbor Community
+                   Credit Union Data Model
 ```
 
-All three applications consume the same educational PHP API and use fictional data. The fixtures are not a database or core banking system: React and React Native present projections, while Laravel owns the shared response contract.
+The three clients present the same deterministic API for different roles and devices. React and React Native render projections; Laravel owns shared response contracts, validation, scenario selection, and fixture-backed services. The final [end-to-end chapter](book/23-end-to-end-digital-banking-experience.md) explains the complete walkthrough and its limits.
 
-## Get started
+## Repository layout
 
-Requirements: Node.js 20.19+, npm, PHP 8.3+, and Composer.
+- `apps/member-web` — Vite and React member dashboard, transfers, verification, settings, and tests;
+- `apps/operations-web` — independently runnable Vite and React employee portal, including failure review;
+- `apps/mobile` — Expo and React Native account, activity, and transfer-preparation workflows;
+- `services/banking-api` — Laravel JSON API, deterministic fixtures and vendor, and feature tests;
+- `book` — Chapters 0–23 of the executable textbook;
+- `docs/security-boundaries.md` — synthetic-data and trust-boundary rules;
+- `.github/workflows/validate.yml` — frontend, mobile, and PHP validation.
 
-Start the Laravel API in the first terminal:
+## Technology stack
+
+- React 19, React Router, Vite, Vitest, and Testing Library;
+- React Native 0.81 and Expo 54 with Jest and React Native Testing Library;
+- JavaScript plus a deliberately gradual TypeScript slice;
+- PHP 8.3+, Laravel 12, Composer, and PHPUnit;
+- npm workspaces, ESLint, Prettier, and GitHub Actions.
+
+## Run the complete laboratory
+
+Requirements: Node.js 20.19+, npm, PHP 8.3+, and Composer. Start services in this order.
+
+### 1. PHP API
 
 ```bash
 cd services/banking-api
@@ -43,38 +56,48 @@ php artisan key:generate
 php artisan serve
 ```
 
-Start the member React application in a second terminal from the repository root:
+### 2. Member web
+
+In a new terminal at the repository root:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Or run the independent operations application on port 5174:
+Vite serves the member app (normally `http://localhost:5173`) and proxies `/api` to `http://127.0.0.1:8000`. Sign in with fictional credentials `member-1001` / `password`.
+
+### 3. Operations portal
 
 ```bash
 npm run dev:operations
 ```
 
-To run the mobile dashboard, configure the shared PHP API URL and start Expo:
+The employee experience runs independently on `http://localhost:5174` and uses the same API proxy.
+
+### 4. Mobile application
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 npm run mobile:start
+EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 \
+EXPO_PUBLIC_DASHBOARD_SCENARIO=success npm run mobile:start
 ```
 
-The loopback default works when Expo can reach the API on the same development machine. Android emulators, Expo Go, and physical devices can interpret `localhost` as the device itself; use a network-accessible host address for your development computer in `EXPO_PUBLIC_API_BASE_URL`. This value is configuration, not a secret. Select a deterministic laboratory response with `EXPO_PUBLIC_DASHBOARD_SCENARIO=success`, `empty`, `stale`, `error`, or `partial` before starting Expo. Unsupported values safely become `success`.
+`EXPO_PUBLIC_API_BASE_URL` defaults to loopback, but a physical device or some emulators require your development computer's network-accessible address. It is configuration, not a secret. `EXPO_PUBLIC_DASHBOARD_SCENARIO` is optional and accepts `success`, `empty`, `stale`, `error`, or `partial`; unsupported values safely use `success`. Member and operations web require no environment variables. Laravel sessions require the local `APP_KEY` generated above.
 
-Vite prints the member application URL and proxies `/api` to Laravel on `http://127.0.0.1:8000`.
+## Deterministic learning path
 
-Sign in using the fictional laboratory member ID `member-1001` and password `password`. These deterministic credentials are intentionally insecure and are never appropriate outside this educational application. After login, choose a dashboard experiment with `?scenario=success`, `empty`, `stale`, `error`, or `partial`. The session API also accepts `?scenario=expired` as a deterministic timeout demonstration.
+1. Review the `success` member dashboard and fixed projection.
+2. Prepare a transfer at `/transfers/new?transferScenario=completed` (also try `accepted`, `rejected`, or `unavailable`).
+3. View the same account contract on mobile with the `success` dashboard scenario.
+4. Visit `/verification?verificationScenario=success`; then compare `timeout`, `timeout-then-success`, or `permanent-failure`.
+5. Use the operations portal to inspect members, transfer and verification status, and fixed failed-operation examples.
+6. Run the tests to see each named result reproduced without a live vendor or background worker.
 
-Choose a transfer outcome by opening the form with `?transferScenario=accepted`, `completed`, or `rejected` (for example, `http://localhost:5173/transfers/new?transferScenario=completed`). The submitted resource retains that deterministic status. The API equivalent is `POST /api/transfers?scenario=completed`; omitting the parameter uses `accepted`.
+Additional member dashboard scenarios are `empty`, `stale`, `error`, and intentionally malformed `partial`. The session endpoint accepts `expired`. See Chapter 23 for the exact walkthrough and an explanation of why operations data remains a fixed review dataset.
 
-Visit `/verification` to inspect or start member verification. Select a fixed simulator result with `?verificationScenario=success`, `timeout`, `unavailable`, `temporary-upstream-failure`, `timeout-then-success`, `invalid-member-information`, `unsupported-request`, or `permanent-failure`. The browser calls only the internal PHP API; the simulator makes no network requests.
+## Validation
 
-Experiment with graceful degradation using `/?scenario=error` for an unavailable dashboard, `/transfers/new?transferScenario=unavailable` for unavailable transfer submission, and `/verification?verificationScenario=unavailable` for an unavailable verification status service. Visit `/settings?scenario=error` to confirm that an unrelated route remains available. Each response and retry is deterministic; the application never substitutes unmarked stale or invented banking information.
-
-Run the frontend quality checks from the repository root:
+Run all JavaScript and TypeScript workspace checks from the root:
 
 ```bash
 npm run lint
@@ -84,23 +107,42 @@ npm run build
 npm run mobile:validate
 ```
 
-Run only the mobile component tests with `npm run test --workspace @dbel/mobile`. Expo configuration validation is non-interactive and requires no emulator or signing credentials.
-
-Run the Laravel suite separately:
+Run Laravel separately:
 
 ```bash
 cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Gradual TypeScript Migration](book/22-gradual-typescript-migration.md).
+GitHub Actions runs the same checks for pushes and pull requests.
 
-## Repository layout
+## Chapters
 
-- `apps/member-web`: Vite-powered React member dashboard and frontend tests;
-- `apps/operations-web`: independently runnable React employee portal and frontend tests;
-- `apps/mobile`: Expo React Native banking workflows and native component tests;
-- `services/banking-api`: Laravel JSON API, deterministic fixture, and feature test;
-- `book`: executable textbook chapters;
-- `docs/security-boundaries.md`: rules that keep the laboratory synthetic and educational;
-- `.github/workflows/validate.yml`: automated frontend and backend validation.
+- [00 — Setting Up the Laboratory](book/00-setting-up-the-laboratory.md)
+- [01 — Interface as Projection](book/01-interface-as-projection.md)
+- [02 — JSX and the First Account Dashboard](book/02-jsx-and-the-first-account-dashboard.md)
+- [03 — Components and Account Cards](book/03-components-and-account-cards.md)
+- [04 — Props and Account Data](book/04-props-and-account-data.md)
+- [05 — State and Member Actions](book/05-state-and-member-actions.md)
+- [06 — From React Fixtures to a PHP API](book/06-from-react-fixtures-to-a-php-api.md)
+- [07 — Loading, Empty, Success, and Failure States](book/07-loading-empty-success-and-failure-states.md)
+- [08 — Routing Through a Banking Application](book/08-routing-through-a-banking-application.md)
+- [09 — Transfer Forms and Validation](book/09-transfer-forms-and-validation.md)
+- [10 — Idempotent Transfer Submission](book/10-idempotent-transfer-submission.md)
+- [11 — Transfer Status and Confirmation](book/11-transfer-status-and-confirmation.md)
+- [12 — Authentication and Session Boundaries](book/12-authentication-and-session-boundaries.md)
+- [13 — Member Verification and Vendor Integrations](book/13-member-verification-and-vendor-integrations.md)
+- [14 — Secure Handling of Member Input](book/14-secure-handling-of-member-input.md)
+- [15 — Retryable Operations](book/15-retryable-operations.md)
+- [16 — Graceful Error Recovery](book/16-graceful-error-recovery.md)
+- [17 — Internal Operations Portal](book/17-internal-operations-portal.md)
+- [18 — Failed Operations Review](book/18-failed-operations-review.md)
+- [19 — Employee Operations Experience](book/19-employee-operations-experience.md)
+- [20 — React Native Foundations](book/20-react-native-foundations.md)
+- [21 — Mobile Banking Workflows](book/21-mobile-banking-workflows.md)
+- [22 — Gradual TypeScript Migration](book/22-gradual-typescript-migration.md)
+- [23 — End-to-End Digital Banking Experience](book/23-end-to-end-digital-banking-experience.md)
+
+## Relationship to the Digital Banking Systems Laboratory
+
+The separate **Digital Banking Systems Laboratory** teaches internal banking behavior, distributed systems, ledger concepts, retries, dead-letter queues, and event processing. This repository teaches the corresponding member and employee interfaces, retry experiences, failed-operation review, and operational dashboards. They remain independent educational projects: together they offer a broader view of banking software, but neither claims production completeness.

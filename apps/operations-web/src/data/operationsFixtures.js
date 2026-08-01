@@ -11,21 +11,21 @@ export const dashboard = {
 export const members = [
   {
     memberId: "member-1001",
-    displayName: "Avery Morgan",
+    displayName: "Alex Morgan",
     verificationStatus: "verified",
     accountCount: 2,
-    email: "avery.morgan@example.test",
+    email: "alex.morgan@example.test",
     phone: "(555) 010-1001",
     accounts: [
       {
         name: "Everyday Checking",
-        maskedNumber: "•••• 1842",
-        balanceCents: 284650,
+        maskedNumber: "•••• 4821",
+        balanceCents: 130500,
       },
       {
         name: "Member Savings",
-        maskedNumber: "•••• 7750",
-        balanceCents: 910200,
+        maskedNumber: "•••• 7314",
+        balanceCents: 420000,
       },
     ],
   },
@@ -64,7 +64,7 @@ export const members = [
 export const transfers = [
   {
     transferId: "transfer-7001",
-    member: "Avery Morgan",
+    member: "Alex Morgan",
     amountCents: 12500,
     status: "completed",
     submittedAt: "2026-08-01T08:15:00Z",
@@ -159,7 +159,7 @@ export const failures = [
   {
     operationId: "failure-9003",
     operationType: "Member verification",
-    member: "Avery Morgan (member-1001)",
+    member: "Alex Morgan (member-1001)",
     status: "failed",
     retryable: true,
     failureCategory: "Authentication Expired",

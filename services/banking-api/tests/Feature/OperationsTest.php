@@ -18,7 +18,10 @@ class OperationsTest extends TestCase
 
     public function test_members_are_listed(): void
     {
-        $this->getJson('/api/operations/members', $this->headers)->assertOk()->assertJsonCount(3, 'members')->assertJsonPath('members.0.memberId', 'member-1001');
+        $this->getJson('/api/operations/members', $this->headers)->assertOk()->assertJsonCount(3, 'members')
+            ->assertJsonPath('members.0.memberId', 'member-1001')
+            ->assertJsonPath('members.0.displayName', 'Alex Morgan')
+            ->assertJsonPath('members.0.accounts.0.maskedNumber', '•••• 4821');
     }
 
     public function test_transfers_are_listed(): void
