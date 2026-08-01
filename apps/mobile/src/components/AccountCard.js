@@ -1,11 +1,16 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatCents } from "../utils/formatters";
 
-export default function AccountCard({ account }) {
+export default function AccountCard({ account, onPress }) {
   const suffix = `•••• ${account.accountSuffix}`;
   const label = `${account.displayName}, ${account.type} account ending in ${account.accountSuffix}, status ${account.status}`;
   return (
-    <View accessibilityLabel={label} style={styles.card}>
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      onPress={() => onPress?.(account)}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
       <View style={styles.headingRow}>
         <View>
           <Text style={styles.name}>{account.displayName}</Text>
@@ -22,7 +27,7 @@ export default function AccountCard({ account }) {
       <Text style={styles.current}>
         Current balance {formatCents(account.currentBalanceCents)}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -35,6 +40,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d7e1df",
   },
+  pressed: { opacity: 0.72 },
   headingRow: {
     flexDirection: "row",
     justifyContent: "space-between",

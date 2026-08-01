@@ -29,4 +29,35 @@ describe("mobile dashboard API client", () => {
       "invalid_dashboard_contract",
     );
   });
+
+  it("rejects malformed deterministic transactions", async () => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        ...validDashboard,
+        accounts: [
+          {
+            id: "account-2001",
+            displayName: "Checking",
+            type: "checking",
+            status: "open",
+            accountSuffix: "4821",
+            availableBalanceCents: 100,
+            currentBalanceCents: 100,
+            transactions: [
+              {
+                description: "Broken",
+                amountCents: "100",
+                type: "deposit",
+                postedAt: "soon",
+              },
+            ],
+          },
+        ],
+      }),
+    });
+    await expect(fetchDashboard()).rejects.toThrow(
+      "invalid_dashboard_contract",
+    );
+  });
 });

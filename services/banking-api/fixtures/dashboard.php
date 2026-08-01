@@ -21,7 +21,20 @@ return [
             'accountSuffix' => '4821',
             'availableBalanceCents' => 125000,
             'currentBalanceCents' => 130500,
-            'transactions' => [],
+            'transactions' => [
+                [
+                    'description' => 'Harbor Market',
+                    'amountCents' => -7452,
+                    'type' => 'card purchase',
+                    'postedAt' => '2026-07-30',
+                ],
+                [
+                    'description' => 'Payroll deposit',
+                    'amountCents' => 185000,
+                    'type' => 'deposit',
+                    'postedAt' => '2026-07-28',
+                ],
+            ],
         ],
         [
             'id' => 'account-2002',
@@ -34,7 +47,14 @@ return [
             'accountSuffix' => '7314',
             'availableBalanceCents' => 420000,
             'currentBalanceCents' => 420000,
-            'transactions' => [],
+            'transactions' => [
+                [
+                    'description' => 'Monthly savings transfer',
+                    'amountCents' => 25000,
+                    'type' => 'transfer',
+                    'postedAt' => '2026-07-25',
+                ],
+            ],
         ],
     ],
 ];

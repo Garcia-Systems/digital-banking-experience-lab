@@ -14,6 +14,9 @@ import ProjectionStatus from "../components/ProjectionStatus";
 
 export default function AccountDashboardScreen({
   loadDashboard = fetchDashboard,
+  onSelectAccount,
+  onPrepareTransfer,
+  onDashboardLoaded,
 }) {
   const [request, setRequest] = useState({
     status: "loading",
@@ -32,12 +35,13 @@ export default function AccountDashboardScreen({
     try {
       const dashboard = await loadDashboard();
       setRequest({ status: "success", dashboard });
+      onDashboardLoaded?.(dashboard);
     } catch {
       setRequest({ status: "error", dashboard: null });
     } finally {
       requestActive.current = false;
     }
-  }, [loadDashboard]);
+  }, [loadDashboard, onDashboardLoaded]);
 
   useEffect(() => {
     load();
@@ -108,9 +112,20 @@ export default function AccountDashboardScreen({
           </View>
         ) : (
           dashboard.accounts.map((account) => (
-            <AccountCard account={account} key={account.id} />
+            <AccountCard
+              account={account}
+              key={account.id}
+              onPress={onSelectAccount}
+            />
           ))
         )}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => onPrepareTransfer?.(dashboard.accounts)}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Prepare a transfer</Text>
+        </Pressable>
         <Text style={styles.disclaimer}>
           Balances are API projections and are not an authoritative ledger.
         </Text>

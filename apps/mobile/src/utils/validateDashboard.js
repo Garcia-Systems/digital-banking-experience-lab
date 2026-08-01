@@ -7,7 +7,20 @@ function validAccount(account) {
     typeof account.status === "string" &&
     /^\d{4}$/.test(account.accountSuffix) &&
     Number.isInteger(account.availableBalanceCents) &&
-    Number.isInteger(account.currentBalanceCents)
+    Number.isInteger(account.currentBalanceCents) &&
+    Array.isArray(account.transactions) &&
+    account.transactions.every(validTransaction)
+  );
+}
+
+function validTransaction(transaction) {
+  return Boolean(
+    transaction &&
+      typeof transaction.description === "string" &&
+      Number.isInteger(transaction.amountCents) &&
+      typeof transaction.type === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(transaction.postedAt) &&
+      !Number.isNaN(Date.parse(`${transaction.postedAt}T00:00:00Z`)),
   );
 }
 
