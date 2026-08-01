@@ -39,18 +39,21 @@ function deferred() {
 
 describe("mobile account dashboard", () => {
   it("renders the institution, fictional member, accounts, masked suffixes, and formatted cents", async () => {
+    const request = deferred();
     const view = renderWithSafeArea(
-      <AccountDashboardScreen
-        loadDashboard={() => Promise.resolve(dashboard)}
-      />,
+      <AccountDashboardScreen loadDashboard={() => request.promise} />,
     );
-    expect(await view.findByText("Everyday Checking")).toBeTruthy();
+    await act(async () => {
+      request.resolve(dashboard);
+      await request.promise;
+    });
     expect(view.getByText("Harbor Community Credit Union")).toBeTruthy();
     expect(
       view.getByRole("header", {
         name: /good afternoon,\s*alex morgan/i,
       }),
     ).toBeTruthy();
+    expect(view.getByText("Everyday Checking")).toBeTruthy();
     expect(view.getByText("Member Savings")).toBeTruthy();
     expect(view.getByText("checking · •••• 4821")).toBeTruthy();
     expect(view.getByText("savings · •••• 7314")).toBeTruthy();
