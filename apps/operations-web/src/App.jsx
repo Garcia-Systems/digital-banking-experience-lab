@@ -7,18 +7,26 @@ import TransferDetails from "./components/TransferDetails.jsx";
 import Transfers from "./components/Transfers.jsx";
 import Unauthorized from "./components/Unauthorized.jsx";
 
-export default function App({ role = "operations-user" }) {
+export function OperationsRoutes({ role = "operations-user" }) {
   if (role !== "operations-user") return <Unauthorized />;
   return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="members" element={<Members />} />
+        <Route path="transfers" element={<Transfers />} />
+        <Route path="transfers/:transferId" element={<TransferDetails />} />
+      </Route>
+    </Routes>
+  );
+}
+
+OperationsRoutes.propTypes = { role: PropTypes.string };
+
+export default function App({ role = "operations-user" }) {
+  return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="members" element={<Members />} />
-          <Route path="transfers" element={<Transfers />} />
-          <Route path="transfers/:transferId" element={<TransferDetails />} />
-        </Route>
-      </Routes>
+      <OperationsRoutes role={role} />
     </BrowserRouter>
   );
 }
