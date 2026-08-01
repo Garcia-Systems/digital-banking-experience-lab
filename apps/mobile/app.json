@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "Harbor Community Credit Union",
+    "slug": "harbor-mobile-lab",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"]
+  }
+}

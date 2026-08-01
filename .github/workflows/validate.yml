@@ -27,6 +27,8 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+      - name: Validate Expo configuration
+        run: npm run mobile:validate
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
