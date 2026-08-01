@@ -95,6 +95,8 @@ EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 \
 EXPO_PUBLIC_DASHBOARD_SCENARIO=success npm run mobile:start
 ```
 
+Use the fictional `member-1001` / `password` hint on the native sign-in screen. Mobile establishes its in-memory laboratory session before loading `/api/dashboard`; sign out or an expired-session `401` removes protected account data and returns to sign-in.
+
 ### Automated validation
 
 From the repository root:
@@ -102,6 +104,7 @@ From the repository root:
 ```bash
 npm run lint
 npm run format:check
+npm run typecheck
 npm run test
 npm run build
 npm run mobile:validate

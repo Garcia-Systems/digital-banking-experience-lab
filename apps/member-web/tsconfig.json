@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["react"]
+  },
+  "include": [
+    "src/api/dashboard.ts",
+    "src/components/BalanceSummary.tsx",
+    "src/types/banking.ts",
+    "src/utils/formatters.ts",
+    "src/data/dashboardScenario.js",
+    "src/data/validateDashboard.js"
+  ]
+}

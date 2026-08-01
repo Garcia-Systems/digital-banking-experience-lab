@@ -16,7 +16,7 @@ describe("mobile dashboard API client", () => {
     await fetchDashboard({ baseUrl: "http://api.test/", scenario: "stale" });
     expect(fetch).toHaveBeenCalledWith(
       "http://api.test/api/dashboard?scenario=stale",
-      { signal: undefined },
+      { headers: {}, signal: undefined },
     );
     expect(dashboardScenario("not-allowed")).toBe("success");
   });

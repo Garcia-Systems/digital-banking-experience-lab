@@ -12,6 +12,16 @@ TypeScript adds a static type checker and editor information to JavaScript. It c
 
 Adoption can be incremental. This repository keeps `allowJs` enabled and `checkJs` disabled: existing JavaScript continues to build while selected `.ts` and `.tsx` files receive strict checks. Pure formatters are a low-risk first step, followed here by a dashboard client, a web balance component, and a native account card. The small `Account`, `DashboardProjection`, and `TransferSummary` contracts document only today's deterministic API.
 
+Run the actual compiler from the repository root:
+
+```bash
+npm run typecheck
+```
+
+The root command invokes TypeScript in strict, no-output mode for the focused member-web and mobile configurations. It checks `dashboard.ts`, `BalanceSummary.tsx`, the shared banking types, the typed web formatter, and `AccountCard.tsx`. Vite and Expo can transpile TypeScript syntax while building, but transpilation is not the static guarantee: `npm run typecheck` is the canonical compiler check. JavaScript remains supported and only this deliberately migrated slice is checked.
+
+Each application configuration also selects only the React ambient types it needs. The web configuration supplies DOM libraries explicitly, while the native configuration relies on React Native's declarations and does not load browser globals. This keeps browser and native definitions from colliding without hiding dependency errors through `skipLibCheck`.
+
 The transfer type is a discriminated union. Its `status` distinguishes accepted/completed transfers from rejected transfers, for which `failureReason` is required. The projection's optional `reason` demonstrates an optional property without inventing new API behavior.
 
 ### Compile-time types are not runtime validation
