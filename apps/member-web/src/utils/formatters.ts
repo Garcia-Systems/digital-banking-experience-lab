@@ -13,18 +13,18 @@ const timestampFormatter = new Intl.DateTimeFormat("en-US", {
   timeZoneName: "short",
 });
 
-export function formatCents(cents) {
+export function formatCents(cents: number): string {
   return currencyFormatter.format(cents / 100);
 }
 
-export function formatTimestamp(timestamp) {
+export function formatTimestamp(timestamp: string): string {
   return timestampFormatter.format(new Date(timestamp));
 }
 
-export function formatMaskedSuffix(accountSuffix) {
+export function formatMaskedSuffix(accountSuffix: string): string {
   return `•••• ${accountSuffix}`;
 }
 
-export function formatOwnership(ownership) {
+export function formatOwnership(ownership: "individual" | "joint"): string {
   return ownership === "joint" ? "Joint" : "Individual";
 }

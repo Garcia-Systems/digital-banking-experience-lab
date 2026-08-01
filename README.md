@@ -2,7 +2,7 @@
 
 The **Digital Banking Experience Laboratory** is an executable textbook for learning how modern banking experiences are designed, built, tested, and explained. Each lesson pairs a small working application with the reasoning behind it.
 
-This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. React remains JavaScript so its data flow is visible. Chapter 21 expands the React Native application into everyday account, transaction-history, and transfer-preparation workflows without adding TypeScript or production-only mobile features.
+This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. The applications now intentionally contain both JavaScript and TypeScript so readers can compare them during a gradual migration. Chapter 22 types a small set of utilities, contracts, clients, and components without rewriting the applications or changing banking workflows.
 
 ## Safety and scope
 
@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–21 complete
+## Progress: Chapters 0–22 complete
 
-Chapter 21 adds account navigation, deterministic transaction history, and a locally validated transfer review that intentionally stops before submission.
+Chapter 22 demonstrates incremental TypeScript adoption while keeping JavaScript support enabled and runtime API validation in place.
 
 ## Architecture
 
@@ -93,7 +93,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Mobile Banking Workflows](book/21-mobile-banking-workflows.md).
+Follow the chapters in order in [`book`](book), ending with [Gradual TypeScript Migration](book/22-gradual-typescript-migration.md).
 
 ## Repository layout
 

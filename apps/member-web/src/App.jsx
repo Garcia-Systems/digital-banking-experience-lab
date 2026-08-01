@@ -16,8 +16,7 @@ import NotFound from "./components/NotFound";
 import Settings from "./components/Settings";
 import TransferDetails from "./components/TransferDetails";
 import TransferForm from "./components/TransferForm";
-import { dashboardScenario } from "./data/dashboardScenario";
-import { validateDashboard } from "./data/validateDashboard";
+import { fetchDashboard } from "./api/dashboard";
 
 const initialRequest = { status: "idle", dashboard: null, error: null };
 const expiredMessage = "Your session has expired. Please sign in again.";
@@ -44,24 +43,9 @@ function ProtectedApplication({ session, onLogout, onUnauthorized }) {
   const loadDashboard = useCallback(() => {
     let active = true;
     setRequest({ status: "loading", dashboard: null, error: null });
-    fetch(`/api/dashboard?scenario=${dashboardScenario()}`)
-      .then((response) => {
-        if (response.status === 401) {
-          onUnauthorized();
-          throw new Error("unauthorized");
-        }
-        if (!response.ok) throw new Error("Dashboard request failed");
-        return response.json();
-      })
-      .then((payload) => {
-        const result = validateDashboard(payload);
-        if (!result.valid) throw new Error(result.reason);
-        if (active)
-          setRequest({
-            status: "success",
-            dashboard: result.dashboard,
-            error: null,
-          });
+    fetchDashboard(onUnauthorized)
+      .then((dashboard) => {
+        if (active) setRequest({ status: "success", dashboard, error: null });
       })
       .catch((error) => {
         if (active && error.message !== "unauthorized")

@@ -1,7 +1,13 @@
+import type { Account } from "../../../member-web/src/types/banking";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatCents } from "../utils/formatters";
 
-export default function AccountCard({ account, onPress }) {
+interface AccountCardProps {
+  account: Account;
+  onPress?: (account: Account) => void;
+}
+
+export default function AccountCard({ account, onPress }: AccountCardProps) {
   const suffix = `•••• ${account.accountSuffix}`;
   const label = `${account.displayName}, ${account.type} account ending in ${account.accountSuffix}, status ${account.status}`;
   return (
