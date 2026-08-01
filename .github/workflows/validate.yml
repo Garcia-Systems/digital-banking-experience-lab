@@ -8,7 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  frontend:
+    name: Frontend and mobile
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -17,28 +18,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
-      - name: Lint
-        run: npm run lint
-      - name: Check formatting
-        run: npm run format:check
-      - name: Type-check migrated files
-        run: npm run typecheck
-      - name: Test
-        run: npm run test
-      - name: Build
-        run: npm run build
-      - name: Validate Expo configuration
-        run: npm run mobile:validate
+        run: npm ci
+      - name: Run canonical frontend and mobile validation
+        run: npm run verify
+
+  php:
+    name: Banking API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          tools: composer
+          tools: composer:v2
+          coverage: none
       - name: Install API dependencies
         working-directory: services/banking-api
         run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Validate Composer manifests
+        working-directory: services/banking-api
+        run: composer validate --strict
       - name: Prepare Laravel runtime directories
         working-directory: services/banking-api
         run: |

@@ -29,7 +29,7 @@ The three clients present the same deterministic API for different roles and dev
 - `apps/member-web` — Vite and React member dashboard, transfers, verification, settings, and tests;
 - `apps/operations-web` — independently runnable Vite and React employee portal, including failure review;
 - `apps/mobile` — Expo and React Native account, activity, and transfer-preparation workflows;
-- `services/banking-api` — Laravel JSON API, deterministic fixtures and vendor, and feature tests;
+- `services/banking-api` — Laravel JSON API, deterministic fixtures, and feature tests;
 - `book` — Chapters 0–23 of the executable textbook;
 - `docs/security-boundaries.md` — synthetic-data and trust-boundary rules;
 - `.github/workflows/validate.yml` — frontend, mobile, and PHP validation.
@@ -39,18 +39,28 @@ The three clients present the same deterministic API for different roles and dev
 - React 19, React Router, Vite, Vitest, and Testing Library;
 - React Native 0.81 and Expo 54 with Jest and React Native Testing Library;
 - JavaScript plus a deliberately gradual TypeScript slice;
-- PHP 8.3+, Laravel 12, Composer, and PHPUnit;
+- PHP 8.3, Laravel 12, Composer 2, and PHPUnit;
 - npm workspaces, ESLint, Prettier, and GitHub Actions.
 
 ## Run the complete laboratory
 
-Requirements: Node.js 20.19+, npm, PHP 8.3+, and Composer. Start services in this order.
+Requirements: Node.js 20.19+, npm 10 or 11, PHP 8.3, Composer 2, and the PHP extensions required by the locked Composer packages. From a fresh clone, reproduce the committed dependency graphs before starting services:
+
+```bash
+npm ci
+cd services/banking-api
+composer install --prefer-dist --no-interaction --no-progress
+cd ../..
+```
+
+Use `npm install` only when intentionally changing JavaScript dependencies and updating `package-lock.json`; validation uses `npm ci`. Start services in this order.
+
+The committed `.npmrc` preserves the legacy peer-dependency resolution mode used by the current Expo-compatible lockfile. Keep that file in place for both `npm install` and `npm ci`; npm requires clean installs to use the same dependency-resolution settings that produced the lockfile.
 
 ### 1. PHP API
 
 ```bash
 cd services/banking-api
-composer install
 cp .env.example .env
 php artisan key:generate
 php artisan serve
@@ -61,7 +71,6 @@ php artisan serve
 In a new terminal at the repository root:
 
 ```bash
-npm install
 npm run dev
 ```
 
@@ -101,16 +110,13 @@ Additional member dashboard scenarios are `empty`, `stale`, `error`, and intenti
 
 ## Validation
 
-Run all JavaScript and TypeScript workspace checks from the root:
+Run the canonical frontend and mobile validation from the root:
 
 ```bash
-npm run lint
-npm run format:check
-npm run typecheck
-npm run test
-npm run build
-npm run mobile:validate
+npm run verify
 ```
+
+`verify` runs lint for all three workspaces, repository formatting, the selected migrated TypeScript files, all three test suites, production builds for the member and operations web applications, and Expo configuration validation. It does not create a native mobile binary and does not run PHP tests. Each underlying command remains available independently: `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm run test`, `npm run build`, and `npm run mobile:validate`.
 
 Run Laravel separately:
 

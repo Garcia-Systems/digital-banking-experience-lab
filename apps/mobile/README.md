@@ -28,7 +28,7 @@ npm run lint --workspace @dbel/mobile
 npm run mobile:validate
 ```
 
-Tests mock the request boundary and require neither a running API nor an emulator. The API URL is public configuration, not a credential.
+`mobile:validate` checks the public Expo configuration; it does not build a signed or native production binary. Tests mock the request boundary and require neither a running API nor an emulator. The API URL is public configuration, not a credential.
 
 ## Safe areas
 

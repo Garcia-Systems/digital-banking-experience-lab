@@ -2,3 +2,7 @@ node_modules
 dist
 coverage
 package-lock.json
+services/banking-api/vendor
+services/banking-api/bootstrap/cache
+services/banking-api/storage/framework
+services/banking-api/storage/logs
