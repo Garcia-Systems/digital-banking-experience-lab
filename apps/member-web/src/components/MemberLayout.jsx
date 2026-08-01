@@ -1,7 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function MemberLayout({ session, onLogout }) {
+  const location = useLocation();
+
   return (
     <>
       <header className="site-header">
@@ -24,7 +27,9 @@ export default function MemberLayout({ session, onLogout }) {
         </nav>
         <p className="signed-in-member">Signed in as {session.displayName}</p>
       </header>
-      <Outlet />
+      <ErrorBoundary key={location.pathname}>
+        <Outlet />
+      </ErrorBoundary>
       <footer>
         <p>Educational demonstration • Fictional data only</p>
       </footer>

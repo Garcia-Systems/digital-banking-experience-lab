@@ -111,9 +111,12 @@ export default function TransferForm({ accounts }) {
       const requestedScenario = new URLSearchParams(window.location.search).get(
         "transferScenario",
       );
-      const scenario = ["accepted", "completed", "rejected"].includes(
-        requestedScenario,
-      )
+      const scenario = [
+        "accepted",
+        "completed",
+        "rejected",
+        "unavailable",
+      ].includes(requestedScenario)
         ? `?scenario=${requestedScenario}`
         : "";
       const response = await fetch(`/api/transfers${scenario}`, {
@@ -145,6 +148,12 @@ export default function TransferForm({ accounts }) {
         setReview(null);
         setSubmission({ status: "idle", result: null, error: null });
         return;
+      }
+      if (response.status === 503) {
+        const body = await response.json();
+        throw new Error(
+          body.error?.message || "Transfers are temporarily unavailable.",
+        );
       }
       if (!response.ok) throw new Error("Transfer request failed");
       const result = await response.json();
@@ -321,8 +330,9 @@ export default function TransferForm({ accounts }) {
           </button>
           {submission.status === "error" && (
             <p className="submission-error" role="alert">
-              The transfer could not be submitted. Try again safely; the same
-              idempotency key will be reused.
+              {submission.error?.message ||
+                "The transfer could not be submitted."}{" "}
+              Try again safely; the same idempotency key will be reused.
             </p>
           )}
         </section>

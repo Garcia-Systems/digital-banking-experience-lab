@@ -12,6 +12,14 @@ final class MemberVerificationController
 
     public function show(Request $request): JsonResponse
     {
+        if ($request->query('scenario') === 'unavailable') {
+            return response()->json(['error' => [
+                'code' => 'verification_unavailable',
+                'message' => 'Member verification is temporarily unavailable.',
+                'retryAvailable' => true,
+            ]], 503);
+        }
+
         return response()->json($request->session()->get('member_verification', $this->notStarted()));
     }
 

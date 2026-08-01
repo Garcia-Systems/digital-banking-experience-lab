@@ -77,9 +77,28 @@ describe("member verification", () => {
     );
     renderWithRouter(<MemberVerification />);
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "We could not load your verification status",
+      "Member verification is temporarily unavailable",
     );
     expect(screen.queryByText("vendor secret")).not.toBeInTheDocument();
+  });
+
+  it("presents a retry action for the deterministic unavailable scenario", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(response({}, false))),
+    );
+    renderWithRouter(<MemberVerification />, {
+      route: "/verification?verificationScenario=unavailable",
+    });
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Member verification is temporarily unavailable",
+    );
+    expect(
+      screen.getByRole("button", { name: "Retry verification" }),
+    ).toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/member-verification?scenario=unavailable",
+    );
   });
 
   it("disables retry while active, prevents duplicates, and shows success", async () => {

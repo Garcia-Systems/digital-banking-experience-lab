@@ -123,4 +123,15 @@ class TransferTest extends TestCase
         $this->postJson('/api/transfers?scenario=scheduled', $this->instruction())->assertBadRequest()
             ->assertJsonPath('error.code', 'unsupported_transfer_scenario');
     }
+
+    public function test_unavailable_scenario_returns_a_safe_retryable_response(): void
+    {
+        $this->postJson('/api/transfers?scenario=unavailable', $this->instruction())->assertServiceUnavailable()
+            ->assertExactJson(['error' => [
+                'code' => 'transfers_unavailable',
+                'message' => 'Transfers are temporarily unavailable.',
+                'retryAvailable' => true,
+            ]]);
+        $this->assertNull(TransferStore::find('TRN-1001'));
+    }
 }

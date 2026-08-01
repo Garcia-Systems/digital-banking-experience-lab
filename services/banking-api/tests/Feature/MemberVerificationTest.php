@@ -59,4 +59,14 @@ class MemberVerificationTest extends TestCase
         $this->postJson($url)->assertOk()->assertJsonPath('status', 'verified');
         $this->postJson($url)->assertOk()->assertJsonPath('status', 'verified');
     }
+
+    public function test_unavailable_status_response_is_safe_and_retryable(): void
+    {
+        $this->getJson('/api/member-verification?scenario=unavailable')->assertServiceUnavailable()
+            ->assertExactJson(['error' => [
+                'code' => 'verification_unavailable',
+                'message' => 'Member verification is temporarily unavailable.',
+                'retryAvailable' => true,
+            ]]);
+    }
 }

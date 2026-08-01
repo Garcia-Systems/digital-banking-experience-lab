@@ -14,11 +14,12 @@ export default function MemberVerification() {
   const scenario = searchParams.get("verificationScenario") || "success";
   const [verification, setVerification] = useState(null);
   const [requestState, setRequestState] = useState("loading");
+  const [statusRequest, setStatusRequest] = useState(0);
   const operationActive = useRef(false);
 
   useEffect(() => {
     let active = true;
-    fetch("/api/member-verification")
+    fetch(`/api/member-verification?scenario=${encodeURIComponent(scenario)}`)
       .then((response) => {
         if (!response.ok) throw new Error("request failed");
         return response.json();
@@ -33,7 +34,7 @@ export default function MemberVerification() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [scenario, statusRequest]);
 
   const verify = async () => {
     if (operationActive.current) return;
@@ -65,9 +66,18 @@ export default function MemberVerification() {
   if (requestState === "error")
     return (
       <main className="verification-page">
-        <p role="alert">
-          We could not load your verification status. Please try again later.
-        </p>
+        <h1>Identity verification</h1>
+        <p role="alert">Member verification is temporarily unavailable.</p>
+        <button
+          className="primary-action"
+          type="button"
+          onClick={() => {
+            setRequestState("loading");
+            setStatusRequest((request) => request + 1);
+          }}
+        >
+          Retry verification
+        </button>
       </main>
     );
 

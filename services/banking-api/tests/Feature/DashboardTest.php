@@ -35,7 +35,11 @@ class DashboardTest extends TestCase
     public function test_error_is_a_safe_controlled_failure(): void
     {
         $this->getJson('/api/dashboard?scenario=error')->assertStatus(503)->assertExactJson([
-            'error' => ['code' => 'dashboard_unavailable', 'message' => 'Dashboard information is temporarily unavailable.'],
+            'error' => [
+                'code' => 'dashboard_unavailable',
+                'message' => 'Dashboard information is temporarily unavailable.',
+                'retryAvailable' => true,
+            ],
         ]);
     }
 

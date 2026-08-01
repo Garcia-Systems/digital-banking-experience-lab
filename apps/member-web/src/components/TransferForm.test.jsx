@@ -7,13 +7,13 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 
 const accounts = freshAccountDashboard.accounts;
 
-function renderForm() {
+function renderForm(route = "/transfers/new") {
   function Destination() {
     const location = useLocation();
     return <h1>Route: {location.pathname}</h1>;
   }
   return render(
-    <MemoryRouter initialEntries={["/transfers/new"]}>
+    <MemoryRouter initialEntries={[route]}>
       <Routes>
         <Route
           path="/transfers/new"
@@ -336,5 +336,30 @@ describe("transfer submission", () => {
         name: "Route: /transfers/TRN-1001",
       }),
     ).toBeVisible();
+  });
+
+  it("keeps the reviewed instruction retryable when transfers are unavailable", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: async () => ({
+        error: { message: "Transfers are temporarily unavailable." },
+      }),
+    });
+    renderForm("/transfers/new?transferScenario=unavailable");
+    await prepareReview(user);
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Transfers are temporarily unavailable",
+    );
+    expect(
+      screen.getByRole("button", { name: "Submit transfer" }),
+    ).toBeEnabled();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/transfers?scenario=unavailable",
+      expect.objectContaining({ method: "POST" }),
+    );
   });
 });

@@ -26,6 +26,7 @@ class DashboardController
                 'error' => [
                     'code' => 'dashboard_unavailable',
                     'message' => 'Dashboard information is temporarily unavailable.',
+                    'retryAvailable' => true,
                 ],
             ], 503),
             'partial' => response()->json([
