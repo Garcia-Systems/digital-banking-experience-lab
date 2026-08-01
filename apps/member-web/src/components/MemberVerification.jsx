@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const labels = {
@@ -14,6 +14,7 @@ export default function MemberVerification() {
   const scenario = searchParams.get("verificationScenario") || "success";
   const [verification, setVerification] = useState(null);
   const [requestState, setRequestState] = useState("loading");
+  const operationActive = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -35,17 +36,22 @@ export default function MemberVerification() {
   }, []);
 
   const verify = async () => {
-    setRequestState("submitting");
+    if (operationActive.current) return;
+    operationActive.current = true;
+    setRequestState(verification?.canRetry ? "retrying" : "submitting");
     try {
       const response = await fetch(
         `/api/member-verification?scenario=${encodeURIComponent(scenario)}`,
         { method: "POST" },
       );
-      if (!response.ok) throw new Error("request failed");
-      setVerification(await response.json());
+      const payload = await response.json();
+      if (!response.ok && !payload.status) throw new Error("request failed");
+      setVerification(payload);
       setRequestState("ready");
     } catch {
       setRequestState("error");
+    } finally {
+      operationActive.current = false;
     }
   };
 
@@ -65,7 +71,7 @@ export default function MemberVerification() {
       </main>
     );
 
-  const pending = requestState === "submitting";
+  const pending = ["submitting", "retrying"].includes(requestState);
   return (
     <main className="verification-page" id="main-content">
       <p className="eyebrow">Member security</p>
@@ -100,10 +106,26 @@ export default function MemberVerification() {
             Start verification
           </button>
         )}
-        {!pending && verification.canRetry && (
-          <button className="primary-action" type="button" onClick={verify}>
-            Try Again
-          </button>
+        {verification.canRetry && (
+          <>
+            {requestState === "retrying" && (
+              <p role="status">Retrying your verification…</p>
+            )}
+            <button
+              className="primary-action"
+              type="button"
+              onClick={verify}
+              disabled={pending}
+              aria-describedby={pending ? "retry-progress" : undefined}
+            >
+              {requestState === "retrying" ? "Trying Again…" : "Try Again"}
+            </button>
+            {requestState === "retrying" && (
+              <span id="retry-progress" className="visually-hidden">
+                Retry in progress. Additional requests are disabled.
+              </span>
+            )}
+          </>
         )}
       </section>
     </main>

@@ -10,7 +10,10 @@ const initial = {
   message: "Verify your identity.",
   canRetry: false,
 };
-const response = (body) => ({ ok: true, json: () => Promise.resolve(body) });
+const response = (body, ok = true) => ({
+  ok,
+  json: () => Promise.resolve(body),
+});
 
 describe("member verification", () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -22,7 +25,7 @@ describe("member verification", () => {
       "permanent-failure",
       "verification_failed",
       "Verification Failed",
-      "We couldn't verify your information. Please contact Harbor Community Credit Union.",
+      "Your verification was permanently rejected. Please contact Harbor Community Credit Union if you need assistance.",
     ],
   ])("handles the %s outcome", async (scenario, status, label, message) => {
     const user = userEvent.setup();
@@ -38,7 +41,7 @@ describe("member verification", () => {
       vi.fn((url, options) => {
         if (!options) return Promise.resolve(response(initial));
         return new Promise((resolve) => {
-          finish = () => resolve(response(result));
+          finish = () => resolve(response(result, status === "verified"));
         });
       }),
     );
@@ -77,5 +80,52 @@ describe("member verification", () => {
       "We could not load your verification status",
     );
     expect(screen.queryByText("vendor secret")).not.toBeInTheDocument();
+  });
+
+  it("disables retry while active, prevents duplicates, and shows success", async () => {
+    const user = userEvent.setup();
+    let finishRetry;
+    const retryRequired = {
+      status: "retry_required",
+      lastAttemptAt: "2026-07-31T12:00:00Z",
+      message: "We couldn't complete your request right now.",
+      canRetry: true,
+    };
+    const verified = {
+      ...retryRequired,
+      status: "verified",
+      message: "Your identity has been verified. No further action is needed.",
+      canRetry: false,
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(retryRequired))
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finishRetry = () => resolve(response(verified));
+          }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderWithRouter(<MemberVerification />, {
+      route: "/verification?verificationScenario=timeout-then-success",
+    });
+    const retry = await screen.findByRole("button", { name: "Try Again" });
+    await user.click(retry);
+    await user.click(retry);
+
+    expect(
+      screen.getByRole("button", { name: "Trying Again…" }),
+    ).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Retrying your verification",
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    finishRetry();
+    expect(await screen.findByText("Verified")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Try Again" }),
+    ).not.toBeInTheDocument();
   });
 });

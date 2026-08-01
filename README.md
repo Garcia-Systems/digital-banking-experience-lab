@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–14 complete
+## Progress: Chapters 0–15 complete
 
-Chapter 14 validates transfer input in both React and the authoritative PHP API, returns structured field errors, and demonstrates that member-provided memos render safely as ordinary text.
+Chapter 15 distinguishes successful, retryable, and permanent verification outcomes. It demonstrates deterministic API failures, a manual retry that repeats only the failed operation, accessible progress, and duplicate-request prevention.
 
 ## Architecture
 
@@ -72,7 +72,7 @@ Sign in using the fictional laboratory member ID `member-1001` and password `pas
 
 Choose a transfer outcome by opening the form with `?transferScenario=accepted`, `completed`, or `rejected` (for example, `http://localhost:5173/transfers/new?transferScenario=completed`). The submitted resource retains that deterministic status. The API equivalent is `POST /api/transfers?scenario=completed`; omitting the parameter uses `accepted`.
 
-Visit `/verification` to inspect or start member verification. Select a fixed simulator result with `?verificationScenario=success`, `timeout`, `unavailable`, `invalid-response`, or `permanent-failure`. The browser calls only the internal PHP API; the simulator makes no network requests.
+Visit `/verification` to inspect or start member verification. Select a fixed simulator result with `?verificationScenario=success`, `timeout`, `unavailable`, `temporary-upstream-failure`, `timeout-then-success`, `invalid-member-information`, `unsupported-request`, or `permanent-failure`. The browser calls only the internal PHP API; the simulator makes no network requests.
 
 Run the frontend quality checks from the repository root:
 
@@ -90,7 +90,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Secure Handling of Member Input](book/14-secure-handling-of-member-input.md).
+Follow the chapters in order in [`book`](book), ending with [Retryable Operations](book/15-retryable-operations.md).
 
 ## Repository layout
 
