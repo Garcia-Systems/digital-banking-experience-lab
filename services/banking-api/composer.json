@@ -3,6 +3,7 @@
   "name": "dbel/banking-api",
   "type": "project",
   "description": "Deterministic educational banking API for the Digital Banking Experience Laboratory.",
+  "license": "proprietary",
   "require": {
     "php": "^8.3",
     "laravel/framework": "^12.0"
