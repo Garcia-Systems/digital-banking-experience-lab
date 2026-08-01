@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": ["ES2022"]
+    "lib": ["ES2022"],
+    "types": ["react"]
   },
   "include": [
     "src/components/AccountCard.tsx",
