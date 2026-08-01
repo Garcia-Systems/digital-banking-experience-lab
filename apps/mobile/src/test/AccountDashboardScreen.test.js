@@ -39,23 +39,27 @@ function deferred() {
 
 describe("mobile account dashboard", () => {
   it("renders the institution, fictional member, accounts, masked suffixes, and formatted cents", async () => {
-    const { findByText, getByText, queryByText } = renderWithSafeArea(
+    const view = renderWithSafeArea(
       <AccountDashboardScreen
         loadDashboard={() => Promise.resolve(dashboard)}
       />,
     );
-    expect(await findByText("Good afternoon, Alex Morgan")).toBeTruthy();
-    expect(getByText("Harbor Community Credit Union")).toBeTruthy();
-    expect(getByText("Everyday Checking")).toBeTruthy();
-    expect(getByText("Member Savings")).toBeTruthy();
-    expect(getByText("checking · •••• 4821")).toBeTruthy();
-    expect(getByText("savings · •••• 7314")).toBeTruthy();
-    expect(getByText("$1,250.00")).toBeTruthy();
-    expect(getByText("Current balance $1,305.00")).toBeTruthy();
-    expect(getByText("$4,200.00")).toBeTruthy();
-    expect(getByText("Account information is current.")).toBeTruthy();
-    expect(queryByText("account-2001")).toBeNull();
-    expect(queryByText("account-2002")).toBeNull();
+    expect(await view.findByText("Everyday Checking")).toBeTruthy();
+    expect(view.getByText("Harbor Community Credit Union")).toBeTruthy();
+    expect(
+      view.getByRole("header", {
+        name: /good afternoon,\s*alex morgan/i,
+      }),
+    ).toBeTruthy();
+    expect(view.getByText("Member Savings")).toBeTruthy();
+    expect(view.getByText("checking · •••• 4821")).toBeTruthy();
+    expect(view.getByText("savings · •••• 7314")).toBeTruthy();
+    expect(view.getByText("$1,250.00")).toBeTruthy();
+    expect(view.getByText("Current balance $1,305.00")).toBeTruthy();
+    expect(view.getByText("$4,200.00")).toBeTruthy();
+    expect(view.getByText("Account information is current.")).toBeTruthy();
+    expect(view.queryByText("account-2001")).toBeNull();
+    expect(view.queryByText("account-2002")).toBeNull();
   });
 
   it("shows accessible loading copy until success replaces it", async () => {
