@@ -17,6 +17,8 @@ export default function AccountDashboardScreen({
   onSelectAccount,
   onPrepareTransfer,
   onDashboardLoaded,
+  onSessionExpired,
+  onLogout,
 }) {
   const [request, setRequest] = useState({
     status: "loading",
@@ -36,12 +38,16 @@ export default function AccountDashboardScreen({
       const dashboard = await loadDashboard();
       setRequest({ status: "success", dashboard });
       onDashboardLoaded?.(dashboard);
-    } catch {
+    } catch (error) {
+      if (error?.status === 401) {
+        onSessionExpired?.();
+        return;
+      }
       setRequest({ status: "error", dashboard: null });
     } finally {
       requestActive.current = false;
     }
-  }, [loadDashboard, onDashboardLoaded]);
+  }, [loadDashboard, onDashboardLoaded, onSessionExpired]);
 
   useEffect(() => {
     load();
@@ -96,6 +102,15 @@ export default function AccountDashboardScreen({
     >
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.institution}>Harbor Community Credit Union</Text>
+        {onLogout ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onLogout}
+            style={styles.logout}
+          >
+            <Text style={styles.logoutText}>Sign out</Text>
+          </Pressable>
+        ) : null}
         <Text style={styles.eyebrow}>Member dashboard</Text>
         <Text accessibilityRole="header" style={styles.greeting}>
           Good afternoon, {dashboard.member.displayName}
@@ -146,6 +161,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f3f7f6",
   },
   institution: { color: "#0b665a", fontWeight: "800", fontSize: 16 },
+  logout: { alignSelf: "flex-end", marginTop: -22, padding: 8 },
+  logoutText: { color: "#0b665a", fontWeight: "700" },
   eyebrow: {
     color: "#526966",
     marginTop: 28,

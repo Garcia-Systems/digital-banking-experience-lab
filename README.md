@@ -84,6 +84,10 @@ EXPO_PUBLIC_DASHBOARD_SCENARIO=success npm run mobile:start
 
 `EXPO_PUBLIC_API_BASE_URL` defaults to loopback, but a physical device or some emulators require your development computer's network-accessible address. It is configuration, not a secret. `EXPO_PUBLIC_DASHBOARD_SCENARIO` is optional and accepts `success`, `empty`, `stale`, `error`, or `partial`; unsupported values safely use `success`. Member and operations web require no environment variables. Laravel sessions require the local `APP_KEY` generated above.
 
+On startup, mobile checks its in-memory laboratory session and otherwise displays a native sign-in screen. Use the explicitly fictional `member-1001` / `password` credentials; successful sign-in establishes the deterministic mobile laboratory session before any dashboard data is requested. A `401` clears account data and asks the learner to sign in again, while **Sign out** ends the session. The token is an intentionally fixed teaching transport held only in memory—not production authentication or credential storage.
+
+The browser and mobile clients share the same `/api/login`, `/api/session`, `/api/logout`, and protected `/api/dashboard` boundary. Member web uses Laravel's `harbor_laboratory_session` cookie through same-origin Vite proxy requests. React Native cannot be assumed to share browser cookie persistence, so mobile identifies its login explicitly and sends the returned laboratory-only bearer value on session, dashboard, and logout requests. Mobile therefore needs a network-reachable API base URL, but it does not use browser credential mode or depend on cross-origin cookies.
+
 ## Deterministic learning path
 
 1. Review the `success` member dashboard and fixed projection.
@@ -102,6 +106,7 @@ Run all JavaScript and TypeScript workspace checks from the root:
 ```bash
 npm run lint
 npm run format:check
+npm run typecheck
 npm run test
 npm run build
 npm run mobile:validate

@@ -1,4 +1,5 @@
 import { validateDashboard } from "../utils/validateDashboard";
+import { apiRequest } from "./client";
 
 export const DASHBOARD_SCENARIOS = [
   "success",
@@ -7,7 +8,6 @@ export const DASHBOARD_SCENARIOS = [
   "error",
   "partial",
 ];
-const defaultBaseUrl = "http://127.0.0.1:8000";
 
 export function dashboardScenario(
   value = process.env.EXPO_PUBLIC_DASHBOARD_SCENARIO,
@@ -16,17 +16,15 @@ export function dashboardScenario(
 }
 
 export async function fetchDashboard({
-  baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || defaultBaseUrl,
+  baseUrl,
   scenario = dashboardScenario(),
   signal,
 } = {}) {
   const safeScenario = dashboardScenario(scenario);
-  const response = await fetch(
-    `${baseUrl.replace(/\/$/, "")}/api/dashboard?scenario=${encodeURIComponent(safeScenario)}`,
-    { signal },
+  const response = await apiRequest(
+    `/api/dashboard?scenario=${encodeURIComponent(safeScenario)}`,
+    { baseUrl, signal },
   );
-
-  if (!response.ok) throw new Error("dashboard_unavailable");
 
   const result = validateDashboard(await response.json());
   if (!result.valid) throw new Error("invalid_dashboard_contract");

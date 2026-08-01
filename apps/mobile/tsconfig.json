@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022"]
+  },
+  "include": [
+    "src/components/AccountCard.tsx",
+    "../member-web/src/types/banking.ts",
+    "src/utils/formatters.js"
+  ]
+}

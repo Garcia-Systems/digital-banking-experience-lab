@@ -26,6 +26,8 @@ Native screens must also respect space reserved for notches, status bars, and ho
 
 The app reads `EXPO_PUBLIC_API_BASE_URL` and calls the existing `/api/dashboard` endpoint. A browser on the API computer can interpret `localhost` as that computer. An Android emulator usually treats it as the virtual device and may need the emulator host alias. An iOS simulator often shares the Mac network, though configuration matters. A physical phone treats `localhost` as the phone and normally needs the development computer's reachable LAN address. Firewalls and the server bind address must permit that connection.
 
+Before requesting that protected dashboard, the app checks its in-memory laboratory session and presents a native sign-in screen when none exists. Use the displayed fictional `member-1001` / `password` credentials. This establishes a deterministic, mobile-only teaching token because React Native cookie persistence must not be assumed to behave like a browser. The token is not persisted and is not production authentication. A session-expiration `401` removes protected data and returns to sign-in; **Sign out** demonstrates the same boundary deliberately.
+
 The committed `http://127.0.0.1:8000` fallback is convenient for same-host development, not a claim that loopback works from every device. Set the environment variable before Expo bundles the app; the URL is public configuration and must not contain secrets.
 
 ## Accessibility
