@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": [
+    "apps/member-web/src/api/dashboard.ts",
+    "apps/member-web/src/types/**/*.ts",
+    "apps/member-web/src/utils/**/*.ts"
+  ]
+}

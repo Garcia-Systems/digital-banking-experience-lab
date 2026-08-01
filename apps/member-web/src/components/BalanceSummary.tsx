@@ -1,10 +1,12 @@
-import PropTypes from "prop-types";
 import { formatCents } from "../utils/formatters";
-
+interface BalanceSummaryProps {
+  availableBalanceCents: number;
+  currentBalanceCents: number;
+}
 export default function BalanceSummary({
   availableBalanceCents,
   currentBalanceCents,
-}) {
+}: BalanceSummaryProps) {
   return (
     <dl className="balances">
       <div className="primary-balance">
@@ -18,8 +20,3 @@ export default function BalanceSummary({
     </dl>
   );
 }
-
-BalanceSummary.propTypes = {
-  availableBalanceCents: PropTypes.number.isRequired,
-  currentBalanceCents: PropTypes.number.isRequired,
-};
