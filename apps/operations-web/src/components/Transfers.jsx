@@ -30,7 +30,7 @@ export default function Transfers() {
             {data.transfers.map((transfer) => (
               <tr key={transfer.transferId}>
                 <td>
-                  <Link to={`/transfers/${transfer.transferId}`}>
+                  <Link to={`/operations/transfers/${transfer.transferId}`}>
                     {transfer.transferId}
                   </Link>
                 </td>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { members } from "../data/operationsFixtures.js";
 import { useOperationsResource } from "../api/operations.js";
 
@@ -36,7 +37,11 @@ export default function Members() {
           <tbody>
             {filtered.map((member) => (
               <tr key={member.memberId}>
-                <td>{member.memberId}</td>
+                <td>
+                  <Link to={`/operations/members/${member.memberId}`}>
+                    {member.memberId}
+                  </Link>
+                </td>
                 <td>{member.displayName}</td>
                 <td>
                   <span className="status">{member.verificationStatus}</span>

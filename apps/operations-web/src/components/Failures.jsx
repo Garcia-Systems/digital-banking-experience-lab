@@ -31,7 +31,7 @@ export default function Failures() {
             {data.failures.map((failure) => (
               <tr key={failure.operationId}>
                 <td>
-                  <Link to={`/failures/${failure.operationId}`}>
+                  <Link to={`/operations/failures/${failure.operationId}`}>
                     {failure.operationId}
                   </Link>
                 </td>

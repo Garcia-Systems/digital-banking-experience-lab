@@ -10,9 +10,9 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–18 complete
+## Progress: Chapters 0–19 complete
 
-Chapter 18 extends the employee-facing operations portal with a failed operations dashboard and read-only detail view. Retryable and permanent indicators support deterministic investigation without implementing retry execution.
+Chapter 19 connects the employee-facing operations portal into a coherent workflow. A shared layout links deterministic member, transfer, failure, and verification list and detail views without adding editing or approval actions.
 
 ## Architecture
 
@@ -27,7 +27,12 @@ PHP Banking API      │
                      │
              Operations Web
                      │
-                     └── Failed Operations list and detail
+                     └── Shared employee layout
+                          ├── Operations Home
+                          ├── Members → Member Detail
+                          ├── Transfers → Transfer Detail
+                          ├── Failures → Failure Detail
+                          └── Verifications → Verification Detail
 
 PHP Banking API
   │
@@ -105,7 +110,7 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Failed Operations Review](book/18-failed-operations-review.md).
+Follow the chapters in order in [`book`](book), ending with [Employee Operations Experience](book/19-employee-operations-experience.md).
 
 ## Repository layout
 

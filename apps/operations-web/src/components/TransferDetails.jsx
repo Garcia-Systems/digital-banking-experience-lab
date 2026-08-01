@@ -1,14 +1,25 @@
 import { Link, useParams } from "react-router-dom";
 import { transfers } from "../data/operationsFixtures.js";
+import { useOperationsResource } from "../api/operations.js";
+
+const dollars = (cents) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+    cents / 100,
+  );
 
 export default function TransferDetails() {
   const { transferId } = useParams();
-  const transfer = transfers.find((item) => item.transferId === transferId);
-  if (!transfer)
+  const fallback = transfers.find((item) => item.transferId === transferId);
+  const { data, error } = useOperationsResource(
+    `transfers/${transferId}`,
+    fallback,
+  );
+  const transfer = data?.transfer ?? data;
+  if (!transfer || error)
     return (
       <>
         <h2>Transfer not found</h2>
-        <Link to="/transfers">Return to transfers</Link>
+        <Link to="/operations/transfers">Return to transfers</Link>
       </>
     );
   return (
@@ -21,11 +32,27 @@ export default function TransferDetails() {
           <dd>{transfer.member}</dd>
           <dt>Status</dt>
           <dd>{transfer.status}</dd>
+          <dt>Amount</dt>
+          <dd>{dollars(transfer.amountCents)}</dd>
           <dt>Submitted</dt>
           <dd>{transfer.submittedAt}</dd>
+          <dt>Related verification</dt>
+          <dd>{transfer.verificationStatus}</dd>
+          <dt>Related failed operation</dt>
+          <dd>
+            {transfer.failureId ? (
+              <Link to={`/operations/failures/${transfer.failureId}`}>
+                {transfer.failureId}
+              </Link>
+            ) : (
+              "None"
+            )}
+          </dd>
         </dl>
       </div>
-      <Link to="/transfers">Return to transfers</Link>
+      <Link to={`/operations/members/${transfer.memberId}`}>View member</Link>
+      {" · "}
+      <Link to="/operations/transfers">Return to transfers</Link>
     </>
   );
 }
