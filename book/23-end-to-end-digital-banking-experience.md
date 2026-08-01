@@ -53,7 +53,7 @@ The walkthrough connects deterministic examples; it does not pretend that one re
 
 ### Requirements and environment
 
-Install Node.js 20.19+, npm, PHP 8.3+, and Composer. Run the API before clients. Member web and operations web use Vite's `/api` proxy and need no frontend environment variable. Mobile must be told how its device can reach PHP:
+Install Node.js 20.19+, npm 10 or 11, PHP 8.3, and Composer 2. Reproduce the committed dependency graphs with `npm ci` at the repository root and `composer install --prefer-dist --no-interaction --no-progress` in `services/banking-api`. Use `npm install` only when intentionally changing dependencies. Run the API before clients. Member web and operations web use Vite's `/api` proxy and need no frontend environment variable. Mobile must be told how its device can reach PHP:
 
 | Variable                         | Required                 | Purpose                                                                          |
 | -------------------------------- | ------------------------ | -------------------------------------------------------------------------------- |
@@ -69,7 +69,6 @@ These values contain no real credentials. Use your computer's LAN address instea
 
 ```bash
 cd services/banking-api
-composer install
 cp .env.example .env
 php artisan key:generate
 php artisan serve
@@ -78,7 +77,6 @@ php artisan serve
 **Terminal 2 — member web (`http://localhost:5173`)**
 
 ```bash
-npm install
 npm run dev
 ```
 
@@ -99,16 +97,13 @@ Use the fictional `member-1001` / `password` hint on the native sign-in screen. 
 
 ### Automated validation
 
-From the repository root:
+From the repository root, run the combined JavaScript and TypeScript contract:
 
 ```bash
-npm run lint
-npm run format:check
-npm run typecheck
-npm run test
-npm run build
-npm run mobile:validate
+npm run verify
 ```
+
+This runs lint and tests in every frontend workspace, repository formatting, checks the selected migrated TypeScript files, builds the member and operations web applications, and validates Expo configuration. Mobile validation is not a production native build. The individual commands remain available as `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm run test`, `npm run build`, and `npm run mobile:validate`.
 
 Then run the API tests:
 

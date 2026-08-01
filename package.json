@@ -7,15 +7,24 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @dbel/member-web",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test:member && npm run test:operations && npm run test:mobile",
+    "test:member": "npm run test --workspace @dbel/member-web",
+    "test:operations": "npm run test --workspace @dbel/operations-web",
+    "test:mobile": "npm run test --workspace @dbel/mobile",
+    "lint": "npm run lint:member && npm run lint:operations && npm run lint:mobile",
+    "lint:member": "npm run lint --workspace @dbel/member-web",
+    "lint:operations": "npm run lint --workspace @dbel/operations-web",
+    "lint:mobile": "npm run lint --workspace @dbel/mobile",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --project apps/member-web/tsconfig.json --pretty false && tsc --project apps/mobile/tsconfig.json --pretty false",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build:member && npm run build:operations",
+    "build:member": "npm run build --workspace @dbel/member-web",
+    "build:operations": "npm run build --workspace @dbel/operations-web",
     "dev:operations": "npm run dev --workspace @dbel/operations-web",
     "mobile:start": "npm run start --workspace @dbel/mobile",
-    "mobile:validate": "npm run validate:expo --workspace @dbel/mobile"
+    "mobile:validate": "npm run validate:expo --workspace @dbel/mobile",
+    "verify": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build && npm run mobile:validate"
   },
   "devDependencies": {
     "prettier": "3.6.2",

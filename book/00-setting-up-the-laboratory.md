@@ -19,9 +19,11 @@ Harbor Community Credit Union, Alex Morgan, every account, and every balance are
 From the repository root, install dependencies and start Vite:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
+
+`npm ci` reproduces the dependency graph in `package-lock.json`. Use `npm install` only when deliberately changing dependencies and the lockfile.
 
 Open the URL Vite prints. The default view uses the fresh fixture. Append `?scenario=stale` to see the deterministic stale state.
 
@@ -30,11 +32,13 @@ The root commands delegate to the member web workspace:
 ```bash
 npm run lint
 npm run format:check
+npm run typecheck
 npm run test
 npm run build
+npm run mobile:validate
 ```
 
-`npm run test` runs Vitest once rather than leaving a watcher open. The tests render the application in a DOM-like environment and ask questions about output a member can perceive: headings, masked suffixes, formatted balances, timestamps, and warnings.
+At the completed Volume I repository state, these explicit root commands cover the member web, operations web, and mobile workspaces. `npm run build` produces the two web builds; `npm run mobile:validate` checks Expo configuration rather than producing a native binary. `npm run test` runs each test suite once rather than leaving a watcher open.
 
 ## Definition of done
 
