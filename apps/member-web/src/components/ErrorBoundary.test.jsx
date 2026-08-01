@@ -8,7 +8,9 @@ function BrokenFeature() {
 
 describe("ErrorBoundary", () => {
   it("replaces an unexpected rendering failure with an isolated fallback", () => {
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     render(
       <ErrorBoundary>
         <BrokenFeature />
@@ -23,5 +25,6 @@ describe("ErrorBoundary", () => {
     expect(
       screen.getByText(/Other features are still available/),
     ).toBeInTheDocument();
+    consoleError.mockRestore();
   });
 });

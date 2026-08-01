@@ -29,7 +29,7 @@ The PHP API exposes deterministic feature-specific failures through scenario que
 
 These safe responses name the affected capability, avoid vendor or implementation details, and explicitly say whether retry is appropriate. Their fixed status, code, message, and retry metadata make the laboratory repeatable.
 
-In the browser, select the scenarios with `?scenario=error`, `?transferScenario=unavailable`, or `?verificationScenario=unavailable`. Retry is manual: there are no queues, background workers, circuit breakers, or timing-dependent recovery.
+In the browser, select the scenarios with `?scenario=error`, `?transferScenario=unavailable`, or `?verificationScenario=unavailable`. These query parameters are laboratory-only selectors. Each feature reads only its own named parameter and validates it against a focused allowlist; arbitrary query parameters and unsupported values are not forwarded to the API. A normal transfer therefore posts to `/api/transfers`, while the explicit unavailable experiment posts to `/api/transfers?scenario=unavailable`. Retry is manual: there are no queues, background workers, circuit breakers, or timing-dependent recovery.
 
 ## Relationship to the Digital Banking Systems Laboratory
 

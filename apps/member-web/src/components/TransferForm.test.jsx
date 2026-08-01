@@ -313,7 +313,20 @@ describe("transfer submission", () => {
 
     expect(fetch).toHaveBeenCalledWith(
       "/api/transfers",
-      expect.objectContaining({ method: "POST" }),
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const body = JSON.parse(fetch.mock.calls[0][1].body);
+    expect(body).toEqual(
+      expect.objectContaining({
+        sourceAccount: "account-2001",
+        destinationAccount: "account-2002",
+        amountCents: 2550,
+        memo: "Vacation fund",
+        idempotencyKey: expect.any(String),
+      }),
     );
     expect(
       await screen.findByRole("heading", {
@@ -359,6 +372,30 @@ describe("transfer submission", () => {
     ).toBeEnabled();
     expect(fetch).toHaveBeenCalledWith(
       "/api/transfers?scenario=unavailable",
+      expect.objectContaining({ method: "POST" }),
+    );
+    const firstBody = JSON.parse(fetch.mock.calls[0][1].body);
+
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[1][0]).toBe("/api/transfers?scenario=unavailable");
+    const retryBody = JSON.parse(fetch.mock.calls[1][1].body);
+    expect(retryBody.idempotencyKey).toBe(firstBody.idempotencyKey);
+  });
+
+  it("does not forward an unsupported laboratory scenario", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => acceptedTransfer,
+    });
+    renderForm("/transfers/new?transferScenario=internal-service-name");
+    await prepareReview(user);
+    await user.click(screen.getByRole("button", { name: "Submit transfer" }));
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/transfers",
       expect.objectContaining({ method: "POST" }),
     );
   });

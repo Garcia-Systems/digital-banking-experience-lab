@@ -2,7 +2,11 @@ import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { formatCents, formatMaskedSuffix } from "../utils/formatters";
 import { accountPropType } from "../propTypes/bankingPropTypes";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  selectTransferScenario,
+  submitTransfer as submitTransferRequest,
+} from "../api/transfers";
 
 const MEMO_LIMIT = 100;
 const API_FIELD_NAMES = {
@@ -65,6 +69,8 @@ FieldError.propTypes = {
 
 export default function TransferForm({ accounts }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const transferScenario = selectTransferScenario(location.search);
   const [values, setValues] = useState({
     sourceId: "",
     destinationId: "",
@@ -108,28 +114,16 @@ export default function TransferForm({ accounts }) {
     setSubmission({ status: "submitting", result: null, error: null });
 
     try {
-      const requestedScenario = new URLSearchParams(window.location.search).get(
-        "transferScenario",
-      );
-      const scenario = [
-        "accepted",
-        "completed",
-        "rejected",
-        "unavailable",
-      ].includes(requestedScenario)
-        ? `?scenario=${requestedScenario}`
-        : "";
-      const response = await fetch(`/api/transfers${scenario}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await submitTransferRequest(
+        {
           sourceAccount: review.sourceId,
           destinationAccount: review.destinationId,
           amountCents: Math.round(review.amount * 100),
           memo: review.memo,
           idempotencyKey: review.idempotencyKey,
-        }),
-      });
+        },
+        { scenario: transferScenario },
+      );
       if (response.status === 422) {
         const body = await response.json();
         const serverErrors = Object.entries(body.errors ?? {}).reduce(
