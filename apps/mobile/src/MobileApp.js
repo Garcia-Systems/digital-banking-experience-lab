@@ -31,6 +31,10 @@ export function MobileAppContent() {
     setRoute("dashboard");
     setSession({ status: "unauthenticated", message });
   }, []);
+  const expireSession = useCallback(
+    () => requireSignIn("Your session has expired. Please sign in again."),
+    [requireSignIn],
+  );
 
   useEffect(() => {
     let active = true;
@@ -87,9 +91,7 @@ export function MobileAppContent() {
           onDashboardLoaded={rememberDashboard}
           onPrepareTransfer={() => setRoute("transfer")}
           onSelectAccount={selectAccount}
-          onSessionExpired={() =>
-            requireSignIn("Your session has expired. Please sign in again.")
-          }
+          onSessionExpired={expireSession}
           onLogout={signOut}
         />
       )}
