@@ -1,12 +1,24 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { dashboard, members, transfers } from "./data/operationsFixtures.js";
+import {
+  dashboard,
+  failures,
+  members,
+  transfers,
+} from "./data/operationsFixtures.js";
 import { renderOperationsApp } from "./test/renderOperationsApp.jsx";
 
 const responses = {
   "/api/operations/dashboard": dashboard,
   "/api/operations/members": { members },
   "/api/operations/transfers": { transfers },
+  "/api/operations/failures": { failures },
+  ...Object.fromEntries(
+    failures.map((failure) => [
+      `/api/operations/failures/${failure.operationId}`,
+      { failure },
+    ]),
+  ),
 };
 
 beforeEach(() => {
@@ -31,7 +43,7 @@ describe("operations portal", () => {
 
     expect(screen.getByText("System Health")).toBeInTheDocument();
     const navigation = screen.getByRole("navigation", { name: /operations/i });
-    expect(within(navigation).getAllByRole("link")).toHaveLength(3);
+    expect(within(navigation).getAllByRole("link")).toHaveLength(4);
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith("/api/operations/dashboard", {
         headers: { "X-Laboratory-Role": "operations-user" },
@@ -118,5 +130,41 @@ describe("operations portal", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("renders a deterministic failed operations list and navigation", async () => {
+    renderOperationsApp("/failures");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    expect(
+      screen.getByRole("heading", { name: "Failed Operations" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "failure-9001" })).toHaveAttribute(
+      "href",
+      "/failures/failure-9001",
+    );
+    expect(screen.getByText("Vendor Timeout")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Failed Operations" }),
+    ).toHaveAttribute("aria-current", "page");
+  });
+
+  it("shows retry eligibility and the audit timeline in failure details", async () => {
+    renderOperationsApp("/failures/failure-9001");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    expect(screen.getByText("Retry Eligible")).toBeInTheDocument();
+    expect(screen.getByText("Vendor timeout recorded")).toBeInTheDocument();
+    expect(screen.getByText(/No member action is needed/)).toBeInTheDocument();
+  });
+
+  it("shows manual review for a permanent failure", async () => {
+    renderOperationsApp("/failures/failure-9002");
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    expect(screen.getByText("Manual Review Required")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Permanent Validation Failure/),
+    ).toBeInTheDocument();
   });
 });

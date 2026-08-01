@@ -27,4 +27,6 @@ Route::prefix('operations')->middleware(RequireOperationsRole::class)->group(fun
     Route::get('/dashboard', App\Http\Controllers\Operations\DashboardController::class);
     Route::get('/members', App\Http\Controllers\Operations\MemberController::class);
     Route::get('/transfers', App\Http\Controllers\Operations\TransferController::class);
+    Route::get('/failures', [App\Http\Controllers\Operations\FailureController::class, 'index']);
+    Route::get('/failures/{failureId}', [App\Http\Controllers\Operations\FailureController::class, 'show']);
 });
