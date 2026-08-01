@@ -2,7 +2,7 @@
 
 The **Digital Banking Experience Laboratory** is an executable textbook for learning how modern banking experiences are designed, built, tested, and explained. Each lesson pairs a small working application with the reasoning behind it.
 
-This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. React remains JavaScript so its data flow is visible; TypeScript and React Native are not configured.
+This independent educational project complements the separate **Digital Banking Systems Laboratory**. This repository focuses on the experience layer around member interfaces and APIs. React remains JavaScript so its data flow is visible. Chapter 20 adds a focused React Native application while deliberately postponing TypeScript and mobile navigation.
 
 ## Safety and scope
 
@@ -10,52 +10,21 @@ Harbor Community Credit Union is fictional. Every member, account, balance, iden
 
 This is not a production banking application, does not claim regulatory compliance, and does not represent any institution's actual systems. Read the [security boundaries](docs/security-boundaries.md) before contributing. The API has no database, production authentication, or authoritative ledger. Chapter 12's session is a deterministic teaching model only.
 
-## Progress: Chapters 0–19 complete
+## Progress: Chapters 0–20 complete
 
-Chapter 19 connects the employee-facing operations portal into a coherent workflow. A shared layout links deterministic member, transfer, failure, and verification list and detail views without adding editing or approval actions.
+Chapter 20 introduces an Expo React Native account dashboard with loading, success, stale, empty, partial-response, and failure behavior. Its scope is intentionally one read-only native screen.
 
 ## Architecture
 
 ```text
-Member Web
-        │
-        ├────────────┐
-        ▼            │
-PHP Banking API      │
-        ▲            │
-        └────────────┤
-                     │
-             Operations Web
-                     │
-                     └── Shared employee layout
-                          ├── Operations Home
-                          ├── Members → Member Detail
-                          ├── Transfers → Transfer Detail
-                          ├── Failures → Failure Detail
-                          └── Verifications → Verification Detail
-
-PHP Banking API
-  │
-  ├── Dashboard
-  ├── Account Details
-  ├── Transfer Submission and Status
-  ├── Settings
-  └── Member Verification
-       │
-       v
-  Deterministic Vendor Simulator
-       │
-  React request state (idle / loading / success / error)
-       |
-       | POST /api/login, GET /api/session, and authenticated banking requests
-       v
-  PHP dashboard endpoint (HTTP/JSON contract)
-       |
-       v
-  deterministic scenario fixture (fictional projection)
+Member Web ───────┐
+                  │
+Operations Web ───┼──> PHP Banking API ──> Deterministic Vendor Simulator
+                  │        │
+Mobile App ───────┘        └──> deterministic fictional projections
 ```
 
-The fixture is educational data, not a database or core banking system. React presents the projection; Laravel owns the API response.
+All three clients use fictional educational data. The fixtures are not a database or core banking system: React and React Native present projections, while Laravel owns the shared API response.
 
 ## Get started
 
@@ -84,6 +53,14 @@ Or run the independent operations application on port 5174:
 npm run dev:operations
 ```
 
+To run the mobile dashboard, configure the shared PHP API URL and start Expo:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 npm run mobile:start
+```
+
+The loopback default works when Expo can reach the API on the same development machine. Android emulators, Expo Go, and physical devices can interpret `localhost` as the device itself; use a network-accessible host address for your development computer in `EXPO_PUBLIC_API_BASE_URL`. This value is configuration, not a secret. Select a deterministic laboratory response with `EXPO_PUBLIC_DASHBOARD_SCENARIO=success`, `empty`, `stale`, `error`, or `partial` before starting Expo. Unsupported values safely become `success`.
+
 Vite prints the member application URL and proxies `/api` to Laravel on `http://127.0.0.1:8000`.
 
 Sign in using the fictional laboratory member ID `member-1001` and password `password`. These deterministic credentials are intentionally insecure and are never appropriate outside this educational application. After login, choose a dashboard experiment with `?scenario=success`, `empty`, `stale`, `error`, or `partial`. The session API also accepts `?scenario=expired` as a deterministic timeout demonstration.
@@ -101,7 +78,10 @@ npm run lint
 npm run format:check
 npm run test
 npm run build
+npm run mobile:validate
 ```
+
+Run only the mobile component tests with `npm run test --workspace @dbel/mobile`. Expo configuration validation is non-interactive and requires no emulator or signing credentials.
 
 Run the Laravel suite separately:
 
@@ -110,12 +90,13 @@ cd services/banking-api
 composer test
 ```
 
-Follow the chapters in order in [`book`](book), ending with [Employee Operations Experience](book/19-employee-operations-experience.md).
+Follow the chapters in order in [`book`](book), ending with [React Native Foundations](book/20-react-native-foundations.md).
 
 ## Repository layout
 
 - `apps/member-web`: Vite-powered React member dashboard and frontend tests;
 - `apps/operations-web`: independently runnable React employee portal and frontend tests;
+- `apps/mobile`: Expo React Native account dashboard and native component tests;
 - `services/banking-api`: Laravel JSON API, deterministic fixture, and feature test;
 - `book`: executable textbook chapters;
 - `docs/security-boundaries.md`: rules that keep the laboratory synthetic and educational;

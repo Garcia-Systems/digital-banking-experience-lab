@@ -12,7 +12,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "npm run build --workspaces --if-present",
-    "dev:operations": "npm run dev --workspace @dbel/operations-web"
+    "dev:operations": "npm run dev --workspace @dbel/operations-web",
+    "mobile:start": "npm run start --workspace @dbel/mobile",
+    "mobile:validate": "npm run validate:expo --workspace @dbel/mobile"
   },
   "devDependencies": {
     "prettier": "3.6.2"
