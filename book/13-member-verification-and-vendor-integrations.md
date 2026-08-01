@@ -1,45 +1,46 @@
-# Chapter 13: Member Verification and Vendor Integrations
+# 13: Member verification and vendor integrations
 
-This chapter adds a fictional identity-verification workflow without connecting to a real institution or provider. Choose a deterministic outcome with `/verification?verificationScenario=success`, `timeout`, `unavailable`, `invalid-response`, or `permanent-failure`.
+## Learning objectives
 
-## Banking Concept
+- Model vendor results as explicit scenarios.
+- Separate Harbor messages from vendor details.
+- Render verification success and failure safely.
+- Test integration behavior deterministically.
 
-Financial institutions rely on specialized external providers for capabilities such as identity verification, fraud signals, document review, and sanctions screening. Those services can concentrate expertise, but they remain outside the institution's application and operational control. A sound member experience therefore treats latency, malformed responses, outages, and negative decisions as normal states to design for—not surprising exceptions.
+## Banking concept
 
-Verification status is a member-facing projection of that boundary. It says what the member can do next while withholding provider names, payloads, identifiers, and diagnostic details.
+**Member verification.** Verification is a workflow with an external dependency, not a simple boolean. Harbor translates success, timeout, and permanent failure into member-appropriate states.
 
-## React Concept
+## Frontend concept
 
-External work is asynchronous even when the simulator answers immediately. `MemberVerification` loads the current state, conditionally renders a start or retry action, and displays **Verification Pending** while a request is in flight. It never retries automatically. Local request state distinguishes loading and transport failure from the durable workflow states returned by the API.
+**Integration adapters.** `MemberVerification` requests and submits verification through the Banking API. `DeterministicVerificationVendor` stands behind the controller, preserving a seam where a real vendor adapter would live.
 
-Conditional rendering makes each transition explicit: **Not Started**, **Verification Pending**, **Verified**, **Retry Required**, and **Verification Failed**. The interface preserves a useful explanation and last-attempt timestamp without exposing technical errors.
+## Implementation
 
-## API Concept
+`MemberVerification.jsx`, `MemberVerificationController.php`, and `DeterministicVerificationVendor.php` implement the workflow. The query parameter `verificationScenario` selects a deterministic result.
 
-The React client calls an **internal API**: the stable contract owned by the banking application. The PHP API alone calls the deterministic **external vendor API simulator**. In production those boundaries may have different credentials, availability, schemas, and release cycles. Keeping the vendor behind the internal API prevents vendor-specific response fields from leaking into the browser and gives the institution one place to validate responses.
+## Run the laboratory
 
-The simulator deliberately produces success, timeout, unavailable, invalid-response, and permanent-failure results. The controller defensively translates every result into a small safe contract. A malformed response becomes retryable rather than being trusted or displayed.
+From the repository root unless the command changes directory:
 
-## Relationship to the Digital Banking Systems Laboratory
+```bash
+npm run test:member -- --run src/components/MemberVerification.test.jsx
+```
 
-Earlier systems concepts distinguish transient failures, permanent failures, retries, and dead-letter queues. This repository concentrates on how those distinctions appear to a member: whether to show **Try Again**, stop retrying, or direct the member to the credit union. The separate Digital Banking Systems Laboratory focuses on durable backend workflow, attempt scheduling, observability, and eventual dead-letter handling. No queue or worker is introduced here.
+## What to observe
 
-## Comparison with Traditional PHP
+The success scenario confirms verification; timeout remains retryable; permanent failure gives a safe next step without exposing vendor internals.
 
-A traditional server-rendered PHP application often called a vendor while generating a page. The request could block page generation, and a retry commonly meant submitting or refreshing the whole page. React instead keeps the current screen mounted, calls the internal JSON API asynchronously, and changes only the workflow presentation. In both styles, PHP should own the external boundary and safe error translation.
+## Engineering tradeoffs
 
-## Comparison with AngularJS
+An adapter isolates vendor vocabulary and volatility, but translation can hide useful diagnostics. Member messages stay safe while operational details belong in controlled employee tooling.
 
-AngularJS applications commonly placed asynchronous calls in a service using `$http`, exposed promise outcomes through controller or `$scope` state, and used directives such as `ng-if` for conditional UI. This React implementation uses `fetch`, component state, effects, and ordinary JavaScript conditions. The syntax differs; both approaches still require explicit state transitions and a deliberate service boundary.
+## Automated tests
 
-## Engineering Tradeoffs
-
-- **Retry versus immediate failure:** transient outages justify a member-initiated retry; a permanent decision should not invite repeated submissions.
-- **Technical detail versus useful messaging:** diagnostics help operators, but provider details and exception text confuse members and can disclose sensitive internals.
-- **Simulation versus live services:** fixed scenarios are fast, safe, and reproducible for teaching and tests. They cannot demonstrate every behavior of a real network dependency.
-- **Frontend resilience:** loading, failure, and retry states prevent a slow dependency from producing a frozen or misleading interface. This adds state-management and testing work.
-- **Operational visibility:** safe member messages do not replace internal telemetry. A production API would correlate sanitized member outcomes with protected operational diagnostics.
+`MemberVerification.test.jsx` covers UI outcomes; `MemberVerificationTest.php` covers protected GET/POST routes and deterministic vendor scenarios.
 
 ## Exercise
 
-Add a deterministic `maintenance-window` scenario. Decide whether it is retryable, define its safe internal API contract, and add backend and frontend tests. Do not expose a provider name or automatically retry the request.
+Add a test that permanent failure omits any raw vendor diagnostic field present in the response fixture.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

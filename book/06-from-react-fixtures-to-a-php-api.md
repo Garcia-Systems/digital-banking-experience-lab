@@ -1,68 +1,46 @@
-# Chapter 6: From React Fixtures to a PHP Banking API
+# 06: From React fixtures to a PHP Banking API
 
-The dashboard looks unchanged in this chapter, but its data crosses a new and important boundary. React no longer selects an account fixture when the application starts. The browser asks a Laravel API for the dashboard projection.
+## Learning objectives
 
-## Why React should not own banking data
+- Start the Laravel Banking API.
+- Describe the dashboard request boundary.
+- Validate JSON before rendering it.
+- Use deterministic scenarios without confusing fixtures with a ledger.
 
-A fixture inside a component is useful while learning JSX and props, but it makes the presentation layer appear authoritative. A real member's accounts must come from services that apply the institution's rules and access controls. React's responsibility is to present the projection it receives and manage short-lived interface state; it is not a ledger and must not decide balances.
+## Banking concept
 
-This API is still deliberately not a real banking service. It reads one fictional PHP fixture, has no database or authentication, and always returns the same result. Moving the fixture behind an HTTP boundary lets us study that boundary without pretending that the example is production-ready.
+**Shared banking contracts.** Multiple clients need a consistent account projection. The Banking API owns scenario selection and fixture-backed response contracts so Member Web does not become the source of banking truth.
 
-## Request, response, and JSON
+## Frontend concept
 
-HTTP is a request-response protocol. The browser sends `GET /api/dashboard`: `GET` says it is reading a resource, and the path identifies the dashboard resource. Laravel replies with an HTTP status (`200 OK` for success), headers describing the response, and a JSON body.
+**Fetch lifecycle and PHP routing.** Member Web fetches `/api/dashboard` after session establishment. Laravel routes the protected request to `DashboardController`; the TypeScript API adapter validates the response before React receives it.
 
-JSON is a text representation of objects, arrays, strings, numbers, booleans, and `null`. The response contains `member`, `projection`, and `accounts`, so it maps naturally to the JavaScript value that the existing components expect. JSON does not make data trustworthy by itself; in a real system, the service behind the endpoint would authorize the request and obtain authoritative data.
+## Implementation
 
-## The frontend lifecycle
+`services/banking-api/routes/api.php`, `DashboardController.php`, and `fixtures/dashboard.php` produce responses. `apps/member-web/src/api/dashboard.ts` and `data/validateDashboard.js` consume them.
 
-`App` begins with no dashboard and renders **Loading dashboard...**. A `useEffect` runs after the first render and calls `fetch`. When the successful response is decoded with `response.json()`, `useState` stores the dashboard and React renders the existing component tree. A failed network request or non-success HTTP response instead renders **Unable to load dashboard.** The interface never displays backend exception details.
+## Run the laboratory
 
-This small state machine has three outcomes:
-
-1. pending: no response yet;
-2. success: render the dashboard projection;
-3. failure: render a safe, stable message.
-
-The Vite development server proxies `/api` requests to Laravel at `127.0.0.1:8000`. The browser can therefore use the same relative URL in development that it would use when both applications sit behind one web origin.
-
-## Responsibilities on each side
-
-The Laravel side owns the response contract and the deterministic fictional fixture. It serializes the PHP array as JSON and supplies the HTTP status. Later services could change how that projection is assembled without requiring the account cards to know about a database or vendor.
-
-The React side owns loading, error, and presentation behavior. It formats cents for people, composes account cards, and manages the temporary card-control demonstration. It does not calculate or mutate authoritative account balances.
-
-Tests respect the same split. Backend feature tests make an HTTP request and verify the response shape and fixed data. Frontend tests mock `fetch`, which makes pending, successful, and failed requests fast and repeatable without starting PHP.
-
-## Why deterministic APIs help education
-
-Random balances and clock-based timestamps produce distracting, flaky examples. This endpoint always describes Alex Morgan, the same two accounts, and the fixed `2026-07-31T12:00:00Z` projection. A reader can compare browser output, test output, and JSON exactly. Determinism is a teaching choice here, not an assertion that a real banking API would never change.
-
-## Traditional PHP and React
-
-In traditional server-rendered PHP, the browser requests a page and PHP combines data with a template to return HTML. That approach remains excellent for content-first sites, progressive enhancement, straightforward forms, and applications that benefit from doing most rendering on the server.
-
-In this React application, PHP returns JSON and browser-side JavaScript turns it into the interface. This approach is useful when an interface has rich local interactions or when multiple clients consume a shared API. It also introduces more states and moving parts: the page can load before its data, the API can fail independently, and both sides must agree on a contract.
-
-Neither architecture is universally better. The useful question is which boundary and rendering model fits the product. This laboratory uses JSON now because seeing the request, response, and three frontend states is the lesson.
-
-## Run the chapter
-
-In one terminal, install and start the API:
+From the repository root unless the command changes directory:
 
 ```bash
-cd services/banking-api
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan serve
+cd services/banking-api && composer test
 ```
 
-In another terminal, start React from the repository root:
+## What to observe
 
-```bash
-npm install
-npm run dev
-```
+`DashboardTest.php` reports passing scenario and authorization cases. With the API and Member Web running, a signed-in member receives the success projection.
 
-Visit the URL printed by Vite. To exercise the endpoint directly, open `http://127.0.0.1:8000/api/dashboard`. Run `composer test` inside `services/banking-api` for the backend test and the root npm quality commands for the frontend. This intentionally minimal Laravel application uses its existing PHPUnit development dependency directly rather than adding a package only to provide the `php artisan test` wrapper.
+## Engineering tradeoffs
+
+A shared API contract enables browser and mobile consistency. Deterministic fixtures make failure modes repeatable, but they deliberately omit persistence and real integration behavior.
+
+## Automated tests
+
+`DashboardTest.php` validates API scenarios; `dashboardApi.test.js` covers the Mobile Laboratory adapter; Member Web dashboard tests cover rendering.
+
+## Exercise
+
+Add a feature-test assertion for one existing dashboard metadata field, then trace it to the corresponding Member Web component.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.

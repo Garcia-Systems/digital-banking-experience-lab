@@ -1,37 +1,46 @@
-# Chapter 19: Employee Operations Experience
+# 19: Employee operations experience
 
-This chapter connects the fictional operations dashboard, member lookup, transfer review, failure investigation, and verification requests into one deterministic employee application.
+## Learning objectives
 
-## Banking Concept
+- Connect member, transfer, verification, and failure views.
+- Trace stable identifiers across operational pages.
+- Interpret the portal as read-only review.
+- Explain role-aware information design.
 
-Employees assisting a member often navigate several related systems. **Workflow continuity** preserves the member and operation context as they move from a member record to a transfer, verification request, or failure. This reduces repeated searches and supports operational efficiency. Shared information—stable identifiers, status, timestamps, and relationships—helps employees form the same understanding without exposing ledger controls.
+## Banking concept
 
-The portal is read-only. It gives an operator enough context to assist a member and investigate a result, but it provides neither editing nor approval actions.
+**Operational context.** An employee often needs to move from a member to related transfer or verification status. Stable identifiers and timestamps let Harbor correlate deterministic records without implying ledger authority.
 
-## React Concept
+## Frontend concept
 
-A reusable operations layout owns navigation, the page content area, application heading, and employee role indicator. React Router nested routes render each page through the layout's `Outlet`, avoiding duplicated shell markup. List and detail components form master-detail interfaces, while links preserve context across related resources.
+**Coherent routed experience.** The shared operations layout connects dashboard, member, transfer, verification, and failure list-detail screens. Each component requests through `api/operations.js` and renders fixture-backed contracts.
 
-## API Concept
+## Implementation
 
-Related operational resources are served through small deterministic JSON endpoints. Collections support queue views; identifier routes support detail views and return explicit `404` responses for unknown fictional records. Relationships use stable IDs rather than embedding an entire unrelated resource, keeping contracts understandable and navigation explicit.
+`apps/operations-web/src/components/Members.jsx`, `MemberDetails.jsx`, `Transfers.jsx`, `TransferDetails.jsx`, `Verifications.jsx`, and `VerificationDetails.jsx` complete the portal.
 
-## Relationship to the Digital Banking Systems Laboratory
+## Run the laboratory
 
-The Digital Banking Systems Laboratory explains backend workflows and ledger boundaries. Operators here observe projections of their results: transfer states, verification states, and classified failures. They never interact directly with ledger mechanics, queues, or vendor credentials.
+From the repository root unless the command changes directory:
 
-## Comparison with Traditional PHP
+```bash
+npm run test:operations && npm run build:operations
+```
 
-Traditional PHP administrative portals commonly use a shared server-rendered header, navigation include, and content template. The same principle applies here: React owns a shared layout while PHP supplies JSON. Both approaches benefit from one consistent shell and focused pages.
+## What to observe
 
-## Comparison with AngularJS
+Operational routes render the corresponding collections and known details, role denial remains enforced, and Vite produces the independent portal bundle.
 
-AngularJS used nested routes, controllers, and reusable templates to build administrative shells. React Router's parent route and `Outlet` provide the nested-routing role, while ordinary components provide reusable templates with explicit data flow.
+## Engineering tradeoffs
 
-## Engineering Tradeoffs
+A unified portal reduces context switching, while broad data aggregation increases privacy and authorization risk. Volume I keeps it read-only and deterministic rather than simulating privileged repair actions.
 
-Multiple small pages make routes bookmarkable and each task focused, but require employees to navigate. One large dashboard reduces page changes but becomes dense, loads unrelated data, and blurs task boundaries. Reusable layouts reduce duplication and visual drift, although changes to the shell affect every workflow. Consistency in labels, identifiers, and related links is valuable because an operator's attention should remain on the member rather than on relearning each screen.
+## Automated tests
+
+`apps/operations-web/src/App.test.jsx` covers the complete routed experience; `OperationsTest.php` validates all operations collections and detail endpoints.
 
 ## Exercise
 
-Add a deterministic **Open Investigations** page with a list and detail route. Decide which existing fictional records it links to and test its empty state. Do not implement editing, approval, or investigation actions.
+Add a navigation test that moves from the Operations Portal dashboard to one existing collection without bypassing the shared layout.
+
+The exercise reinforces this chapter's boundary and prepares the next step in the completed Harbor journey.
