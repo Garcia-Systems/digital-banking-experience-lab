@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react-native";
 import AccountDashboardScreen from "../screens/AccountDashboardScreen";
 import { renderWithSafeArea } from "./renderWithSafeArea";
 
@@ -65,9 +65,14 @@ describe("mobile account dashboard", () => {
     );
     expect(screen.getByText("Loading account information…")).toBeTruthy();
     expect(screen.getByLabelText("Loading account information")).toBeTruthy();
-    request.resolve(dashboard);
+    await act(async () => {
+      request.resolve(dashboard);
+      await request.promise;
+    });
     expect(await screen.findByText("Everyday Checking")).toBeTruthy();
-    expect(screen.queryByText("Loading account information…")).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByText("Loading account information…")).toBeNull();
+    });
   });
 
   it("shows an empty success without inventing an account", async () => {
@@ -126,12 +131,15 @@ describe("mobile account dashboard", () => {
     );
     const button = await screen.findByRole("button", { name: "Try Again" });
     fireEvent.press(button);
-    fireEvent.press(button);
-    expect(loadDashboard).toHaveBeenCalledTimes(2);
-    retry.resolve(dashboard);
-    await waitFor(() =>
-      expect(screen.getByText("Everyday Checking")).toBeTruthy(),
-    );
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Try Again" })).toBeNull();
+      expect(loadDashboard).toHaveBeenCalledTimes(2);
+    });
+    await act(async () => {
+      retry.resolve(dashboard);
+      await retry.promise;
+    });
+    expect(await screen.findByText("Everyday Checking")).toBeTruthy();
   });
 
   it("fails safely when the API client rejects a malformed response", async () => {
