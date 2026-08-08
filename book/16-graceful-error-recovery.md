@@ -7,6 +7,8 @@
 - Clear protected data on authorization failure.
 - Distinguish retryable degradation from invalid data.
 
+![Graceful error recovery](../images/chapters/chapter-16.png)
+
 ## Banking concept
 
 **Graceful degradation.** Harbor can offer a dashboard retry or stale projection without inventing balances. On malformed data or expired authorization, withholding account content is safer than optimistic display.

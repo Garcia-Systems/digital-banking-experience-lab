@@ -7,6 +7,8 @@
 - Navigate operational summaries.
 - Separate member and employee experiences.
 
+![Internal Operations Portal](../images/chapters/chapter-17.png)
+
 ## Banking concept
 
 **Role-specific operations.** Employees need cross-member queues and status summaries that would be inappropriate in Member Web. Harbor models a distinct Operations Portal and API prefix.

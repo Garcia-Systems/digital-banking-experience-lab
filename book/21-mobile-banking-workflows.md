@@ -7,6 +7,8 @@
 - Prepare a transfer without claiming submission.
 - Handle dashboard scenarios and expiration.
 
+![Mobile banking workflows](../images/chapters/chapter-21.png)
+
 ## Banking concept
 
 **Mobile workflow scope.** Harbor's Mobile Laboratory supports account review, history, and transfer preparation. Preparation validates an intent locally; it intentionally does not claim that a transfer was submitted.

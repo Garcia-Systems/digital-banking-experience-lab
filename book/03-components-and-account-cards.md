@@ -7,6 +7,8 @@
 - Distinguish empty, loading, failure, and zero balance.
 - Test behavior through accessible output.
 
+![Components and account cards](../images/chapters/chapter-03.png)
+
 ## Banking concept
 
 **Account identity.** Checking and savings accounts may share layout while retaining distinct names, masked identifiers, and balances. A zero balance is valid data; no accounts is a different state.

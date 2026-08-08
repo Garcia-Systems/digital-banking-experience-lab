@@ -7,6 +7,8 @@
 - Render account collections with stable keys.
 - Compose a page from banking-specific components.
 
+![JSX and the first account dashboard](../images/chapters/chapter-02.png)
+
 ## Banking concept
 
 **Dashboard comprehension.** A member needs balances, account identity, freshness, and recent activity together. The hierarchy helps them understand the projection before taking an action.

@@ -7,6 +7,8 @@
 - Distinguish synthetic laboratory data from production banking data.
 - Run the repository's complete validation suite.
 
+![Setting up the laboratory](../images/chapters/chapter-00.png)
+
 ## Banking concept
 
 **Laboratory boundaries.** A banking laboratory must make its trust boundary explicit. Harbor Community Credit Union, its members, balances, and outcomes are synthetic; the applications demonstrate experience design, not a ledger or compliance claim.

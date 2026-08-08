@@ -7,6 +7,8 @@
 - Prevent duplicate submission in the UI.
 - Distinguish replay from a second transfer intent.
 
+![Idempotent transfer submission](../images/chapters/chapter-10.png)
+
 ## Banking concept
 
 **Duplicate protection.** Networks and members retry. Harbor assigns an idempotency key to one transfer intent so replaying that command returns the same result instead of creating another transfer.

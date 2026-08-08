@@ -7,6 +7,8 @@
 - Display stale and partial-data warnings.
 - Retry dashboard loading safely.
 
+![Loading, empty, success, and failure states](../images/chapters/chapter-07.png)
+
 ## Banking concept
 
 **Uncertain and unavailable data.** Banking screens must not turn absence, delay, or malformed data into a balance. Harbor labels stale information and withholds incomplete projections.

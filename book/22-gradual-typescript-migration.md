@@ -7,6 +7,8 @@
 - Run compile-time checking.
 - Preserve runtime validation at network boundaries.
 
+![Gradual TypeScript migration](../images/chapters/chapter-22.png)
+
 ## Banking concept
 
 **Reliable financial presentation.** Misspelled or nullable account fields can produce misleading output. Static types improve editor and build feedback for Harbor's core dashboard values, but cannot prove a balance is authoritative.

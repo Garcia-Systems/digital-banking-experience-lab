@@ -7,6 +7,8 @@
 - Render completed, accepted, and rejected outcomes.
 - Avoid optimistic claims about settlement.
 
+![Transfer status and confirmation](../images/chapters/chapter-11.png)
+
 ## Banking concept
 
 **Transfer lifecycle.** A submitted transfer can be accepted, completed, rejected, or unavailable. Harbor's confirmation screen reports the returned state rather than equating an HTTP success with completed movement.

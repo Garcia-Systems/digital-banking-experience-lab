@@ -7,6 +7,8 @@
 - Understand operational triage metadata.
 - Avoid implying that review automatically repairs work.
 
+![Failed operations review](../images/chapters/chapter-18.png)
+
 ## Banking concept
 
 **Failure review.** Failed operations need identifiers, categories, timestamps, and safe context so Harbor employees can triage them. A review queue is an audit aid, not proof of retry or resolution.

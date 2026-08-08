@@ -7,6 +7,8 @@
 - Validate JSON before rendering it.
 - Use deterministic scenarios without confusing fixtures with a ledger.
 
+![From React fixtures to a PHP Banking API](../images/chapters/chapter-06.png)
+
 ## Banking concept
 
 **Shared banking contracts.** Multiple clients need a consistent account projection. The Banking API owns scenario selection and fixture-backed response contracts so Member Web does not become the source of banking truth.

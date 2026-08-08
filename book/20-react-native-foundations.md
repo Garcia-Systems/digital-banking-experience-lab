@@ -7,6 +7,8 @@
 - Render Harbor accounts with native components.
 - Configure a network-reachable Banking API URL.
 
+![React Native foundations](../images/chapters/chapter-20.png)
+
 ## Banking concept
 
 **Mobile access boundary.** A mobile member still needs authenticated, fresh account information, but the device cannot assume browser cookie persistence or a loopback address that reaches the development computer.

@@ -7,6 +7,8 @@
 - Render verification success and failure safely.
 - Test integration behavior deterministically.
 
+![Member verification and vendor integrations](../images/chapters/chapter-13.png)
+
 ## Banking concept
 
 **Member verification.** Verification is a workflow with an external dependency, not a simple boolean. Harbor translates success, timeout, and permanent failure into member-appropriate states.

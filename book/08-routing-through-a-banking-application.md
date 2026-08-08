@@ -7,6 +7,8 @@
 - Keep authentication outside protected routes.
 - Provide a safe not-found experience.
 
+![Routing through a banking application](../images/chapters/chapter-08.png)
+
 ## Banking concept
 
 **Workflow navigation.** Dashboard, account detail, transfer preparation, transfer status, verification, and settings are distinct member tasks. Stable routes make those tasks bookmarkable without treating the URL as authorization.
