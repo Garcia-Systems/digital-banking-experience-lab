@@ -7,6 +7,8 @@
 - Execute every automated validation command.
 - State the limits of the complete system.
 
+![End-to-end digital banking experience](../images/chapters/chapter-23.png)
+
 ## Banking concept
 
 **Cross-channel banking experience.** Harbor members see the same fixture-backed account contract through Member Web and the Mobile Laboratory, while employees inspect fixed operational records in the Operations Portal. Identifiers and statuses connect experiences without representing a real ledger.

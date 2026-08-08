@@ -7,6 +7,8 @@
 - Explain why display components do not fetch independently.
 - Compare compile-time, runtime, and PropTypes checks.
 
+![Props and account data](../images/chapters/chapter-04.png)
+
 ## Banking concept
 
 **Consistent account data.** Harbor must display the same account identity and balances across summary and detail views. A single dashboard value prevents independently fetched fragments from contradicting one another within a render.

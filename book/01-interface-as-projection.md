@@ -7,6 +7,8 @@
 - Render deterministic dashboard scenarios.
 - Recognize why uncertainty must remain visible.
 
+![Interface as projection](../images/chapters/chapter-01.png)
+
 ## Banking concept
 
 **Account projections.** Member Web presents Harbor balances and activity as a point-in-time projection. `asOf` and status metadata prevent the screen from implying that cached information is authoritative or current.

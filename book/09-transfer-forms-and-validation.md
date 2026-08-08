@@ -7,6 +7,8 @@
 - Keep the Banking API authoritative.
 - Present actionable validation feedback.
 
+![Transfer forms and validation](../images/chapters/chapter-09.png)
+
 ## Banking concept
 
 **Transfer intent.** A transfer form records a member's intent; it does not prove money moved. Harbor prevents same-account transfers and invalid amounts before submission while the server repeats authoritative checks.

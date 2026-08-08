@@ -7,6 +7,8 @@
 - Interpret the portal as read-only review.
 - Explain role-aware information design.
 
+![Employee operations experience](../images/chapters/chapter-19.png)
+
 ## Banking concept
 
 **Operational context.** An employee often needs to move from a member to related transfer or verification status. Stable identifiers and timestamps let Harbor correlate deterministic records without implying ledger authority.

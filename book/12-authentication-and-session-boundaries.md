@@ -7,6 +7,8 @@
 - Handle expiration and logout.
 - Explain why browser and mobile transports differ.
 
+![Authentication and session boundaries](../images/chapters/chapter-12.png)
+
 ## Banking concept
 
 **Authentication boundaries.** Harbor checks identity before returning dashboard, verification, or transfer data. The fixed credentials and token are teaching mechanisms, not production identity or secret storage.

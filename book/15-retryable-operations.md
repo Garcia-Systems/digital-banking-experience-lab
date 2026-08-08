@@ -7,6 +7,8 @@
 - Show pending feedback during retry.
 - Explain when manual retry is safer.
 
+![Retryable operations](../images/chapters/chapter-15.png)
+
 ## Banking concept
 
 **Retries.** A timeout does not reveal whether an external operation failed or merely lost its response. Harbor retries the deterministic verification workflow but does not blindly repeat a transfer command without idempotency.

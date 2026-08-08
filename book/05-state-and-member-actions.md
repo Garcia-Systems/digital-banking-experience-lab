@@ -7,6 +7,8 @@
 - Explain why hiding a balance does not change its value.
 - Avoid treating UI state as a banking record.
 
+![State and member actions](../images/chapters/chapter-05.png)
+
 ## Banking concept
 
 **Commands versus records.** A member can hide balances or open card controls, but those interactions do not alter Harbor's underlying account projection. A command intent and an authoritative record are different things.

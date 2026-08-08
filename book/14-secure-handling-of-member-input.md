@@ -7,6 +7,8 @@
 - Keep raw diagnostics out of member messages.
 - Preserve usability without weakening server authority.
 
+![Secure handling of member input](../images/chapters/chapter-14.png)
+
 ## Banking concept
 
 **Input trust.** Amounts, account IDs, credentials, memos, and verification values cross a trust boundary. Harbor validates structure and allowed values before using an input to select a banking operation.
